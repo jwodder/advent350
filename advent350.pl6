@@ -214,6 +214,8 @@ sub drop(int $obj, int $where) {
  @atloc[$where].unshift: $obj if $where > 0;
 }
 
+ #< sub ciao() {mspeak 32; } >
+
 sub bug(int $num) {
  say "Fatal error, see source code for interpretation.";
 

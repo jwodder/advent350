@@ -1,10 +1,12 @@
 # Magic/wizard-mode related routines
 
-# Because $wkday, $wkend, and $holid have to contain at least 24 bits, we can't
-# safely use the native `int' type for them.
-my Int $wkday;
-my Int $wkend;
-my Int $holid;
+# These arrays hold the times when adventurers are allowed into Colossal Cave;
+# @wkday is for weekdays, @wkend for weekends, and @holid for holidays (days
+# with special hours).  If element $n of an array is true, then the hour $n:00
+# through $n:59 is considered "prime time," i.e., the cave is closed then.
+my bool @wkday[24];
+my bool @wkend[24];
+my bool @holid[24];
 
 my int $hbegin;
 my int $hend;
@@ -37,10 +39,10 @@ sub yesm(int $x, int $y, int $z --> Bool) {
 
 sub start( --> Bool) {
  my($d, $t) = datime;
- my $primetm = $wkday;
- $primetm = $wkend if $d % 7 <= 1;
- $primetm = $holid if $hbegin <= $d <= $hend;
- my bool $ptime = ($primetm +& 1 +< ($t/60)) != 0;
+ my bool @primetm[24] = @wkday;
+ @primetm = @wkend if $d % 7 <= 1;
+ @primetm = @holid if $hbegin <= $d <= $hend;
+ my bool $ptime = @primetm[($t/60).floor];
  my bool $soon = False;
  if $setup < 0 {
   $delay = ($d - $saved) * 1440 + ($t - $savet);
@@ -114,19 +116,6 @@ sub maint() {
  ciao;
 }
 
-sub a5toi(Str $word --> int64) {
- my int64 $i = 0;
- my @chrs = $word.comb.map: *.ord;  # $word must be in ASCII, or else...
- $i += int64(@chrs[$_] // 0) +< (36 - 7 * ($_+1)) for ^5;
- return $i;
-}
-
-sub itoa5(int64 $i --> Str) {
- my Str $word = '';
- $word ~= chr(($i +> (36 - 7 * ($_+1))) +& 127) for ^5;
- return $word;
-}
-
 sub wizard( --> Bool) {
  return False if !yesm(16, 0, 7);
  mspeak 17;
@@ -135,38 +124,38 @@ sub wizard( --> Bool) {
  if $word !eq $magic {mspeak 20; return False; }
  my($d, $t) = datime;
  $t = $t * 2 + 1;
- my int64 $iword = a5toi '@@@@@';
+ my int @wchrs[5] = 64, *;
  my int @val[5];
- for 1..5 -> $y {
+ for ^5 -> $y {
   my $x = 79 + $d % 5;
   $d /= 5;
   $t = ($t * 1027) % 1048576 for 1..$x;
-  @val[$y-1] = ($t*26) / 1048576 + 1;
-  $iword += int64(@val[$y-1]) +< (36 - 7*$y);
+  @wchrs[$y] += @val[$y] = ($t*26) / 1048576 + 1;
  }
  if yesm(18, 0, 0) {mspeak 20; return False; }
- say itoa5($iword);
+ .print for @wchrs.map: *.chr;
  print "\n> ";
- $iword = a5toi $*IN.get.words.[0];
+ @wchrs = $*IN.get.words.[0].substr(0, 5).comb.map: *.ord;
+  #< What happens if the inputted word is less than five characters? >
  ($d, $t) = datime;
  $t = ($t/60)*40 + ($t/10)*10;
  $d = $magnm;
- for 1..5 -> $y {
-  my $z = $y % 5 + 1;
-  my $x = ((@val[$y-1] - @val[$z-1]).abs * ($d % 10) + ($t % 10)) % 26 + 1;
+ for ^5 -> $y {
+  @wchrs[$y] -= ((@val[$y] - @val[($y+1) % 5]).abs * ($d % 10) + ($t % 10))
+   % 26 + 1;
   $t /= 10;
   $d /= 10;
-  $iword -= int64($x) +< (36 - 7*$y);
  }
- if itoa5($iword) eq '@@@@@' {mspeak 19; return True; }
+ if @wchrs »==» 64 {mspeak 19; return True; }
+ #< Is this ^^ right? >
  else {mspeak 20; return False; }
 }
 
 sub hours() {
  print "\n";
- hoursx($wkday, "Mon - Fri:");
- hoursx($wkend, "Sat - Sun:");
- hoursx($holid, "Holidays: ");
+ hoursx(@wkday, "Mon - Fri:");
+ hoursx(@wkend, "Sat - Sun:");
+ hoursx(@holid, "Holidays: ");
  my($d, $t) = datime;
  return if $hend < $d | $hbegin;
  if $hbegin > $d {
@@ -176,19 +165,19 @@ sub hours() {
  } else { say "Today is a holiday, namely $hname." }
 }
 
-sub hoursx($h, Str $day) {
- my Bool $first = True;
- my $from = -1;
- if $h == 0 { say ' ' x 10, "$day Open all day" }
+sub hoursx(bool @hours[24], Str $day) {
+ my bool $first = True;
+ my int $from = -1;
+ if @hours.all == False { say ' ' x 10, "$day Open all day" }
  else {
   loop {
-   do { $from++ } while $h +& 1 +< $from;
+   do { $from++ } while @hours[$from] && $from < 24;
    if $from >= 24 {
     say ' ' x 10, $day, ' Closed all day' if $first;
     return;
    } else {
     my $till = $from;
-    do { $till++ } while ($h +& 1 +< $till) == 0 && $till != 24;
+    do { $till++ } while !@hours[$till] && $till != 24;
     if $first {
      print ' ' x 10, $day;
      printf "%4d:00 to%3d:00\n", $from, $till;
@@ -204,24 +193,24 @@ sub hoursx($h, Str $day) {
 
 sub newhrs() {
  mspeak 21;
- $wkday = newhrx('Weekdays:');
- $wkend = newhrx('Weekends:');
- $holid = newhrx('Holidays:');
+ @wkday = newhrx('Weekdays:');
+ @wkend = newhrx('Weekends:');
+ @holid = newhrx('Holidays:');
  mspeak 22;
  hours;
 }
 
-sub newhrx(Str $day --> Int) {
- my Int $newhrx = 0;
+sub newhrx(Str $day --> bool[24] #< Right? > ) {
+ my bool @newhrx[24] = False, *;
  say "Prime time on $day";
  loop {
   print "from: ";
   my int $from = $*IN.get.words.[0];
-  return $newhrx if $from < 0 || $from >= 24;
+  return @newhrx if $from < 0 || $from >= 24;
   print "till: ";
   my int $till = $*IN.get.words.[0] - 1;
-  return $newhrx if $till < $from || $till >= 24;
-  $newhrx +|= 1 +< $_ for $from..$till;
+  return @newhrx if $till < $from || $till >= 24;
+  @newhrx[$from..$till] = True, *;
  }
 }
 
@@ -243,9 +232,9 @@ sub motd(Bool $alter) {
 }
 
 sub poof() {
- $wkday = 0o00777400;
- $wkend = 0;
- $holid = 0;
+ @wkday = False xx 8, True xx 10, False xx 6;
+ @wkend = False;
+ @holid = False;
  $hbegin = 0;
  $hend = -1;
  $short = 30;

@@ -1,0 +1,21 @@
+- Finish translating the original Fortran to Perl 6
+- Translate the Perl 6 to C
+ - Use preprocessor directives to configure:
+  - whether to include magic
+  - (possibly) whether to include the second part of wizard authentication
+  - whether to use C's rand() or the original Fortran's RAN() for random number
+    generation
+- Replace the text portions of data.txt with the corresponding sections from
+  advent.dat, properly cased & with typos corrected
+- Write a script for converting advent350.pl6 from its "ideal" form into one
+  that works on the current version of Rakudo
+- Split advent350.pl6 into two versions: one with magic, one without
+- Add a README explaining what I'm doing and/or why I'm doing it, along with
+  links to the IF Archive's downloads of the original Fortran source and
+  possibly also the BDS C source
+- Come up with a good name for the project/repository and then upload it to
+  Github
+- Add/implement "save" & "restore" commands
+- For the magic version, add a way to save changes made in maintenance mode
+- Add transcripts?
+- Make the arrays be properly zero-indexed
