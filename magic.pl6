@@ -49,7 +49,7 @@ sub start( --> Bool) {
   if $delay < $latency {
    say "This adventure was suspended a mere $delay minutes ago.";
    $soon = True;
-   if $delay < $latency/3 {mspeak 2; return False; }
+   if $delay < $latency/3 {mspeak 2; exit 0; }
   }
  }
  if $soon {
@@ -63,9 +63,9 @@ sub start( --> Bool) {
   hours;
   mspeak 4;
   if wizard {$saved = -1; return False; }
-  if $setup < 0 {mspeak 9; return False; }
+  if $setup < 0 {mspeak 9; exit 0; }
   if yesm(5, 7, 7) {$saved = -1; return True; }
-  return False;
+  exit 0;
  }
  $saved = -1;
  return False;

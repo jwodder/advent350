@@ -15,7 +15,7 @@
   possibly also the BDS C source
 - Come up with a good name for the project/repository and then upload it to
   Github
-- Add/implement "save" & "restore" commands
+- Add "save" and "restore"/"restart"/"resume"/"load" (2033) commands
 - For the magic version, add a way to save changes made in maintenance mode
 - Add transcripts?
 - Make the arrays be properly zero-indexed

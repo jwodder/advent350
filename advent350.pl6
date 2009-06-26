@@ -84,9 +84,11 @@ enum item « :KEYS(1) LAMP GRATE CAGE ROD ROD2 STEPS BIRD DOOR PILLOW SNAKE
  SPICES CHAIN »;
 
 enum movement « :BACK(8) :NULL(21) :LOOK(57) :DEPRESSION(63) :ENTRANCE(64)
- :CAVE(67) »
+ :CAVE(67) »;
 
-enum action « :SAY(3) :LOCK(6) :THROW(17) :FIND(19) :INVENT(20) »
+enum action « :TAKE(1) DROP SAY OPEN NOTHING LOCK ON OFF WAVE CALM WALK KILL
+ POUR EAT DRINK RUB THROW QUIT FIND INVENT FEED FILL BLAST SCORE FOO BRIEF READ
+ BREAK WAKE SUSPEND HOURS {#< :LOAD(33) >} »;
 
 
 # Global variables:
@@ -209,15 +211,15 @@ sub drop(int $obj, int $where) {
  @atloc[$where].unshift: $obj if $where > 0;
 }
 
- #< sub ciao() {mspeak 32; } >
+ #< sub ciao() {mspeak 32; exit 0; } >
 
 sub bug(int $num) {
  say "Fatal error, see source code for interpretation.";
 
 # Given the above message, I suppose I should list the possible bug numbers in
 # the source somewhere, and right here is as good a place as any:
+# 5 - Required vocabulary word not found
 # 20 - Special travel (500>L>300) exceeds GOTO list
-# 21 - Ran off end of vocabulary table
 # 22 - Vocabulary type (N/1000) not between 0 and 3
 # 23 - Intransitive action verb exceeds GOTO list
 # 24 - Transitive action verb exceeds GOTO list
@@ -229,6 +231,18 @@ sub bug(int $num) {
  #say "Probable cause: erroneous info in database.";  # Not in this version
  say "Error code = $num";
  exit -1;
+}
+
+sub vocab(Str $word, int $type --> int) {
+ my int @matches = %vocab{$word};
+ if $type >= 0 { @matches.=grep: { ($_/1000).floor == $type } }
+ if !@matches {
+  if $type >= 0 { bug 5 }
+  return -1;
+ } else { return $type >= 0 ?? @matches[0] % 1000 !! [min] @matches }
+ # When returning values of a specified type, there can be no more than one
+ # match; if there is more than one, someone's been messing with the data
+ # sections.
 }
 
 sub dwarves() {
@@ -490,15 +504,12 @@ sub normend() {
 }
 
 
-# Functions to define: vocab, something for saving & restoring
-
-
 sub MAIN #< Insert command-line stuff here > {
 
  #«« poof; $demo = start; motd(False); »»
  $newloc = 1;
  $limit = (@hinted[3] = yes(65, 1, 0)) ?? 1000 !! 330;
- # $setup = 3;  ???
+ #< $setup = 3; >  ???
 
  bigLoop: loop {
 # 2:
@@ -732,87 +743,6 @@ sub MAIN #< Insert command-line stuff here > {
     default { bug 22 }
    }
   }
-
-
-# Label 4080 (intransitive verb handling):
- given $verb {
-  when NOTHING {rspeak 54; #< GOTO 2012 > }
-  when WALK {rspeak $spk; #< GOTO 2012 > }
-  when DROP | SAY | WAVE | CALM | RUB | TOSS | FIND | FEED | BREAK | WAKE {
-   say "$in1 what?";
-   $obj = 0;
-   #< GOTO 2600 >
-  }
-  when TAKE {
-   if @atloc[$loc] != 1 || $dflag >= 2 && @dloc[^5].any == $loc {
-    say "$in1 What?";
-    $obj = 0;
-    #< GOTO 2600 >
-   }
-   $obj = @atloc[$loc;0];
-   #< GOTO 9010 >
-  }
-  when OPEN | LOCK { #< GOTO 8040 > }
-  when EAT { #< GOTO 8140 > }
-  when QUIT { #< GOTO 8180 > }
-  when INVEN { #< GOTO 8200 > }
-  when SCORE { #< GOTO 8240 > }
-  when FOO { #< GOTO 8250 > }
-  when BRIEF { #< GOTO 8260 > }
-  when READ { #< GOTO 8270 > }
-  when SUSP { #< GOTO 8300 > }
-  when HOUR { #< GOTO 8310 > }
-  when ON { #< GOTO 9070 > }
-  when OFF { #< GOTO 9080 > }
-  when KILL { #< GOTO 9120 > }
-  when POUR { #< GOTO 9130 > }
-  when DRINK { #< GOTO 9150 > }
-  when FILL { #< GOTO 9220 > }
-  when BLAST { #< GOTO 9230 > }
-  default { bug 23 }
- }
-
-
-# Label 9010 (transitive carry):
- if toting $obj {rspeak $spk; #< GOTO 2012 > }
- $spk = 25;
- $spk = 115 if $obj == PLANT && @prop[PLANT] <= 0;
- $spk = 169 if $obj == BEAR && @prop[BEAR] == 1;
- $spk = 170 if $obj == CHAIN && @prop[BEAR] != 0;
- if fixed $obj {rspeak $spk; #< GOTO 2012 > }
- if $obj == WATER | OIL {
-  if !here BOTTLE || liq != $obj {
-   $obj = BOTTLE;
-   if toting BOTTLE && @prop[BOTTLE] == 1 { #< GOTO 9220 > }
-   $spk = 105 if @prop[BOTTLE] != 1;
-   $spk = 104 if !toting BOTTLE;
-   rspeak $spk;
-   #< GOTO 2012 >
-  }
-  $obj = BOTTLE;
- }
- if $holding >= 7 {
-  rspeak 92;
-  #< GOTO 2012 >
- }
- if $obj == BIRD && @prop[BIRD] == 0 {
-  if toting ROD {
-   rspeak 26;
-   #< GOTO 2012 >
-  }
-  if !toting CAGE {
-   rspeak 27;
-   #< GOTO 2012 >
-  }
-  @prop[BIRD] = 1;
- }
- carry BIRD+CAGE-$obj, $loc if $obj == BIRD | CAGE && @prop[BIRD] != 0;
- carry $obj, $loc;
- $k = liq;
- @place[$k] = -1 if $obj == BOTTLE && $k != 0;
- rspeak 54;
- #< GOTO 2012 >
-
 
 
 
