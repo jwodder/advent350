@@ -19,7 +19,7 @@ sub indexLines(Str *@lines --> List of Str) {
 my Str @longDesc <== indexLines <== $=adventData01.lines(:!chomp);
 my Str @shortDesc <== indexLines <== $=adventData02.lines(:!chomp);
 
-my Array of Array of int @travel
+my int @travel[*;*;*]
  <== map { .defined ?? .split("\n").map: *.split("\t") !! undef }
  <== indexLines <== $=adventData03.lines(:!chomp);
 
@@ -61,7 +61,7 @@ drop($_, @place[$_])
 
 my int @actspk[32] <== indexLines <== $adventData08.lines;
 
-my int @cond;
+my int @cond = 0, *;
 for $=adventData09.lines {
  my($bit, @locs) = .split: "\t";
  @cond[$_] +|= 1 +< $bit for @locs;
@@ -69,25 +69,24 @@ for $=adventData09.lines {
 
 my Pair @classes <== map { [=>] .split("\t") } <== $adventData10.lines(:!chomp);
 
-my Array[4] of int @hints <== map { .defined ?? .split("\t") !! undef }
+my int @hints[*;4] <== map { .defined ?? .split("\t") !! undef }
  <== indexLines <== $adventData11.lines;
 
  #«« my Str @magicMsg <== indexLines <== $=adventData12.lines(!:chomp); »»
 
 
-#
-# Insert object, verb, & other constants enums here
-#
+# Object & verb numbers:
 
-# Object enums: KEYS, LAMP, GRATE, CAGE, ROD, ROD2, STEPS, BIRD, DOOR, PILLOW,
-# SNAKE, FISSUR, TABLET, CLAM, OYSTER, MAGZIN, DWARF, KNIFE, FOOD, BOTTLE,
-# WATER, OIL, PLANT, PLANT2, AXE, MIRROR, DRAGON, CHASM, TROLL, TROLL2, BEAR,
-# MESSAG, VEND, BATTER, NUGGET, COINS, CHEST, EGGS, TRIDENT, VASE, EMERALD,
-# PYRAM, PEARL, RUG, CHAIN
+enum item « :KEYS(1) LAMP GRATE CAGE ROD ROD2 STEPS BIRD DOOR PILLOW SNAKE
+ FISSUR TABLET CLAM OYSTER MAGZIN DWARF KNIFE FOOD BOTTLE WATER OIL MIRROR
+ PLANT PLANT2 :AXE(28) :DRAGON(31) CHASM TROLL TROLL2 BEAR MESSAG VOLCANO VEND
+ BATTER :NUGGET(50) :COINS(54) CHEST EGGS TRIDENT VASE EMERALD PYRAM PEARL RUG
+ SPICES CHAIN »;
 
-# Motion verbs enums: BACK, LOOK, CAVE, NULL, ENTRANCE, DEPRESSION
+enum movement « :BACK(8) :NULL(21) :LOOK(57) :DEPRESSION(63) :ENTRANCE(64)
+ :CAVE(67) »
 
-# Action verb enums: SAY, LOCK, THROW, FIND, INVENT
+enum action « :SAY(3) :LOCK(6) :THROW(17) :FIND(19) :INVENT(20) »
 
 
 # Global variables:
@@ -107,7 +106,7 @@ my bool $gaveup = False;
 my int $tally = 15;
 my int $tally2 = 0;
 my int @hintlc[10] = 0, *;
-my bool @hinted[10] = 0, *;
+my bool @hinted[10] = False, *;
 
 constant int $chloc = 114;
 constant int $chloc2 = 140;
@@ -142,14 +141,10 @@ sub here(int $item --> Bool) { @place[$item] == $loc || toting $item }
 sub at(int $item --> Bool) { $loc == @place[$item] | @fixed[$item] }
 sub liq2(int $p --> int) { (WATER, 0, OIL)[$p] }
 sub liq( --> int) { liq2(@prop[BOTTLE] max -1-@prop[BOTTLE]) }
-
-sub liqloc(int $loc --> int) {
- liq2(@cond[$loc] +& LIQUID ?? @cond[$loc] +& WATOIL !! 1)
-}
-
+sub liqloc(int $loc --> int) { liq2(@cond[$loc] +& 4 ?? @cond[$loc] +& 2 !! 1) }
 sub bitset(int $loc, int $n --> Bool) { @cond[$loc] +& 1 +< $n }
-sub forced(int $loc --> Bool) { @travel[$loc][0][1] == 1 }
-sub dark ( --> Bool) { !(@cond[$loc] +& LIGHT || (@prop[LAMP] && here(LAMP)) }
+sub forced(int $loc --> Bool) { @travel[$loc;0;1] == 1 }
+sub dark( --> Bool) { !(@cond[$loc] +& 1 || (@prop[LAMP] && here(LAMP)) }
 sub pct(int $x --> Bool) { (^100).pick < $x }
 
 sub speak(Str $s) {
@@ -158,7 +153,7 @@ sub speak(Str $s) {
  print $s;
 }
 
-sub pspeak(int $item, int $state) { speak @itemDesc[$item][$state+1] }
+sub pspeak(int $item, int $state) { speak @itemDesc[$item;$state+1] }
 sub rspeak(int $msg) { speak @rmsg[$msg] if $msg != 0 }
 
 sub yes(int $x, int $y, int $z --> Bool) {
@@ -201,7 +196,7 @@ sub carry(int $obj, int $where) {
   $holding++;
  }
  @atloc[$where].splice:
-  @atloc[$where].keys.first({ @atloc[$where][$_] == $obj }), 1;
+  @atloc[$where].keys.first({ @atloc[$where;$_] == $obj }), 1;
 }
 
 sub drop(int $obj, int $where) {
@@ -472,7 +467,7 @@ sub score(Bool $scoring --> int) {
  }
  $score++ if @place[MAGZIN] == 108;
  $score += 2;
- for 1..9 -> $i { $score -= @hints[$i][1] if @hinted[$i] }
+ for 1..9 -> $i { $score -= @hints[$i;1] if @hinted[$i] }
  return $score;
 }
 
@@ -560,7 +555,7 @@ sub MAIN #< Insert command-line stuff here > {
    next if @hinted[$hint];
    @hintlc[$hint] = -1 if !bitset $loc, $hint;
    @hintlc[$hint]++;
-   if @hintlc[$hint] >= @hints[$hint][0] {
+   if @hintlc[$hint] >= @hints[$hint;0] {
     given $hint {
      when 4 {
       if @prop[GRATE] != 0 || here KEYS {@hintlc[$hint] = 0; next hintLoop; }
@@ -583,11 +578,11 @@ sub MAIN #< Insert command-line stuff here > {
      }
     }
     @hintlc[$hint] = 0;
-    next hintLoop if !yes(@hints[$hint][2], 0, 54);
+    next hintLoop if !yes(@hints[$hint;2], 0, 54);
     say "I am prepared to give you a hint, but it will cost you ",
-     @hints[$hint][1], " points.";
-    @hinted[$hint] = yes(175, @hints[$hint][3], 54);
-    limit += 30 * @hints[$hint][1] if @hinted[$hint] && $limit > 30;
+     @hints[$hint;1], " points.";
+    @hinted[$hint] = yes(175, @hints[$hint;3], 54);
+    limit += 30 * @hints[$hint;1] if @hinted[$hint] && $limit > 30;
    }
   }
   if $closed {
@@ -666,7 +661,10 @@ sub MAIN #< Insert command-line stuff here > {
 # 19999:
   $k = 43;
   $k = 70 if liqloc $loc == WATER;
-  if $word1 eq 'ENTER' && $word2 eq 'STREA' | 'WATER' { #< GOTO 2010 > }
+  if $word1 eq 'ENTER' && $word2 eq 'STREA' | 'WATER' {
+   rspeak #< $spk = > $k;
+   #< GOTO 2012 >
+  }
   if $word1 eq 'ENTER' && $word2 { ($word1, $word2) = ($word2, undef) }
   elsif $word1 eq 'WATER' | 'OIL' && $word2 eq 'PLANT' | 'DOOR' {
    $word2 = 'POUR' if at vocab($word2, 1)
@@ -693,7 +691,7 @@ sub MAIN #< Insert command-line stuff here > {
        $k = ENTRANCE if 9 < $loc < 15;
        if $k != GRATE {domove; next bigLoop; }
       } elsif $k == DWARF {
-       if $dflag >= 2 && @dloc[(^5).any] == $loc { #< GOTO 5010 > }
+       if $dflag >= 2 && @dloc[^5].any == $loc { #< GOTO 5010 > }
       }
       if liq == $k && here BOTTLE || $k == liqloc $loc { #< GOTO 5010 > }
       if $obj == PLANT && at PLANT2 && @prop[PLANT2] != 0 {
@@ -734,6 +732,87 @@ sub MAIN #< Insert command-line stuff here > {
     default { bug 22 }
    }
   }
+
+
+# Label 4080 (intransitive verb handling):
+ given $verb {
+  when NOTHING {rspeak 54; #< GOTO 2012 > }
+  when WALK {rspeak $spk; #< GOTO 2012 > }
+  when DROP | SAY | WAVE | CALM | RUB | TOSS | FIND | FEED | BREAK | WAKE {
+   say "$in1 what?";
+   $obj = 0;
+   #< GOTO 2600 >
+  }
+  when TAKE {
+   if @atloc[$loc] != 1 || $dflag >= 2 && @dloc[^5].any == $loc {
+    say "$in1 What?";
+    $obj = 0;
+    #< GOTO 2600 >
+   }
+   $obj = @atloc[$loc;0];
+   #< GOTO 9010 >
+  }
+  when OPEN | LOCK { #< GOTO 8040 > }
+  when EAT { #< GOTO 8140 > }
+  when QUIT { #< GOTO 8180 > }
+  when INVEN { #< GOTO 8200 > }
+  when SCORE { #< GOTO 8240 > }
+  when FOO { #< GOTO 8250 > }
+  when BRIEF { #< GOTO 8260 > }
+  when READ { #< GOTO 8270 > }
+  when SUSP { #< GOTO 8300 > }
+  when HOUR { #< GOTO 8310 > }
+  when ON { #< GOTO 9070 > }
+  when OFF { #< GOTO 9080 > }
+  when KILL { #< GOTO 9120 > }
+  when POUR { #< GOTO 9130 > }
+  when DRINK { #< GOTO 9150 > }
+  when FILL { #< GOTO 9220 > }
+  when BLAST { #< GOTO 9230 > }
+  default { bug 23 }
+ }
+
+
+# Label 9010 (transitive carry):
+ if toting $obj {rspeak $spk; #< GOTO 2012 > }
+ $spk = 25;
+ $spk = 115 if $obj == PLANT && @prop[PLANT] <= 0;
+ $spk = 169 if $obj == BEAR && @prop[BEAR] == 1;
+ $spk = 170 if $obj == CHAIN && @prop[BEAR] != 0;
+ if fixed $obj {rspeak $spk; #< GOTO 2012 > }
+ if $obj == WATER | OIL {
+  if !here BOTTLE || liq != $obj {
+   $obj = BOTTLE;
+   if toting BOTTLE && @prop[BOTTLE] == 1 { #< GOTO 9220 > }
+   $spk = 105 if @prop[BOTTLE] != 1;
+   $spk = 104 if !toting BOTTLE;
+   rspeak $spk;
+   #< GOTO 2012 >
+  }
+  $obj = BOTTLE;
+ }
+ if $holding >= 7 {
+  rspeak 92;
+  #< GOTO 2012 >
+ }
+ if $obj == BIRD && @prop[BIRD] == 0 {
+  if toting ROD {
+   rspeak 26;
+   #< GOTO 2012 >
+  }
+  if !toting CAGE {
+   rspeak 27;
+   #< GOTO 2012 >
+  }
+  @prop[BIRD] = 1;
+ }
+ carry BIRD+CAGE-$obj, $loc if $obj == BIRD | CAGE && @prop[BIRD] != 0;
+ carry $obj, $loc;
+ $k = liq;
+ @place[$k] = -1 if $obj == BOTTLE && $k != 0;
+ rspeak 54;
+ #< GOTO 2012 >
+
 
 
 
