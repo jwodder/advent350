@@ -135,6 +135,10 @@ my int $clock1 = 30;
 my int $clock2 = 50;
 my bool $blklin = True;
 
+# Global variables used in parsing commands:
+my int $verb, $obj;
+my Str $in1, $in2;
+
 
 # Functions:
 
@@ -340,40 +344,46 @@ sub dwarves() {
  death;
 }
 
-sub domove() {
-# 8:
+# Label 8; GOTO 2 (i.e., next bigLoop) on return:
+sub domove(int $motion) {
  $newloc = $loc;
  bug 26 if !@travel[$loc];
- return if $k == NULL;
- if $k == BACK {
-  #< GOTO 20 >
-  $k = forced($oldloc) ?? $oldloc2 !! $oldloc;
-  ($oldloc2, $oldloc) = ($oldloc, $loc);
-  my $k2 = 0;
-  if $k != $loc {
-   # GOTO 21
-   for @travel[$loc].keys -> $kk {
-    my $ll = @travel[$loc;$kk;0] % 1000;
-    if $ll == $k {
-     #< GOTO 25 >
-    } elsif $ll <= 300 {
-     $k2 = $kk if forced $ll && @travel[$ll;0;0] % 1000 == $k
+ given $motion {
+  when NULL { return }
+  when BACK {
+   my int $k = forced($oldloc) ?? $oldloc2 !! $oldloc;
+   ($oldloc2, $oldloc) = ($oldloc, $loc);
+   if $k == $loc { rspeak 91 }
+   else {
+    my int $k2 = 0;
+    for @travel[$loc].keys -> $kk {
+     my $ll = @travel[$loc;$kk;0] % 1000;
+     if $ll == $k {
+      dotrav @travel[$loc;$kk;1];
+      return;
+     } elsif $ll <= 300 {
+      $k2 = $kk if forced $ll && @travel[$ll;0;0] % 1000 == $k
+     }
     }
+    if $k2 != 0 { dotrav @travel[$loc;$k2;1] }
+    else { rspeak 140 }
    }
-   my $kk = $k2;
-   if $kk != 0 {
-    #< GOTO 25 >
-   }
-   rspeak 140;
-   return;
-  } else {rspeak 91; return; }
+  }
+  when LOOK {
+   rspeak 15 if $detail++ < 3;
+   $wzdark = False;
+   @abb[$loc] = 0;
+  }
+  when CAVE { rspeak($loc < 8 ?? 57 !! 58) }
+  default {($oldloc2, $oldloc) = ($oldloc, $loc); dotrav $motion; }
  }
- if $k == LOOK { #< GOTO 30 > }
- if $k == CAVE { #< GOTO 40 > }
- ($oldloc2, $oldloc) = $oldloc, $loc;
+}
+
+sub dotrav(int $motion) {
+# 9:
  my int $rdest = -1;
  for @travel[$loc] -> $kk {
-  if $kk[1..*].any == 1 | $k ff * {
+  if $kk[1..*].any == 1 | $motion ff * {
    my int $ll = $kk[0];
    my int $rcond = ($ll/1000).floor;
    my int $robject = $rcond % 100;
@@ -389,7 +399,7 @@ sub domove() {
  }
  given $rdest {
   when -1 {
-   given $k {
+   given $motion {
     when 29 | 30 | (43..50) { rspeak 9 }
     when  7 | 36 | 37 { rspeak 10 }
     when 11 | 19 { rspeak 11 }
@@ -436,7 +446,6 @@ sub domove() {
   when 500 ^.. * { rspeak $rdest-500 }
   default { bug 20 }
  }
- #< GOTO 2 >
 }
 
 sub death() {
@@ -542,8 +551,7 @@ sub MAIN #< Insert command-line stuff here > {
   }
   rspeak 141 if toting BEAR;
   speak $kk;
-  my $k = 1; # ???
-  if forced $loc {domove; next bigLoop; }
+  if forced $loc {domove 1; next bigLoop; }
   rspeak 8 if $loc == 33 && pct 25 && !$closing;
   if !dark {
    @abb[$loc]++;
@@ -560,7 +568,7 @@ sub MAIN #< Insert command-line stuff here > {
    }
   }
 # 2012:
-  my($verb, $obj) = 0, 0;
+  ($verb, $obj) = 0, 0;
 # 2600:
   hintLoop: for 4..9 -> $hint {
    next if @hinted[$hint];
@@ -604,7 +612,7 @@ sub MAIN #< Insert command-line stuff here > {
   $wzdark = dark;
   $knifeloc = 0 if 0 < $knifeloc != $loc;
   print "\n> ";
-  my($in1, $in2) = $*IN.get.word.[0,1];
+  ($in1, $in2) = $*IN.get.words.[0,1];
   my($word1, $word2) = ($in1, $in2).map:
    { .defined ?? .substr(0, 5).uc !! undef };
 # 2608:
@@ -673,7 +681,7 @@ sub MAIN #< Insert command-line stuff here > {
   $k = 43;
   $k = 70 if liqloc $loc == WATER;
   if $word1 eq 'ENTER' && $word2 eq 'STREA' | 'WATER' {
-   rspeak #< $spk = > $k;
+   rspeak $k;
    #< GOTO 2012 >
   }
   if $word1 eq 'ENTER' && $word2 { ($word1, $word2) = ($word2, undef) }
@@ -686,7 +694,7 @@ sub MAIN #< Insert command-line stuff here > {
    if $i == -1 {rspeak(pct 20 ?? 61 !! pct 20 ?? 13 !! 60); #< GOTO 2600 > }
    $k = $i % 1000;
    given ($i / 1000).floor {
-    when 0 {domove; next bigLoop; }
+    when 0 {domove $k; next bigLoop; }
     when 1 {
 # 5000:
      $obj = $k;
@@ -700,7 +708,7 @@ sub MAIN #< Insert command-line stuff here > {
       if $k == GRATE {
        $k = DEPRESSION if $loc == 1 | 4 | 7;
        $k = ENTRANCE if 9 < $loc < 15;
-       if $k != GRATE {domove; next bigLoop; }
+       if $k != GRATE {domove $k; next bigLoop; }
       } elsif $k == DWARF {
        if $dflag >= 2 && @dloc[^5].any == $loc { #< GOTO 5010 > }
       }
@@ -718,6 +726,7 @@ sub MAIN #< Insert command-line stuff here > {
        $obj = ROD2;
        #< GOTO 5010 >
       }
+# 5190:
       if $verb == FIND | INVENT && !$word2 { #< GOTO 5010 > }
       say "I see no $in1 here.";
       #< GOTO 2012 >
