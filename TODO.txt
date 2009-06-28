@@ -13,9 +13,9 @@
 - Add a README explaining what I'm doing and/or why I'm doing it, along with
   links to the IF Archive's downloads of the original Fortran source and
   possibly also the BDS C source
-- Come up with a good name for the project/repository and then upload it to
-  Github
 - Add "save" and "restore"/"restart"/"resume"/"load" (2033) commands
 - For the magic version, add a way to save changes made in maintenance mode
 - Add transcripts?
 - Make the arrays be properly zero-indexed
+- Upload the repository to GitHub with the name "advent350" (description: "Yet
+  another port of the Colossal Cave Adventure")

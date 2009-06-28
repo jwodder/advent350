@@ -168,13 +168,60 @@
     if $obj != WATER {rspeak 112; #< GOTO 2012 > }
     pspeak PLANT, @prop[PLANT] + 1;
     @prop[PLANT] = (@prop[PLANT] + 2) % 6;
-    @prop[PLANT2] = (@prop[PLANT]/2).floor;
+    @prop[PLANT2] = @prop[PLANT] idiv 2;
     domove NULL;
     #< GOTO 2 >
    } else {rspeak 77; #< GOTO 2012 > }
   }
-  when DRINK { #< GOTO 9150 > }
-  when FILL { #< GOTO 9220 > }
+  when DRINK {
+# 9150:
+   if $obj == 0 && liqloc($loc) != WATER && (liq != WATER || !here BOTTLE) {
+    #< GOTO 8000 >
+   }
+   if $obj == 0 | WATER {
+    if liq == WATER && here BOTTLE {
+     @prop[BOTTLE] = 1;
+     @place[WATER] = 0;
+     rspeak 74;
+    } else { rspeak @actspk[$verb] }
+   } else { rspeak 110 }
+   #< GOTO 2012 >
+  }
+  when FILL {
+# 9220:
+   if $obj == VASE {
+    if liqloc($loc) == 0 { rspeak 144 }
+    elsif !toting VASE { rspeak 29 }
+    else {
+     rspeak 145;
+     @prop[VASE] = 2;
+     @fixed[VASE] = -1;
+
+     # In the original Fortran, when the vase is filled with water or oil, its
+     # property is set so that it breaks into pieces, *but* the code then
+     # branches to label 9024 to actually drop the vase.  Once you cut out the
+     # unreachable states, it turns out that the vase remains intact if the
+     # pillow is present, but even if it survives it is still marked as a fixed
+     # object and can't be picked up again.  This is probably a bug in the
+     # original code, but who am I to fix it?
+
+     @prop[VASE] = 0 if at PILLOW;
+     pspeak VASE, @prop[VASE] + 1;
+     drop $obj, $loc;
+    }
+   } else {
+    if $obj != 0 & BOTTLE { rspeak @actspk[$verb] }
+    if $obj == 0 && !here BOTTLE { #< GOTO 8000 > }
+    if liq != 0 { rspeak 105 }
+    elsif liqloc($loc) == 0 { rspeak 106 }
+    else {
+     @prop[BOTTLE] = @cond[$loc] +& 2;
+     @place[liq] = -1 if toting BOTTLE;
+     rspeak(liq == OIL ?? 108 !! 107);
+    }
+   }
+   #< GOTO 2012 >
+  }
   when BLAST { #< GOTO 9230 > }
   default { bug 23 }
  }
@@ -221,7 +268,6 @@ sub vtake() {
  rspeak 54;
  #< GOTO 2012 >
 }
-
 
 # Label 9040 (transitive lock/unlock):
 sub vopen() {
@@ -345,7 +391,7 @@ sub vkill() {
    }
   }
   when TROLL { $spk = 157 }
-  when BEAR { $spk = 165 + ((@prop[BEAR]+1)/2).floor }
+  when BEAR { $spk = 165 + (@prop[BEAR]+1) idiv 2 }
  }
  rspeak $spk;
  #< GOTO 2012 >

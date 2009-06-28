@@ -142,6 +142,15 @@ my Str $in1, $in2;
 
 # Functions:
 
+# I got sick of constantly flooring quotients (sometimes done because the
+# original source required it, oftentimes done just because I don't trust
+# Rakudo's typecasting), and I would like to use as many Perl 6 features as
+# possible, so I defined an integer division operator:
+multi sub infix:<idiv>(Int | Num | Rat $a, Int | Num | Rat $b --> Int)
+ is equiv(&infix:<div>) is assoc('left') {
+ ($a div $b).floor
+}
+
 sub toting(int $item --> Bool) { @place[$item] == -1 }
 sub here(int $item --> Bool) { @place[$item] == $loc || toting $item }
 sub at(int $item --> Bool) { $loc == @place[$item] | @fixed[$item] }
@@ -239,7 +248,7 @@ sub bug(int $num) {
 
 sub vocab(Str $word, int $type --> int) {
  my int @matches = %vocab{$word};
- if $type >= 0 { @matches.=grep: { ($_/1000).floor == $type } }
+ if $type >= 0 { @matches.=grep: { $_ idiv 1000 == $type } }
  if !@matches {
   if $type >= 0 { bug 5 }
   return -1;
@@ -276,7 +285,7 @@ sub dwarves() {
    my $newloc = $_ % 1000;
    15 <= $newloc <= 300 && $newloc != @odloc[$i] & @dloc[$i]
     && !forced($newloc) && !($i == 5 && bitset($newloc, 3))
-    && ($_ / 1000).floor != 100;
+    && $_ idiv 1000 != 100;
   } @travel[@dloc[$i];*;0];
   @tk.push: @odloc[$i];
   (@odloc[$i], @dloc[$i]) = @dloc[$i], @tk.pick;
@@ -385,14 +394,14 @@ sub dotrav(int $motion) {
  for @travel[$loc] -> $kk {
   if $kk[1..*].any == 1 | $motion ff * {
    my int $ll = $kk[0];
-   my int $rcond = ($ll/1000).floor;
+   my int $rcond = $ll idiv 1000;
    my int $robject = $rcond % 100;
    given $rcond {
     when 0 | 100 { $rdest = $ll % 1000 }
     when 0 ^..^ 100 { $rdest = $ll % 1000 if pct $_ }
     when 100 ^.. 200 { $rdest = $ll % 1000 if toting $robject }
     when 200 ^.. 300 { $rdest = $ll % 1000 if toting $robject || at $robject }
-    default { $rdest = $ll % 1000 if @prop[$robject] != ($_/100).floor - 3 }
+    default { $rdest = $ll % 1000 if @prop[$robject] != $_ idiv 100 - 3 }
    }
    last if $rdest != -1;
   }
@@ -541,7 +550,7 @@ sub MAIN #< Insert command-line stuff here > {
   death if $loc == 0;
   my Str $kk = @shortdesc[$loc];
   $kk = @longdesc[$loc] if @abb[$loc] % $abbnum == 0 || !$kk.defined;
-  if !forced $loc && dark {
+  if !forced($loc) && dark {
    if $wzdark && pct 35 {
     rspeak 23;
     $oldloc2 = $loc;
@@ -552,7 +561,7 @@ sub MAIN #< Insert command-line stuff here > {
   rspeak 141 if toting BEAR;
   speak $kk;
   if forced $loc {domove 1; next bigLoop; }
-  rspeak 8 if $loc == 33 && pct 25 && !$closing;
+  rspeak 8 if $loc == 33 && pct(25) && !$closing;
   if !dark {
    @abb[$loc]++;
    for @atloc[$loc] -> $obj {
@@ -577,14 +586,16 @@ sub MAIN #< Insert command-line stuff here > {
    if @hintlc[$hint] >= @hints[$hint;0] {
     given $hint {
      when 4 {
-      if @prop[GRATE] != 0 || here KEYS {@hintlc[$hint] = 0; next hintLoop; }
+      if @prop[GRATE] != 0 || here(KEYS) {@hintlc[$hint] = 0; next hintLoop; }
      }
-     when 5 { next hintLoop if !here BIRD || !toting ROD || $obj != BIRD }
+     when 5 { next hintLoop if !here(BIRD) || !toting(ROD) || $obj != BIRD }
      when 6 {
-      if !here SNAKE || here BIRD {@hintlc[$hint] = 0; next hintLoop; }
+      if !here(SNAKE) || here(BIRD) {@hintlc[$hint] = 0; next hintLoop; }
      }
      when 7 {
-      if @atloc[$loc] || @atloc[$oldloc] || @atloc[$oldloc2] || $holding <= 1 {
+      if @atloc[$loc, $oldloc, $oldloc2] || $holding <= 1 {
+      # This ^^ is supposed to check whether there is at least one item at any
+      # of the given locations; does it work right?
        @hintlc[$hint] = 0;
        next hintLoop;
       }
@@ -625,13 +636,10 @@ sub MAIN #< Insert command-line stuff here > {
   $clock1-- if $tally == 0 && 15 <= $loc != 33;
   if $clock1 == 0 {
    @prop[GRATE, FISSUR] = 0, 0;
-   for ^6 -> $i {
-    @dseen[$i] = False;
-    @dloc[$i] = 0;
-   }
+   (@dseen[$_], @dloc[$_]) = False, 0 for ^6;
    move TROLL, 0;
    move TROLL+100, 0;
-   move TROLL2, 117;
+   move TROLL2, 117;  # There are no trolls in *Troll 2*.
    move TROLL2+100, 122;
    juggle CHASM;
    destroy BEAR if @prop[BEAR] != 3;
@@ -693,7 +701,7 @@ sub MAIN #< Insert command-line stuff here > {
    my $i = vocab $wd, -1;
    if $i == -1 {rspeak(pct 20 ?? 61 !! pct 20 ?? 13 !! 60); #< GOTO 2600 > }
    $k = $i % 1000;
-   given ($i / 1000).floor {
+   given $i idiv 1000 {
     when 0 {domove $k; next bigLoop; }
     when 1 {
 # 5000:

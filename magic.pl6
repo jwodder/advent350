@@ -42,7 +42,7 @@ sub start( --> Bool) {
  my bool @primetm[24] = @wkday;
  @primetm = @wkend if $d % 7 <= 1;
  @primetm = @holid if $hbegin <= $d <= $hend;
- my bool $ptime = @primetm[($t/60).floor];
+ my bool $ptime = @primetm[$t idiv 60];
  my bool $soon = False;
  if $setup < 0 {
   $delay = ($d - $saved) * 1440 + ($t - $savet);
