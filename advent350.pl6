@@ -137,7 +137,7 @@ my bool $blklin = True;
 
 # Global variables used in parsing commands:
 my int $verb, $obj;
-my Str $in1, $in2;
+my Str $in1, $in2, $word1, $word2;
 
 
 # Functions:
@@ -267,7 +267,7 @@ sub dwarves() {
  if $dflag == 1 {
   return if $loc < 15 || pct 95;
   $dflag = 2;
-  for 1, 2 { @dloc[(^5).pick] = 0 if pct 50 #< && $saved == -1 > }
+  for 1, 2 { @dloc[(^5).pick] = 0 if pct(50) #< && $saved == -1 > }
   for ^5 -> $i {
    @dloc[$i] = 18 if @dloc[$i] == $loc;
    @odloc[$i] = @dloc[$i];
@@ -624,7 +624,7 @@ sub MAIN #< Insert command-line stuff here > {
   $knifeloc = 0 if 0 < $knifeloc != $loc;
   print "\n> ";
   ($in1, $in2) = $*IN.get.words.[0,1];
-  my($word1, $word2) = ($in1, $in2).map:
+  ($word1, $word2) = ($in1, $in2).map:
    { .defined ?? .substr(0, 5).uc !! undef };
 # 2608:
   $foobar = 0 min -$foobar;
@@ -698,6 +698,7 @@ sub MAIN #< Insert command-line stuff here > {
   }
   for $word1, $word2 -> $wd {
    rspeak 17 if $wd eq 'WEST' && ++$iwest == 10;
+# 2630:
    my $i = vocab $wd, -1;
    if $i == -1 {rspeak(pct 20 ?? 61 !! pct 20 ?? 13 !! 60); #< GOTO 2600 > }
    $k = $i % 1000;
@@ -743,7 +744,7 @@ sub MAIN #< Insert command-line stuff here > {
     when 2 {
 # 4000:
      $verb = $k;
-     my $spk = @actspk[$verb];  # Is a separate variable necessary?
+     #< my $spk = @actspk[$verb]; >
      if $word2 && $verb != SAY { #< GOTO 2800 > }
      $obj = $word2 if $verb == SAY;
      if $obj == 0 {

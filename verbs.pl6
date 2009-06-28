@@ -132,98 +132,151 @@
   »»
 
   }
-  when ON {
-   if !here LAMP { rspeak @actspk[$verb] }
-   elsif $limit < 0 { rspeak 184 }
-   else {
-    @prop[LAMP] = 1;
-    rspeak 39;
-    if $wzdark { #< GOTO 2000 > }
+  when ON { von }
+  when OFF { voff }
+  when KILL { vkill }
+  when POUR { vpour }
+  when DRINK { vdrink }
+  when FILL { vfill }
+  when BLAST { vblast }
+  default { bug 23 }
+ }
+
+
+# Label 4090 (transitive verb handling):
+ given $verb {
+  when TAKE { vtake }
+  when DROP { vdrop }
+  when SAY {
+# 9030:
+   my Str $tk = $in2 // $in1;
+   $word1 = $word2 // $word1;
+   if vocab($word1, -1) == 62 | 65 | 71 | 2025 {
+    $word2 = undef;
+    $obj = 0;
+    #< GOTO 2630 >
+   }
+   say "Okay, \"$tk\".";
+   #< GOTO 2012 >
+  }
+  when OPEN | LOCK { vopen }
+  when NOTHING {rspeak 54; #< GOTO 2012 > }
+  when ON { von }
+  when OFF { voff }
+  when WAVE {
+# 9090:
+   if !toting($obj) && !($obj == ROD && toting(ROD2)) { rspeak 29 }
+   elsif $obj != ROD || !at(FISSUR) || !toting($obj) || $closing {
+    rspeak @actspk[$verb]
+   } else {
+    @prop[FISSUR] = 1 - @prop[FISSUR];
+    pspeak FISSUR, 2 - @prop[FISSUR];
    }
    #< GOTO 2012 >
   }
-  when OFF {
-   if !here LAMP { rspeak @actspk[$verb] }
-   else {
-    @prop[LAMP] = 0;
-    rspeak 40;
-    rspeak 16 if dark;
-   }
+  when CALM | WALK | QUIT | SCORE | FOO | BRIEF | SUSPEND | HOURS {
+   rspeak @actspk[$verb];
    #< GOTO 2012 >
   }
   when KILL { vkill }
-  when POUR {
-# 9130:
-   $obj = liq if $obj == BOTTLE | 0;
-   if $obj == 0 { #< GOTO 8000 > }
+  when POUR { vpour }
+  when EAT {
+# 9140:
+   if $obj == FOOD {destroy FOOD; rspeak 72; }
+   elsif $obj == BIRD | SNAKE | CLAM | OYSTER | DWARF | DRAGON | TROLL | BEAR {
+    rspeak 71
+   } else { rspeak @actspk[$verb] }
+   #< GOTO 2012 >
+  }
+  when DRINK { vdrink }
+  when RUB {rspeak($obj == LAMP ?? @actspk[$verb] !! 76); #< GOTO 2012 > }
+  when THROW {
+# 9170:
+   $obj = ROD2 if toting(ROD2) && $obj == ROD && !toting(ROD);
    if !toting $obj {rspeak @actspk[$verb]; #< GOTO 2012 > }
-   if !($obj == OIL | WATER) {rspeak 78; #< GOTO 2012 > }
-   @prop[BOTTLE] = 1;
-   @place[OBJ] = 0;
-   if at DOOR {
-    @prop[DOOR] = ($obj == OIL);
-    rspeak 113 + @prop[DOOR];
+   if 50 <= $obj < 65 && at(TROLL) {
+    drop $obj, 0;
+    move TROLL, 0;
+    move TROLL+100, 0;
+    drop TROLL2, 117;
+    drop TROLL2+100, 122;
+    juggle CHASM;
+    rspeak 159;
     #< GOTO 2012 >
-   } elsif at PLANT {
-    if $obj != WATER {rspeak 112; #< GOTO 2012 > }
-    pspeak PLANT, @prop[PLANT] + 1;
-    @prop[PLANT] = (@prop[PLANT] + 2) % 6;
-    @prop[PLANT2] = @prop[PLANT] idiv 2;
-    domove NULL;
-    #< GOTO 2 >
-   } else {rspeak 77; #< GOTO 2012 > }
-  }
-  when DRINK {
-# 9150:
-   if $obj == 0 && liqloc($loc) != WATER && (liq != WATER || !here BOTTLE) {
-    #< GOTO 8000 >
    }
-   if $obj == 0 | WATER {
-    if liq == WATER && here BOTTLE {
-     @prop[BOTTLE] = 1;
-     @place[WATER] = 0;
-     rspeak 74;
-    } else { rspeak @actspk[$verb] }
-   } else { rspeak 110 }
+   if $obj == FOOD && here BEAR {$obj = BEAR; vfeed; }
+   elsif $obj == AXE {
+    my int $i = (^5).first({ @dloc[$_] == $loc }) // -1;
+    if $i != -1 {
+     if (^3).pick == 0 #< || $saved != -1 > { rspeak 48 }
+     else {
+      @dseen[$i] = False;
+      @dloc[$i] = 0;
+      rspeak(++$dkill == 1 ?? 149 !! 47);
+     }
+     drop AXE, $loc;
+     domove NULL;
+     #< GOTO 2 >
+    } elsif at(DRAGON) && @prop[DRAGON] == 0 {
+     rspeak 152;
+     drop AXE, $loc;
+     domove NULL;
+     #< GOTO 2 >
+    } elsif at(TROLL) {
+     rspeak 158;
+     drop AXE, $loc;
+     domove NULL;
+     #< GOTO 2 >
+    } elsif here(BEAR) && @prop[BEAR] == 0 {
+     drop AXE, $loc;
+     @fixed[AXE] = -1;
+     @prop[AXE] = 1;
+     juggle BEAR;  # Don't try this at home, kids.
+     rspeak 164;
+     #< GOTO 2012 >
+    } else {$obj = 0; vkill; }
+   } else { vdrop }
+  }
+  when FIND | INVENT {
+# 9190:
+   if toting $obj { rspeak 24 }
+   elsif $closed { rspeak 138 }
+   elsif $obj == DWARF && $dflag >= 2 && @dloc[^5].any == $loc { rspeak 94 }
+   elsif at($obj) || (liq == $obj && at(BOTTLE)) || $obj == liqloc($loc) {
+    rspeak 94
+   } else { rspeak @actspk[$verb] }
    #< GOTO 2012 >
   }
-  when FILL {
-# 9220:
-   if $obj == VASE {
-    if liqloc($loc) == 0 { rspeak 144 }
-    elsif !toting VASE { rspeak 29 }
-    else {
-     rspeak 145;
-     @prop[VASE] = 2;
-     @fixed[VASE] = -1;
-
-     # In the original Fortran, when the vase is filled with water or oil, its
-     # property is set so that it breaks into pieces, *but* the code then
-     # branches to label 9024 to actually drop the vase.  Once you cut out the
-     # unreachable states, it turns out that the vase remains intact if the
-     # pillow is present, but even if it survives it is still marked as a fixed
-     # object and can't be picked up again.  This is probably a bug in the
-     # original code, but who am I to fix it?
-
-     @prop[VASE] = 0 if at PILLOW;
-     pspeak VASE, @prop[VASE] + 1;
-     drop $obj, $loc;
-    }
-   } else {
-    if $obj != 0 & BOTTLE { rspeak @actspk[$verb] }
-    if $obj == 0 && !here BOTTLE { #< GOTO 8000 > }
-    if liq != 0 { rspeak 105 }
-    elsif liqloc($loc) == 0 { rspeak 106 }
-    else {
-     @prop[BOTTLE] = @cond[$loc] +& 2;
-     @place[liq] = -1 if toting BOTTLE;
-     rspeak(liq == OIL ?? 108 !! 107);
-    }
+  when FEED { vfeed }
+  when FILL { vfill }
+  when BLAST { vblast }
+  when READ { vread }
+  when BREAK {
+# 9280:
+   if $obj == VASE && @prop[VASE] == 0 {
+    drop VASE, $loc if toting VASE;
+    @prop[VASE] = 2;
+    @fixed[VASE] = -1;
+    rspeak 198;
+   } elsif $obj != MIRROR { rspeak @actspk[$verb] }
+   elsif !$closed { rspeak 148 }
+   else {
+    rspeak 197;
+    rspeak 136;
+    normend;
    }
    #< GOTO 2012 >
   }
-  when BLAST { #< GOTO 9230 > }
-  default { bug 23 }
+  when WAKE {
+# 9290:
+   if $obj == DWARF && $closed {
+    rspeak 199;
+    rspeak 136;
+    normend;
+   } else { rspeak @actspk[$verb] }
+   #< GOTO 2012 >
+  }
+  default { bug 24 }
  }
 
 
@@ -236,9 +289,9 @@ sub vtake() {
  $spk = 170 if $obj == CHAIN && @prop[BEAR] != 0;
  if fixed $obj {rspeak $spk; #< GOTO 2012 > }
  if $obj == WATER | OIL {
-  if !here BOTTLE || liq != $obj {
+  if !here(BOTTLE) || liq != $obj {
    $obj = BOTTLE;
-   if toting BOTTLE && @prop[BOTTLE] == 1 { #< GOTO 9220 > }
+   if toting(BOTTLE) && @prop[BOTTLE] == 1 { #< GOTO 9220 > }
    $spk = 105 if @prop[BOTTLE] != 1;
    $spk = 104 if !toting BOTTLE;
    rspeak $spk;
@@ -368,7 +421,7 @@ sub vkill() {
   when CLAM | OYSTER { $spk = 150 }
   when SNAKE { $spk = 46 }
   when DWARF {
-   if $closed {rspeak 136; normend; #< GOTO somewhere? > }
+   if $closed {rspeak 136; normend; }
    else { $spk = 49 }
   }
   when DRAGON {
@@ -394,5 +447,187 @@ sub vkill() {
   when BEAR { $spk = 165 + (@prop[BEAR]+1) idiv 2 }
  }
  rspeak $spk;
+ #< GOTO 2012 >
+}
+
+sub vpour() {
+# 9130:
+ $obj = liq if $obj == BOTTLE | 0;
+ if $obj == 0 { #< GOTO 8000 > }
+ if !toting $obj {rspeak @actspk[$verb]; #< GOTO 2012 > }
+ if !($obj == OIL | WATER) {rspeak 78; #< GOTO 2012 > }
+ @prop[BOTTLE] = 1;
+ @place[OBJ] = 0;
+ if at DOOR {
+  @prop[DOOR] = ($obj == OIL);
+  rspeak 113 + @prop[DOOR];
+  #< GOTO 2012 >
+ } elsif at PLANT {
+  if $obj != WATER {rspeak 112; #< GOTO 2012 > }
+  pspeak PLANT, @prop[PLANT] + 1;
+  @prop[PLANT] = (@prop[PLANT] + 2) % 6;
+  @prop[PLANT2] = @prop[PLANT] idiv 2;
+  domove NULL;
+  #< GOTO 2 >
+ } else {rspeak 77; #< GOTO 2012 > }
+}
+
+sub vdrink() {
+# 9150:
+ if $obj == 0 && liqloc($loc) != WATER && (liq != WATER || !here BOTTLE) {
+  #< GOTO 8000 >
+ }
+ if $obj == 0 | WATER {
+  if liq == WATER && here BOTTLE {
+   @prop[BOTTLE] = 1;
+   @place[WATER] = 0;
+   rspeak 74;
+  } else { rspeak @actspk[$verb] }
+ } else { rspeak 110 }
+ #< GOTO 2012 >
+}
+
+sub vfill() {
+# 9220:
+ if $obj == VASE {
+  if liqloc($loc) == 0 { rspeak 144 }
+  elsif !toting VASE { rspeak 29 }
+  else {
+   rspeak 145;
+   @prop[VASE] = 2;
+   @fixed[VASE] = -1;
+
+# In the original Fortran, when the vase is filled with water or oil, its
+# property is set so that it breaks into pieces, *but* the code then branches
+# to label 9024 to actually drop the vase.  Once you cut out the unreachable
+# states, it turns out that the vase remains intact if the pillow is present,
+# but even if it survives it is still marked as a fixed object and can't be
+# picked up again.  This is probably a bug in the original code, but who am I
+# to fix it?
+
+   @prop[VASE] = 0 if at PILLOW;
+   pspeak VASE, @prop[VASE] + 1;
+   drop $obj, $loc;
+  }
+ } else {
+  if $obj != 0 & BOTTLE { rspeak @actspk[$verb] }
+  if $obj == 0 && !here BOTTLE { #< GOTO 8000 > }
+  if liq != 0 { rspeak 105 }
+  elsif liqloc($loc) == 0 { rspeak 106 }
+  else {
+   @prop[BOTTLE] = @cond[$loc] +& 2;
+   @place[liq] = -1 if toting BOTTLE;
+   rspeak(liq == OIL ?? 108 !! 107);
+  }
+ }
+ #< GOTO 2012 >
+}
+
+sub vblast() {
+# 9230:
+ if @prop[ROD2] < 0 || !$closed {rspeak @actspk[$verb]; #< GOTO 2012 > }
+ $bonus = 133;
+ $bonus = 134 if $loc == 115;
+ $bonus = 135 if here ROD2;
+ rspeak $bonus;
+ normend;
+ # Fin
+}
+
+sub von() {
+# 9070:
+ if !here LAMP { rspeak @actspk[$verb] }
+ elsif $limit < 0 { rspeak 184 }
+ else {
+  @prop[LAMP] = 1;
+  rspeak 39;
+  if $wzdark { #< GOTO 2000 > }
+ }
+ #< GOTO 2012 >
+}
+
+sub voff() {
+# 9080:
+ if !here LAMP { rspeak @actspk[$verb] }
+ else {
+  @prop[LAMP] = 0;
+  rspeak 40;
+  rspeak 16 if dark;
+ }
+ #< GOTO 2012 >
+}
+
+sub vdrop() {
+# 9020:
+ $obj = ROD2 if toting(ROD2) && $obj == ROD && !toting ROD;
+ if !toting $obj {rspeak @actspk[$verb]; #< GOTO 2012 > }
+ if $obj == BIRD && here SNAKE {
+  rspeak 30;
+  if $closed {rspeak 136; normend; }
+  destroy SNAKE;
+  @prop[SNAKE] = 1;
+ } elsif $obj == COINS && here VEND {
+  destroy COINS;
+  drop BATTER, $loc;
+  pspeak BATTER, 0;
+  #< GOTO 2012 >
+ } elsif $obj == BIRD && at(DRAGON) && @prop[DRAGON] == 0 {
+  rspeak 154;
+  destroy BIRD;
+  @prop[BIRD] = 0;
+  $tally2++ if @place[SNAKE] == 19;
+  #< GOTO 2012 >
+ } elsif $obj == BEAR && at(TROLL) {
+  rspeak 163;
+  move TROLL, 0;
+  move TROLL+100, 0;
+  move TROLL2, 117;
+  move TROLL2+100, 122;
+  juggle CHASM;
+  @prop[TROLL] = 2;
+ } elsif $obj == VASE && $loc != 96 {
+  @prop[VASE] = at(PILLOW) ?? 0 !! 2;
+  pspeak VASE, @prop[VASE] + 1;
+  @fixed[VASE] = -1 if @prop[VASE] != 0;
+ } else { rspeak 54 }
+ my int $k = liq;
+ $obj = BOTTLE if $k == $obj;
+ @place[$k] = 0 if $obj == BOTTLE && $k != 0;
+ drop BIRD, $loc if $obj == CAGE && @prop[BIRD] != 0;
+ @prop[BIRD] = 0 if $obj == BIRD;
+ drop $obj, $loc;
+ #< GOTO 2012 >
+}
+
+sub vfeed() {
+# 9210:
+ given $obj {
+  when BIRD { rspeak 100 }
+  when SNAKE {
+   if !$closed && here BIRD {
+    destroy BIRD;
+    @prop[BIRD] = 0;
+    $tally2++;
+    rspeak 101;
+   } else { rspeak 102 }
+  }
+  when TROLL { rspeak 182 }
+  when DRAGON { rspeak(@prop[DRAGON] != 0 ?? 110 !! 102) }
+  when DWARF {
+   if !here FOOD { rspeak @actspk[$verb] }
+   else {$dflag++; rspeak 103; }
+  }
+  when BEAR {
+   if !here FOOD { rspeak (102, @actspk[$verb] xx 2, 110)[@prop[BEAR]] }
+   else {
+    destroy FOOD;
+    @prop[BEAR] = 1;
+    @fixed[AXE] = 0;
+    @prop[AXE] = 0;
+    rspeak 168;
+   }
+  }
+  default { rspeak 14 }
+ }
  #< GOTO 2012 >
 }
