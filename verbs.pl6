@@ -115,7 +115,6 @@
    say "you will have to wait at least $latency minutes before continuing.";
    if yes(200, 54, 54) {
     ($saved, $savet) = datime;
-    $setup = -1;
     ciao;
     # Save the game data somewhere in here.
    } else { #< GOTO 2012 > }
@@ -147,18 +146,7 @@
  given $verb {
   when TAKE { vtake }
   when DROP { vdrop }
-  when SAY {
-# 9030:
-   my Str $tk = $in2 // $in1;
-   $word1 = $word2 // $word1;
-   if vocab($word1, -1) == 62 | 65 | 71 | 2025 {
-    $word2 = undef;
-    $obj = 0;
-    #< GOTO 2630 >
-   }
-   say "Okay, \"$tk\".";
-   #< GOTO 2012 >
-  }
+  when SAY { vsay }
   when OPEN | LOCK { vopen }
   when NOTHING {rspeak 54; #< GOTO 2012 > }
   when ON { von }
@@ -208,7 +196,7 @@
    elsif $obj == AXE {
     my int $i = (^5).first({ @dloc[$_] == $loc }) // -1;
     if $i != -1 {
-     if (^3).pick == 0 #< || $saved != -1 > { rspeak 48 }
+     if (^3).pick == 0 { rspeak 48 }
      else {
       @dseen[$i] = False;
       @dloc[$i] = 0;
@@ -382,14 +370,16 @@ sub vopen() {
 
 sub vread() {
 # 9270:
- if dark {say "I see no $in1 here."; #< GOTO 2012 > }
- my int $spk = @actspk[$verb];
- $spk = 190 if $obj == MAGZIN;
- $spk = 196 if $obj == TABLET;
- $spk = 191 if $obj == MESSAG;
- $spk = 194 if $obj == OYSTER && @hinted[2] && toting OYSTER;
- if $obj != OYSTER || @hinted[2] || !toting OYSTER || !$closed { rspeak $spk }
- else { @hinted[2] = yes(192, 193, 54) }
+ if dark() { say "I see no $in1 here." }
+ else {
+  my int $spk = @actspk[$verb];
+  $spk = 190 if $obj == MAGZIN;
+  $spk = 196 if $obj == TABLET;
+  $spk = 191 if $obj == MESSAG;
+  $spk = 194 if $obj == OYSTER && @hinted[2] && toting OYSTER;
+  if $obj != OYSTER || @hinted[2] || !toting(OYSTER) || !$closed { rspeak $spk }
+  else { @hinted[2] = yes(192, 193, 54) }
+ }
  #< GOTO 2012 >
 }
 
@@ -429,8 +419,14 @@ sub vkill() {
    else {
     rspeak 49;
     ($verb, $obj) = (0, 0);
+    print "\n> ";
     my Str $reply = $*IN.get;
-    if $reply !~~ m:i/^^\h*y/ { #< GOTO 2608 > }
+    if $reply !~~ m:i/^^\h*y/ {
+     ($in1, $in2) = $reply.words.[0,1];
+     ($word1, $word2) = ($in1, $in2).map:
+      { .defined ?? .substr(0, 5).uc !! undef };
+     #< GOTO 2608 >
+    }
     pspeak DRAGON, 1;
     @prop[DRAGON, RUG] = 2, 0;
     move DRAGON+100, -1;
@@ -629,5 +625,18 @@ sub vfeed() {
   }
   default { rspeak 14 }
  }
+ #< GOTO 2012 >
+}
+
+sub vsay() {
+# 9030:
+ my Str $tk = $in2 // $in1;
+ $word1 = $word2 // $word1;
+ if vocab($word1, -1) == 62 | 65 | 71 | 2025 {
+  $word2 = undef;
+  $obj = 0;
+  #< GOTO 2630 >
+ }
+ say "Okay, \"$tk\".";
  #< GOTO 2012 >
 }

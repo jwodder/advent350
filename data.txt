@@ -1,101 +1,87 @@
 =begin adventData01
-1	You are standing at the end of a road before a small brick
-1	building.  Around you is a forest.  A small stream flows out
-1	of the building and down a gully.
-2	You have walked up a hill, still in the forest.  The road
-2	slopes back down the other side of the hill.  There is a
-2	building in the distance.
+1	You are standing at the end of a road before a small brick building.
+1	Around you is a forest.  A small stream flows out of the building and
+1	down a gully.
+2	You have walked up a hill, still in the forest.  The road slopes back
+2	down the other side of the hill.  There is a building in the distance.
 3	You are inside a building, a well house for a large spring.
-4	You are in a valley in the forest beside a stream tumbling
-4	along a rocky bed.
+4	You are in a valley in the forest beside a stream tumbling along a
+4	rocky bed.
 5	You are in open forest, with a deep valley to one side.
 6	You are in open forest near both a valley and a road.
-7	At your feet all the water of the stream splashes into a
-7	2-inch slit in the rock.  Downstream the streambed is bare rock.
-8	You are in a 20-foot depression floored with bare dirt.  Set
-8	into the dirt is a strong steel grate mounted in concrete.
-8	A dry streambed leads into the depression.
-9	You are in a small chamber beneath a 3x3 steel grate to the
-9	surface.  A low crawl over cobbles leads inward to the West.
-10	You are crawling over cobbles in a low passage.  There is a
-10	dim light at the east end of the passage.
-11	You are in a debris room filled with stuff washed in from the
-11	surface.  A low wide passage with cobbles becomes plugged
-11	with mud and debris here, but an awkward canyon leads
-11	upward and west.  A note on the wall says:
-11	       "MAGIC WORD XYZZY"
+7	At your feet all the water of the stream splashes into a 2-inch slit
+7	in the rock.  Downstream the streambed is bare rock.
+8	You are in a 20-foot depression floored with bare dirt.  Set into the
+8	dirt is a strong steel grate mounted in concrete.  A dry streambed
+8	leads into the depression.
+9	You are in a small chamber beneath a 3x3 steel grate to the surface.
+9	A low crawl over cobbles leads inward to the west.
+10	You are crawling over cobbles in a low passage.  There is a dim light
+10	at the east end of the passage.
+11	You are in a debris room filled with stuff washed in from the surface.
+11	A low wide passage with cobbles becomes plugged with mud and debris
+11	here, but an awkward canyon leads upward and west.  A note on the wall
+11	says "MAGIC WORD XYZZY".
 12	You are in an awkward sloping east/west canyon.
-13	You are in a splendid chamber thirty feet high.  The walls
-13	are frozen rivers of orange stone.  An awkward canyon and a
-13	good passage exit from east and west sides of the chamber.
-14	At your feet is a small pit breathing traces of white mist.
-14	An east passage ends here except for a small crack leading
-14	on.
-15	You are at one end of a vast hall stretching forward out of
-15	sight to the west.  There are openings to either side.
-15	Nearby, a wide stone staircase leads downward.  The hall
-15	is filled with wisps of white mist swaying to and fro
-15	almost as if alive.  A cold wind blows up the staircase.
-15	There is a passage at the top of a dome behind you.
+13	You are in a splendid chamber thirty feet high.  The walls are frozen
+13	rivers of orange stone.  An awkward canyon and a good passage exit
+13	from east and west sides of the chamber.
+14	At your feet is a small pit breathing traces of white mist.  An east
+14	passage ends here except for a small crack leading on.
+15	You are at one end of a vast hall stretching forward out of sight to
+15	the west.  There are openings to either side.  Nearby, a wide stone
+15	staircase leads downward.  The hall is filled with wisps of white mist
+15	swaying to and fro almost as if alive.	A cold wind blows up the
+15	staircase.  There is a passage at the top of a dome behind you.
 16	The crack is far too small for you to follow.
-17	You are on the east bank of a fissure slicing clear across
-17	the hall.  The mist is quite thick here, and the fissure
-17	is too wide to jump.
-18	This is a low room with a crude note on the wall.  The
-18	note says:
-18	       You won't get it up the steps.
-19	You are in the hall of the mountain king, with passages
-19	off in all directions.
+17	You are on the east bank of a fissure slicing clear across the hall.
+17	The mist is quite thick here, and the fissure is too wide to jump.
+18	This is a low room with a crude note on the wall.  The note says,
+18	"You won't get it up the steps".
+19	You are in the Hall of the Mountain King, with passages off in all
+19	directions.
 20	You are at the bottom of the pit with a broken neck.
 21	You didn't make it.
 22	The dome is unclimbable.
-23	You are at the west end of the twopit room.  There is a
-23	large hole in the wall above the pit at this end of the
-23	room.
-24	You are at the bottom of the eastern pit in the twopit
-24	room.  There is a small pool of oil in one corner of the
-24	pit.
-25	You are at the bottom of the western pit in the twopit room.
-25	There is a large hole in the wall about 25 feet above you.
-26	You clamber up the plant and scurry through the hole at the
-26	top.
-27	You are on the west side of the fissure in the hall of mists.
-28	You are in a low N/S passage at a hole in the floor.  The
-28	hole goes down to an E/W passage.
+23	You are at the west end of the Twopit Room.  There is a large hole in
+23	the wall above the pit at this end of the room.
+24	You are at the bottom of the eastern pit in the Twopit Room.  There is
+24	a small pool of oil in one corner of the pit.
+25	You are at the bottom of the western pit in the Twopit Room.  There is
+25	a large hole in the wall about 25 feet above you.
+26	You clamber up the plant and scurry through the hole at the top.
+27	You are on the west side of the fissure in the Hall of Mists.
+28	You are in a low n/s passage at a hole in the floor.  the hole goes
+28	down to an e/w passage.
 29	You are in the south side chamber.
-30	You are in the west side chamber of the hall of the
-30	mountain king.  A passage continues west and up here.
+30	You are in the west side chamber of the Hall of the Mountain King.
+30	A passage continues west and up here.
 31	>$<
 32	You can't get by the snake.
-33	You are in a large room, with a passage to the south,
-33	a passage to the west, and a wall of broken rock to the
-33	east.  There is a large "Y2" on a rock in the room's 
-33	center.
+33	You are in a large room, with a passage to the south, a passage to the
+33	west, and a wall of broken rock to the east.  There is a large "Y2" on
+33	a rock in the room's center.
 34	You are in a jumble of rock, with cracks everywhere.
-35	You're at a low window overlooking a huge pit, which
-35	extends up out of sight.  A floor is indistinctly visible
-35	over 50 feet below.  Traces of white mist cover the floor
-35	of the pit, becoming thicker to the right.  Marks in the
-35	dust around the window would seem to indicate that
-35	someone has been here recently.  Directly across the pit
-35	from you and 25 feet away there is a similar window
-35	looking into a lighted room.  A shadowy figure can
-35	be seen there peering back at you.
-36	You are in a dirty broken passage.  To the east is a
-36	crawl.  To the west is a large passage.  Above you is
-36	another passage.
-37	You are on the brink of a small clean climbable pit.  A
-37	crawl leads west.
-38	You are in the bottom of a small pit with a little stream,
-38	which enters and exits through tiny slits.
-39	You are in a large room full of dusty rocks.  There is a
-39	big hole in the floor.  There are cracks everywhere, and
-39	a passage leading east.
-40	You have crawled through a very low wide passage parallel
-40	to and north of the hall of mists.
-41	You are at the west end of hall of mists.  A low wide crawl
-41	continues west and another goes north.  To the south is a
-41	little passage 6 feet off the floor.
+35	You're at a low window overlooking a huge pit, which extends up out of
+35	sight.  A floor is indistinctly visible over 50 feet below.  Traces of
+35	white mist cover the floor of the pit, becoming thicker to the right.
+35	Marks in the dust around the window would seem to indicate that
+35	someone has been here recently.  Directly across the pit from you and
+35	25 feet away there is a similar window looking into a lighted room.  A
+35	shadowy figure can be seen there peering back at you.
+36	You are in a dirty broken passage.  To the east is a crawl.  To the
+36	west is a large passage.  Above you is a hole to another passage.
+37	You are on the brink of a small clean climbable pit.  A crawl leads
+37	west.
+38	You are in the bottom of a small pit with a little stream, which
+38	enters and exits through tiny slits.
+39	You are in a large room full of dusty rocks.  There is a big hole in
+39	the floor.  There are cracks everywhere, and a passage leading east.
+40	You have crawled through a very low wide passage parallel to and north
+40	of the Hall of Mists.
+41	You are at the west end of Hall of Mists.  A low wide crawl continues
+41	west and another goes north.  To the south is a little passage 6 feet
+41	off the floor.
 42	You are in a maze of twisty little passages, all alike.
 43	You are in a maze of twisty little passages, all alike.
 44	You are in a maze of twisty little passages, all alike.
@@ -111,238 +97,198 @@
 54	Dead end
 55	You are in a maze of twisty little passages, all alike.
 56	Dead end
-57	You are on the brink of a thirty foot pit with a massive
-57	orange column down one wall.  You could climb down here but
-57	you could not get back up.  The maze continues at this level.
+57	You are on the brink of a thirty foot pit with a massive orange column
+57	down one wall.  You could climb down here but you could not get back
+57	up.  The maze continues at this level.
 58	Dead end
-59	You have crawled through a very low wide passage parallel
-59	to and north of the hall of mists.
-60	You are at the east end of a very long hall apparently
-60	without side chambers.  To the east a low wide crawl
-60	slants up.  To the north a round two foot hole slants
-60	down.
-61	You are at the west end of a very long featureless hall.
-61	The hall joins up with a narrow north/south passage.
-62	You are at a crossover of a high N/S passage and a low
-62	E/W one.
+59	You have crawled through a very low wide passage parallel to and north
+59	of the Hall of Mists.
+60	You are at the east end of a very long hall apparently without side
+60	chambers.  To the east a low wide crawl slants up.  To the north a
+60	round two foot hole slants down.
+61	You are at the west end of a very long featureless hall.  The hall
+61	joins up with a narrow north/south passage.
+62	You are at a crossover of a high n/s passage and a low e/w one.
 63	Dead end
-64	You are at a complex junction.  A low hands and knees passage
-64	from the north joins a higher crawl from the east to make
-64	a walking passage going west.  There is also a large room
-64	above.  The air is damp here.
-65	You are in bedquilt, a long east/west passage with holes
-65	everywhere.  To explore at random select north, south, up
-65	or down.
-66	You are in a room whose walls resemble swiss cheese.  
-66	Obvious passages go west, east, ne, and nw.  Part of the
-66	room is occupied by a large bedrock block.
-67	You are at the east end of the twopit room.  The floor
-67	here is littered with thin rock slabs, which make it easy
-67	to descend the pits.  There is a path here bypassing
-67	the pits to connect passages from east and west.
-67	There are holes all over, but the only big one is on
-67	the wall directly over the west pit where you can't
-67	get at it.
-68	You are in a large low circular chamber whose floor is
-68	an immense slab fallen from the ceiling (slab room).
-68	East and west there once were large passages, but they
-68	are now filled with boulders.  Low small passages go
-68	north and south, and the south one quickly bends west
+64	You are at a complex junction.  A low hands and knees passage from the
+64	north joins a higher crawl from the east to make a walking passage
+64	going west.  There is also a large room above.  The air is damp here.
+65	You are in Bedquilt, a long east/west passage with holes everywhere.
+65	To explore at random select north, south, up, or down.
+66	You are in a room whose walls resemble swiss cheese.  Obvious passages
+66	go west, east, ne, and nw.  Part of the room is occupied by a large
+66	bedrock block.
+67	You are at the east end of the Twopit Room.  The floor here is
+67	littered with thin rock slabs, which make it easy to descend the pits.
+67	There is a path here bypassing the pits to connect passages from east
+67	and west.  There are holes all over, but the only big one is on the
+67	wall directly over the west pit where you can't get to it.
+68	You are in a large low circular chamber whose floor is an immense slab
+68	fallen from the ceiling (Slab Room).  East and west there once were
+68	large passages, but they are now filled with boulders.  Low small
+68	passages go north and south, and the south one quickly bends west
 68	around the boulders.
-69	You are in a secret N/S canyon above a large room.
-70	You are in a secret N/S canyon above a sizable passage.
-71	You are in a secret canyon at a junction of three canyons,
-71	bearing north, south and se.  The north one is as tall as
-71	the other two combined.
+69	You are in a secret n/s canyon above a large room.
+70	You are in a secret n/s canyon above a sizable passage.
+71	You are in a secret canyon at a junction of three canyons, bearing
+71	north, south, and se.  The north one is as tall as the other two
+71	combined.
 72	You are in a large low room.  Crawls lead north, se, and sw.
 73	Dead end crawl.
-74	You are in a secret canyon which here runs E/W.  It crosses
-74	over a very tight canyon 15 feet below.  If you go down you
-74	may not be able to get back up.
-75	You are at a wide place in a very tight N/S canyon.
+74	You are in a secret canyon which here runs e/w.  It crosses over a
+74	very tight canyon 15 feet below.  If you go down you may not be able
+74	to get back up.
+75	You are at a wide place in a very tight n/s canyon.
 76	The canyon here becomes too tight to go further south.
-77	You are in a tall E/W canyon.  A low tight crawl goes 3
-77	feet north and seems to open up.
+77	You are in a tall e/w canyon.  A low tight crawl goes 3 feet north and
+77	seems to open up.
 78	The canyon runs into a mass of boulders -- dead end.
-79	The stream flows out through a pair of 1 foot diameter
-79	sewer pipes.  It would be advisable to use the exit.
+79	The stream flows out through a pair of 1 foot diameter sewer pipes.
+79	It would be advisable to use the exit.
 80	You are in a maze of twisty little passages, all alike.
-81	Dead end.
-82	Dead end.
+81	Dead end
+82	Dead end
 83	You are in a maze of twisty little passages, all alike.
 84	You are in a maze of twisty little passages, all alike.
-85	Dead end.
-86	Dead end.
+85	Dead end
+86	Dead end
 87	You are in a maze of twisty little passages, all alike.
-88	You are in a long, narrow corridor stretching out of sight
-88	to the west.  At the eastern end is a hole through which
-88	you can see a profusion of leaves.
-89	There is nothing here to climb.  Use "up" or "out" to leave
-89	the pit.
+88	You are in a long, narrow corridor stretching out of sight to the
+88	west.  At the eastern end is a hole through which you can see a
+88	profusion of leaves.
+89	There is nothing here to climb.  Use "up" or "out" to leave the pit.
 90	You have climbed up the plant and out of the pit.
-91	You are at the top of a steep incline above a large room.
-91	You could climb down here, but you would not be able to
-91	climb up.  There is a passage leading back to the north.
-92	You are in the giant room.  The ceiling is too high up
-92	for your lamp to show it.  Cavernous passages lead east,
-92	north, and south.  On the west wall is scrawled the
-92	inscription:
-92	              "Fee Fie Foe Foo"       [sic]
+91	You are at the top of a steep incline above a large room.  You could
+91	climb down here, but you would not be able to climb up.  There is a
+91	passage leading back to the north.
+92	You are in the Giant Room.  The ceiling here is too high up for your
+92	lamp to show it.  Cavernous passages lead east, north, and south.  On
+92	the west wall is scrawled the inscription, "FEE FIE FOE FOO" [sic].
 93	The passage here is blocked by a recent cave-in.
 94	You are at one end of an immense north/south passage.
-95	You are in a magnificent cavern with a rushing stream,
-95	which cascades over a sparkling waterfall into a
-95	roaring whirlpool which disappears through a hole in
-95	the floor.  Passages exit to the south and west.
-96	You are in the soft room.  The walls are covered with
-96	heavy curtains, the floor with a thick pile carpet.
-96	Moss covers the ceiling.
-97	This is the oriental room.  Ancient oriental cave drawings
-97	cover the walls.  A gently sloping passage leads upward
-97	to the north, another passage leads se, and a hands and
-97	knees crawl leads west.
-98	You are following a wide path around the outer edge of a
-98	large cavern.  Far below, through a heavy white mist,
-98	strange splashing noises can be heard.  The mist rises up
-98	through a fissure in the ceiling.  The path exits to the
-98	south and west.
-99	You are in an alcove.  A small nw path seems to widen
-99	after a short distance.  An extremely tight tunnel leads
-99	east.  It looks like a very tight squeeze.  An eerie
-99	light can be seen at the other end.
-100	You're in a small chamber lit by an eerie green light.  An
-100	extremely narrow tunnel exits to the west.  A dark corridor
-100	leads ne.
-101	You're in the dark-room.  A corridor leading south is the
-101	only exit.
-102	You are in an arched hall.  A coral passage once continued
-102	up and east from here, but is now blocked by debris.  The
-102	air smells of sea water.
-103	You're in a large room carved out of sedimentary rock.
-103	The floor and walls are littered with bits of shells
-103	embedded in the stone.  A shallow passage proceeds
-103	downward, and a somewhat steeper one leads up.  A low
-103	hands and knees passage enters from the south.
+95	You are in a magnificent cavern with a rushing stream, which cascades
+95	over a sparkling waterfall into a roaring whirlpool which disappears
+95	through a hole in the floor.  Passages exit to the south and west.
+96	You are in the soft room.  The walls are covered with heavy curtains,
+96	the floor with a thick pile carpet.  Moss covers the ceiling.
+97	This is the oriental room.  Ancient oriental cave drawings cover the
+97	walls.  A gently sloping passage leads upward to the north, another
+97	passage leads se, and a hands and knees crawl leads west.
+98	You are following a wide path around the outer edge of a large cavern.
+98	Far below, through a heavy white mist, strange splashing noises can be
+98	heard.  The mist rises up through a fissure in the ceiling.  The path
+98	exits to the south and west.
+99	You are in an alcove.  A small nw path seems to widen after a short
+99	distance.  An extremely tight tunnel leads east.  It looks like a very
+99	tight squeeze.  An eerie light can be seen at the other end.
+100	You're in a small chamber lit by an eerie green light.  An extremely
+100	narrow tunnel exits to the west.  A dark corridor leads ne.
+101	You're in the dark-room.  A corridor leading south is the only exit.
+102	You are in an arched hall.  A coral passage once continued up and east
+102	from here, but is now blocked by debris.  The air smells of sea water.
+103	You're in a large room carved out of sedimentary rock.  The floor and
+103	walls are littered with bits of shells embedded in the stone.  A
+103	shallow passage proceeds downward, and a somewhat steeper one leads
+103	up.  A low hands and knees passage enters from the south.
 104	You are in a long sloping corridor with ragged sharp walls.
 105	You are in a cul-de-sac about eight feet across.
-106	You are in an anteroom leading to a large passage to the
-106	east.  Small passages go west and up.  The remnants of
-106	recent digging are evident.  A sign in midair here says:
-106	       "Cave under construction beyond this point."
-106	              "Proceed at your own risk."
-106	             "Witt construction company"
+106	You are in an anteroom leading to a large passage to the east.  Small
+106	passages go west and up.  The remnants of recent digging are evident.
+106	A sign in midair here says "Cave under construction beyond this point.
+106	Proceed at own risk.  [Witt Construction Company]"
 107	You are in a maze of twisty little passages, all different.
-108	You are at Witt's end.  Passages lead off in ALL directions.
-109	You are in a north/south canyon about 25 feet across.  The
-109	floor is covered by white mist seeping in from the north.
-109	The walls extend upward for well over 100 feet.  Suspended
-109	from some unseen point far above you, an enormous two-
-109	sided mirror is hanging parallel to and midway between
-109	the canyon walls.  (The mirror is obviously provided
-109	for the use of the dwarves, who as you know, are
-109	extremely vain.)  A small window can be seen in either
-109	wall, some fifty feet up.
-110	You're at a low window overlooking a huge pit, which
-110	extends up out of sight.  A floor is indistinctly visible
-110	over 50 feet below.  Traces of white mist cover the floor
-110	of the pit, becoming thicker to the left.  Marks in the
-110	dust around the window would seem to indicate that
-110	someone has been here recently.  Directly across the pit
-110	from you and 25 feet away there is a similar window
-110	looking into a lighted room.  A shadowy figure can be seen
-110	there peering back at you.
-111	A large stalactite extends from the roof and almost reaches
-111	the floor below.  You could climb down it, and jump from
-111	it to the floor, but having done so you would be unable to
-111	reach it to climb back up.
+108	You are at Witt's End.  Passages lead off in *ALL* directions.
+109	You are in a north/south canyon about 25 feet across.  The floor is
+109	covered by white mist seeping in from the north.  The walls extend
+109	upward for well over 100 feet.  Suspended from some unseen point far
+109	above you, an enormous two-sided mirror is hanging parallel to and
+109	midway between the canyon walls.  (The mirror is obviously provided
+109	for the use of the dwarves, who as you know, are extremely vain.)  A
+109	small window can be seen in either wall, some fifty feet up.
+110	You're at a low window overlooking a huge pit, which extends up out of
+110	sight.  A floor is indistinctly visible over 50 feet below.  Traces of
+110	white mist cover the floor of the pit, becoming thicker to the left.
+110	Marks in the dust around the window would seem to indicate that
+110	someone has been here recently.  Directly across the pit from you and
+110	25 feet away there is a similar window looking into a lighted room.  A
+110	shadowy figure can be seen there peering back at you.
+111	A large stalactite extends from the roof and almost reaches the floor
+111	below.  You could climb down it, and jump from it to the floor, but
+111	having done so you would be unable to reach it to climb back up.
 112	You are in a little maze of twisting passages, all different.
-113	You are at the edge of a large underground reservoir.  An
-113	opaque cloud of white mist fills the room and rises
-113	rapidly upward.  The lake is fed by a stream which tumbles
-113	out of a hole in the wall about 10 feet overhead and
-113	splashes noisily into the water somewhere within the mist.
-113	The only passage goes back toward the south.
-114	Dead end.
-115	You are at the northeast end of an immense room, even
-115	larger than the giant room.  It appears to be a repository
-115	for the "Adventure" program.  Massive torches far overhead
-115	bathe the room with smoky yellow light.  Scattered about
-115	you can be seen a pile of bottles (all of them empty), a
-115	nursery of young beanstalks murmuring quietly, a bed of
-115	oysters, a bundle of black rods with rusty stars on their
-115	ends, and a collection of brass lanterns.  Off to one side
-115	a great many dwarves are sleeping on the floor, snoring
-115	loudly.  A sign nearby reads:
-115	        "Do NOT disturb the dwarves!"
-115	An immense mirror is hanging against one wall, and
-115	stretches to the other end of the room, where various
-115	other sundry objects can be glimpsed dimly in the distance.
-116	You are at the southwest end of the repository.  To one
-116	side is a pit full of fierce green snakes.  On the other
-116	side is a row of small wicker cages, each of which contains
-116	a little sulking bird.  In one corner is a bundle of
-116	black rods with rusty marks on their ends.  A large
-116	number of velvet pillows are scattered about on the floor.
-116	A vast mirror stretches off to the northeast.  At your
-116	feet is a large steel grate, next to which is a sign
-116	which reads:
-116	     "Treasure vault.  Keys in main office."
-117	You are on one side of a large deep chasm.  A heavy white
-117	mist rising up from below obscures all view of the far
-117	side.  A sw path leads away from the chasm into a winding
-117	corridor.
-118	You are in a long winding corridor sloping out of sight
-118	in both directions.
+113	You are at the edge of a large underground reservoir.  An opaque cloud
+113	of white mist fills the room and rises rapidly upward.  The lake is
+113	fed by a stream, which tumbles out of a hole in the wall about 10 feet
+113	overhead and splashes noisily into the water somewhere within the
+113	mist.  The only passage goes back toward the south.
+114	Dead end
+115	You are at the northeast end of an immense room, even larger than the
+115	Giant Room.  It appears to be a repository for the "Adventure"
+115	program.  Massive torches far overhead bathe the room with smoky
+115	yellow light.  Scattered about you can be seen a pile of bottles (all
+115	of them empty), a nursery of young beanstalks murmuring quietly, a bed
+115	of oysters, a bundle of black rods with rusty stars on their ends, and
+115	a collection of brass lanterns.  Off to one side a great many dwarves
+115	are sleeping on the floor, snoring loudly.  A sign nearby reads: "Do
+115	not disturb the dwarves!"  An immense mirror is hanging against one
+115	wall, and stretches to the other end of the room, where various other
+115	sundry objects can be glimpsed dimly in the distance.
+116	You are at the southwest end of the repository.  To one side is a pit
+116	full of fierce green snakes.  On the other side is a row of small
+116	wicker cages, each of which contains a little sulking bird.  In one
+116	corner is a bundle of black rods with rusty marks on their ends.  A
+116	large number of velvet pillows are scattered about on the floor.  A
+116	vast mirror stretches off to the northeast.  At your feet is a large
+116	steel grate, next to which is a sign which reads, "Treasure vault.
+116	Keys in main office."
+117	You are on one side of a large, deep chasm.  A heavy white mist rising
+117	up from below obscures all view of the far side.  A sw path leads away
+117	from the chasm into a winding corridor.
+118	You are in a long winding corridor sloping out of sight in both
+118	directions.
 119	You are in a secret canyon which exits to the north and east.
 120	You are in a secret canyon which exits to the north and east.
 121	You are in a secret canyon which exits to the north and east.
-122	You are on the far side of the chasm.  A ne path leads away
-122	from the chasm on this side.
-123	You're in a long east/west corridor.  A faint rumbling noise
-123	can be heard in the distance.
-124	The path forks here.  The left fork leads northeast.  A dull
-124	rumbling seems to get louder in that direction.  The right
-124	fork leads southeast down a gentle slope.  The main
-124	corridor enters from the west.
-125	The walls are quite warm here.  From the north can be heard
-125	a steady roar, so loud that the entire cave seems to be
-125	trembling.  Another passage leads south, and a low crawl
-125	goes east.
+122	You are on the far side of the chasm.  A ne path leads away from the
+122	chasm on this side.
+123	You're in a long east/west corridor.  A faint rumbling noise can be
+123	heard in the distance.
+124	The path forks here.  The left fork leads northeast.  A dull rumbling
+124	seems to get louder in that direction.  The right fork leads southeast
+124	down a gentle slope.  The main corridor enters from the west.
+125	The walls are quite warm here.  From the north can be heard a steady
+125	roar, so loud that the entire cave seems to be trembling.  Another
+125	passage leads south, and a low crawl goes east.
 126	You are on the edge of a breath-taking view.  Far below you is an
 126	active volcano, from which great gouts of molten lava come surging
-126	out, cascading back down into the depths. The glowing rock fills the
-126	farthest reaches of the cavern with a blood-red glare, giving
-126	everything an eerie, macabre appearance.
-126	The air is filled with flickering sparks of ash and a heavy smell of
-126	brimstone.  The walls are hot to the touch, and the thundering of the
-126	volcano drowns out all other sounds.  Embedded in the jagged roof far
-126	overhead are myriad formations composed of pure white alabaster, which
-126	scatter their murky light into sinister apparitions upon the walls.
-126	To one side is a deep gorge, filled with a bizarre chaos of tortured
-126	rock which seems to have been crafted by the Devil Himself.  An
-126	immense river of fire crashes out from the depths of the volcano,
-126	burns its way through the gorge, and plummets into a bottomless pit
-126	far off to your left.
-126	To the right, an immense geyser of blistering steam erupts
-126	continuously from a barren island in the center of a sulfurous lake,
-126	which bubbles ominously. The far right wall is aflame with an
-126	incandescence of its own, which lends an additional infernal splendor
-126	to the already hellish scene.
-126	A dark, foreboding passage exits to the south.
-127	You are in a small chamber filled with large boulders.
-127	The walls are very warm, causing the air in the room
-127	to be almost stifling from the heat.  The only exit
-127	is a crawl heading west, through which is coming
+126	out, cascading back down into the depths.  The glowing rock fills the
+126	farthest reaches of the cavern with a blood-red glare, giving every-
+126	thing an eerie, macabre appearance.  The air is filled with flickering
+126	sparks of ash and a heavy smell of brimstone.  The walls are hot to
+126	the touch, and the thundering of the volcano drowns out all other
+126	sounds.  Embedded in the jagged roof far overhead are myriad twisted
+126	formations composed of pure white alabaster, which scatter the murky
+126	light into sinister apparitions upon the walls.  To one side is a deep
+126	gorge, filled with a bizarre chaos of tortured rock which seems to
+126	have been crafted by the devil himself.  An immense river of fire
+126	crashes out from the depths of the volcano, burns its way through the
+126	gorge, and plummets into a bottomless pit far off to your left.  To
+126	the right, an immense geyser of blistering steam erupts continuously
+126	from a barren island in the center of a sulfurous lake, which bubbles
+126	ominously.  The far right wall is aflame with an incandescence of its
+126	own, which lends an additional infernal splendor to the already
+126	hellish scene.  A dark, foreboding passage exits to the south.
+127	You are in a small chamber filled with large boulders.  The walls are
+127	very warm, causing the air in the room to be almost stifling from the
+127	heat.  The only exit is a crawl heading west, through which is coming
 127	a low rumbling.
-128	You are walking along a gently sloping north/south passage
-128	lined with oddly shaped limestone formations.
-129	You are standing at the entrance to a large, barren
-129	room.  A sign posted above the entrance reads:
-129	       "Caution!  Bear in room!"
-130	You are inside a barren room.  The center of the room
-130	is completely empty except for some dust.  Marks in
-130	the dust lead away toward the far end of the room.
-130	The only exit is the way you came in.
+128	You are walking along a gently sloping north/south passage lined with
+128	oddly shaped limestone formations.
+129	You are standing at the entrance to a large, barren room.  A sign
+129	posted above the entrance reads:  "Caution!  Bear in room!"
+130	You are inside a barren room.  The center of the room is completely
+130	empty except for some dust.  Marks in the dust lead away toward the
+130	far end of the room.  The only exit is the way you came in.
 131	You are in a maze of twisting little passages, all different.
 132	You are in a little maze of twisty passages, all different.
 133	You are in a twisting maze of little passages, all different.
@@ -352,7 +298,7 @@
 137	You are in a little twisty maze of passages, all different.
 138	You are in a maze of little twisting passages, all different.
 139	You are in a maze of little twisty passages, all different.
-140	Dead end.
+140	Dead end
 =end adventData01
 
 =begin adventData02
@@ -369,47 +315,47 @@
 11	You're in debris room.
 13	You're in bird chamber.
 14	You're at top of small pit.
-15	You're in hall of mists.
+15	You're in Hall of Mists.
 17	You're on east bank of fissure.
 18	You're in nugget of gold room.
-19	You're in hall of mt. king.
-23	You're at west end of twopit room.
+19	You're in Hall of Mt King
+23	You're at west end of Twopit Room.
 24	You're in east pit.
 25	You're in west pit.
 33	You're at "Y2".
 35	You're at window on pit.
 36	You're in dirty passage.
 39	You're in dusty rock room.
-41	You're at west end of hall of mists.
+41	You're at west end of Hall of Mists.
 57	You're at brink of pit.
 60	You're at east end of long hall.
 61	You're at west end of long hall.
 64	You're at complex junction.
-66	You're in swiss cheese room.
-67	You're at east end of twopit room.
-68	You're in slab room.
+66	You're in Swiss Cheese Room.
+67	You're at east end of Twopit Room.
+68	You're in Slab Room.
 71	You're at junction of three secret canyons.
-74	You're at secret E/W canyon above tight canyon.
+74	You're in secret e/w canyon above tight canyon.
 88	You're in narrow corridor.
 91	You're at steep incline above large room.
-92	You're in giant room.
+92	You're in Giant Room.
 95	You're in cavern with waterfall.
-96	You're in soft room.
-97	You're in oriental room.
+96	You're in Soft Room.
+97	You're in Oriental Room.
 98	You're in misty cavern.
 99	You're in alcove.
-100	You're in plover room.
+100	You're in Plover Room.
 101	You're in dark-room.
 102	You're in arched hall.
-103	You're in shell room.
+103	You're in Shell Room.
 106	You're in anteroom.
-108	You're at Witt's end.
-109	You're in mirror canyon.
+108	You're at Witt's End.
+109	You're in Mirror Canyon.
 110	You're at window on pit.
 111	You're at top of stalactite.
 113	You're at reservoir.
-115	You're at ne end of repository.
-116	You're at sw end of repository.
+115	You're at ne end.
+116	You're at sw end.
 117	You're on sw side of chasm.
 118	You're in sloping corridor.
 122	You're on ne side of chasm.
@@ -417,10 +363,10 @@
 124	You're at fork in path.
 125	You're at junction with warm walls.
 126	You're at breath-taking view.
-127	You're in chamber of boulders.
+127	You're in Chamber of Boulders.
 128	You're in limestone passage.
-129	You're in front of barren room.
-130	You're in barren room.
+129	You're in front of Barren Room.
+130	You're in Barren Room.
 =end adventData02
 
 =begin adventData03
@@ -1223,7 +1169,7 @@
 2	Brass lantern
 000	There is a shiny brass lamp nearby.
 100	There is a lamp shining nearby.
-3	*Grate
+3	*grate
 000	The grate is locked.
 100	The grate is open.
 4	Wicker cage
@@ -1232,36 +1178,35 @@
 000	A three foot black rod with a rusty star on an end lies nearby.
 6	Black rod
 000	A three foot black rod with a rusty mark on an end lies nearby.
-7	*Steps
+7	*steps
 000	Rough stone steps lead down the pit.
 100	Rough stone steps lead up the dome.
 8	Little bird in cage
 000	A cheerful little bird is sitting here singing.
 100	There is a little bird in the cage.
-9	*Rusty door
+9	*rusty door
 000	The way north is barred by a massive, rusty, iron door.
 100	The way north leads through a massive, rusty, iron door.
 10	Velvet pillow
 000	A small velvet pillow lies on the floor.
-11	*Snake
+11	*snake
 000	A huge green fierce snake bars the way!
 100	>$<  (chased away)
-12	*Fissure
+12	*fissure
 000	>$<
 100	A crystal bridge now spans the fissure.
 200	The crystal bridge has vanished!
-13	*Stone tablet
+13	*stone tablet
 000	A massive stone tablet embedded in the wall reads:
 000	"Congratulations on bringing light into the dark-room!"
-14	Giant clam  >Grunt!<
+14	Giant clam  >GRUNT!<
 000	There is an enormous clam here with its shell tightly closed.
-15	Giant oyster  >Groan!<
+15	Giant oyster  >GROAN!<
 000	There is an enormous oyster here with its shell tightly closed.
-100	Interesting.  There seems to be something written on the
-100	underside of the oyster.
+100	Interesting.  There seems to be something written on the underside of
+100	the oyster.
 16	"Spelunker Today"
-000	There are a few recent issues of "Spelunker Today" magazine
-000	here.
+000	There are a few recent issues of "Spelunker Today" magazine here.
 19	Tasty food
 000	There is food here.
 20	Small bottle
@@ -1270,78 +1215,65 @@
 200	There is a bottle of oil here.
 21	Water in the bottle
 22	Oil in the bottle
-23	*Mirror
+23	*mirror
 000	>$<
-24	*Plant
-000	There is a tiny little plant in the pit, murmuring
-000	"Water, water, ..."
+24	*plant
+000	There is a tiny little plant in the pit, murmuring "water, water, ..."
 100	The plant spurts into furious growth for a few seconds.
-200	There is a 12-foot-tall beanstalk stretching up out of
-200	the pit, bellowing "Water!!  Water!!"
-300	The plant grows explosively, almost filling the bottom
-300	of the pit.
-400	There is a gigantic beanstalk stretching all the way
-400	up to the hole.
-500	You've over-watered the plant!  It's shriveling up!
-500	It's, it's...
-25	*Phony plant
+200	There is a 12-foot-tall beanstalk stretching up out of the pit,
+200	bellowing "WATER!! WATER!!"
+300	The plant grows explosively, almost filling the bottom of the pit.
+400	There is a gigantic beanstalk stretching all the way up to the hole.
+500	You've over-watered the plant!  It's shriveling up!  It's, it's...
+25	*phony plant (seen in Twopit Room only when tall enough)
 000	>$<
-100	The top of a 12-foot-tall beanstalk is poking up out of
-100	the west pit.
-200	There is a huge beanstalk growing out of the west pit up to
-200	the hole.
-26	*Stalactite
+100	The top of a 12-foot-tall beanstalk is poking out of the west pit.
+200	There is a huge beanstalk growing out of the west pit up to the hole.
+26	*stalactite
 000	>$<
-27	*Shadowy figure
+27	*shadowy figure
 000	The shadowy figure seems to be trying to attract your attention.
 28	Dwarf's axe
 000	There is a little axe here.
 100	There is a little axe lying beside the bear.
-29	*Cave drawings
+29	*cave drawings
 000	>$<
-30	*Pirate
+30	*pirate
 000	>$<
-31	*Dragon
+31	*dragon
 000	A huge green fierce dragon bars the way!
-100	Congratulations!  You have just vanquished a dragon with
-100	your bare hands!  (Unbelievable, isn't it?)
-200	The body of a huge green dead dragon is lying off to one
-200	side.
-32	*Chasm
-000	A rickety wooden bridge extends across the chasm, vanishing
-000	into the mist.  A sign posted on the bridge reads:
-000	          "Stop!  Pay troll!"
-100	The wreckage of a bridge (and a dead bear) can be seen
-100	at the bottom of the chasm.
-33	*Troll
-000	A burly troll stands by the bridge and insists you throw
-000	him a treasure before you may cross.
-100	The troll steps out from beneath the bridge and blocks
-100	your way.
+100	Congratulations!  You have just vanquished a dragon with your bare
+100	hands!  (Unbelievable, isn't it?)
+200	The body of a huge green dead dragon is lying off to one side.
+32	*chasm
+000	A rickety wooden bridge extends across the chasm, vanishing into the
+000	mist.  A sign posted on the bridge reads, "Stop! Pay troll!"
+100	The wreckage of a bridge (and a dead bear) can be seen at the bottom
+100	of the chasm.
+33	*troll
+000	A burly troll stands by the bridge and insists you throw him a
+000	treasure before you may cross.
+100	The troll steps out from beneath the bridge and blocks your way.
 200	>$<  (chased away)
-34	*Phony troll
+34	*phony troll
 000	The troll is nowhere to be seen.
 35	>$<  (bear uses rtext 141)
-000	There is a ferocious cave bear eyeing you from the far
-000	end of the room!
+000	There is a ferocious cave bear eying you from the far end of the room!
 100	There is a gentle cave bear sitting placidly in one corner.
 200	There is a contented-looking bear wandering about nearby.
 300	>$<  (dead)
-36	*Message in second maze
-000	There is a message scrawled in the dust in a flowery script,
-000	reading:
-000	           "This is not the maze where the
-000	            pirate leaves his treasure chest."
-37	*Volcano and/or Geyser
+36	*message in second maze
+000	There is a message scrawled in the dust in a flowery script, reading:
+000	"This is not the maze where the pirate leaves his treasure chest."
+37	*volcano and/or geyser
 000	>$<
-38	*Vending machine
-000	There is a massive vending machine here.  The instructions
-000	on it read:
-000	     "Drop coins here to receive fresh batteries."
+38	*vending machine
+000	There is a massive vending machine here.  The instructions on it read:
+000	"Drop coins here to receive fresh batteries."
 39	Batteries
 000	There are fresh batteries here.
 100	Some worn-out batteries have been discarded nearby.
-40	*Carpet and/or moss
+40	*carpet and/or moss
 000	>$<
 50	Large gold nugget
 000	There is a large sparkling nugget of gold here!
@@ -1397,44 +1329,42 @@
 1	features of the current program were added by Don Woods (don @ su-ai).
 1	Contact Don if you have any questions, comments, etc.
 2	A little dwarf with a big knife blocks your way.
-3	A little dwarf just walked around a corner, saw you,
-3	threw a little axe at you which missed, cursed, and ran away.
+3	A little dwarf just walked around a corner, saw you, threw a little
+3	axe at you which missed, cursed, and ran away.
 4	There is a threatening little dwarf in the room with you!
-5	One sharp, nasty knife is thrown at you!
+5	One sharp nasty knife is thrown at you!
 6	None of them hit you!
 7	One of them gets you!
-8	A hollow voice says "Plugh".
+8	A hollow voice says "PLUGH".
 9	There is no way to go that direction.
-10	I am unsure how you are facing.  Use compass points or
-10	nearby objects.
-11	I don't know in from out here.  Use compass points or name
-11	something in the general direction you want to go.
+10	I am unsure how you are facing.  Use compass points or nearby objects.
+11	I don't know in from out here.  Use compass points or name something
+11	in the general direction you want to go.
 12	I don't know how to apply that word here.
 13	I don't understand that!
 14	I'm game.  Would you care to explain how?
-15	Sorry, but I am not allowed to give more detail.  I will
-15	repeat the long description of your location.
-16	It is now pitch dark.  If you proceed you will likely fall
-16	into a pit.
-17	If you prefer, simply type W rather than West.
+15	Sorry, but I am not allowed to give more detail.  I will repeat the
+15	long description of your location.
+16	It is now pitch dark.  If you proceed you will likely fall into a pit.
+17	If you prefer, simply type w rather than west.
 18	Are you trying to catch the bird?
-19	The bird is frightened right now and you cannot catch
-19	it no matter what you try.  Perhaps you might try later.
+19	The bird is frightened right now and you cannot catch it no matter
+19	what you try.  Perhaps you might try later.
 20	Are you trying to somehow deal with the snake?
-21	You can't kill the snake, or drive it away, or avoid it,
-21	or anything like that.  There is a way to get by, but you
-21	don't have the necessary resources right now.
+21	You can't kill the snake, or drive it away, or avoid it, or anything
+21	like that.  There is a way to get by, but you don't have the necessary
+21	resources right now.
 22	Do you really want to quit now?
 23	You fell into a pit and broke every bone in your body!
 24	You are already carrying it!
 25	You can't be serious!
-26	The bird was unafraid when you entered, but as you approach
-26	it becomes disturbed and you cannot catch it.
+26	The bird was unafraid when you entered, but as you approach it becomes
+26	disturbed and you cannot catch it.
 27	You can catch the bird, but you cannot carry it.
 28	There is nothing here with a lock!
 29	You aren't carrying it!
-30	The little bird attacks the green snake, and in an
-30	astounding flurry drives the snake away.
+30	The little bird attacks the green snake, and in an astounding flurry
+30	drives the snake away.
 31	You have no keys!
 32	It has no lock.
 33	I don't know how to lock or unlock such a thing.
@@ -1445,8 +1375,8 @@
 38	You have no source of light.
 39	Your lamp is now on.
 40	Your lamp is now off.
-41	There is no way to get past the bear to unlock the chain,
-41	which is probably just as well.
+41	There is no way to get past the bear to unlock the chain, which is
+41	probably just as well.
 42	Nothing happens.
 43	Where?
 44	There is nothing here to attack.
@@ -1454,110 +1384,101 @@
 46	Attacking the snake both doesn't work and is very dangerous.
 47	You killed a little dwarf.
 48	You attack a little dwarf, but he dodges out of the way.
-49	With what? Your bare hands?
+49	With what?  Your bare hands?
 50	Good try, but that is an old worn-out magic word.
 51	I know of places, actions, and things.  Most of my vocabulary
 51	describes places and is used to move you there.  To move, try words
-51	like forest, building, downstream, enter, east, west, north, south, up
-51	or down.
-51	I know about a few special objects, like a black rod hidden in the
-51	cave.  These objects can be manipulated using some of the action words
-51	I know. Usually you will need to give both the object and action words
-51	(In either order), but sometimes I can infer the object from the verb
-51	alone.  Some objects also imply verbs; in particular, "inventory"
-51	implies "take inventory", which causes me to give you a list of what
-51	you're carrying.
-51	The objects have side effects; for instance, the rod scares the bird.
-51	Usually people having trouble moving just need to try a few more
-51	words.  Usually people trying unsuccessfully to manipulate an object
-51	are attempting something beyond their (or my!) capabilities and should
-51	try a completely different tack.
-51	To speed the game up, you can sometimes move long distances with a
-51	single word.  For example, "building" usually gets you to the building
-51	from anywhere above ground except when lost in the forest.  Also, note
-51	that cave passages turn a lot, and that leaving a room to the north
-51	does not guarantee entering the next from the south.  Good luck!
+51	like forest, building, downstream, enter, east, west, north, south,
+51	up, or down.  I know about a few special objects, like a black rod
+51	hidden in the cave.  These objects can be manipulated using some of
+51	the action words that I know.  Usually you will need to give both the
+51	object and action words (in either order), but sometimes I can infer
+51	the object from the verb alone.  Some objects also imply verbs; in
+51	particular, "inventory" implies "take inventory", which causes me to
+51	give you a list of what you're carrying.  The objects have side
+51	effects; for instance, the rod scares the bird.  Usually people having
+51	trouble moving just need to try a few more words.  Usually people
+51	trying unsuccessfully to manipulate an object are attempting something
+51	beyond their (or my!) capabilities and should try a completely
+51	different tack.  To speed the game you can sometimes move long
+51	distances with a single word.  For example, "building" usually gets
+51	you to the building from anywhere above ground except when lost in the
+51	forest.  Also, note that cave passages turn a lot, and that leaving a
+51	room to the north does not guarantee entering the next from the south.
+51	Good luck!
 52	It misses!
 53	It gets you!
 54	OK
 55	You can't unlock the keys.
-56	You have crawled around in some little holes and wound up
-56	back in the main passage.
-57	I don't know where the cave is, but hereabouts no stream
-57	can run on the surface for very long.  I would try the stream.
+56	You have crawled around in some little holes and wound up back in the
+56	main passage.
+57	I don't know where the cave is, but hereabouts no stream can run on
+57	the surface for long.  I would try the stream.
 58	I need more detailed instructions to do that.
-59	I can only tell you what you see as you move about and
-59	manipulate things.  I cannot tell you where remote things are.
+59	I can only tell you what you see as you move about and manipulate
+59	things.  I cannot tell you where remote things are.
 60	I don't know that word.
 61	What?
 62	Are you trying to get into the cave?
-63	The grate is very solid and has a hardened steel lock.  You
-63	cannot enter without a key, and there are no keys nearby.
-63	I would recommend looking elsewhere for the keys.
-64	The trees of the forest are large hardwood oak and maple,
-64	with an occasional grove of pine or spruce.  There is quite
-64	a bit of undergrowth, largely birch and ash saplings plus
-64	nondescript bushes of various sorts.  This time of year 
-64	visibility is quite restricted by all the leaves, but travel
-64	is quite easy if you detour around the spruce and berry
-64	bushes.
+63	The grate is very solid and has a hardened steel lock.  You cannot
+63	enter without a key, and there are no keys nearby.  I would recommend
+63	looking elsewhere for the keys.
+64	The trees of the forest are large hardwood oak and maple, with an
+64	occasional grove of pine or spruce.  There is quite a bit of under-
+64	growth, largely birch and ash saplings plus nondescript bushes of
+64	various sorts.  This time of year visibility is quite restricted by
+64	all the leaves, but travel is quite easy if you detour around the
+64	spruce and berry bushes.
 65	Welcome to Adventure!!  Would you like instructions?
-66	Digging without a shovel is quite impractical.  Even with a
-66	shovel progress is unlikely.
+66	Digging without a shovel is quite impractical.  Even with a shovel
+66	progress is unlikely.
 67	Blasting requires dynamite.
 68	I'm as confused as you are.
-69	Mist is a white vapor, usually water.  Seen from time to time
-69	in caverns.  It can be found anywhere but is frequently a
-69	sign of a deep pit leading down to water.
+69	Mist is a white vapor, usually water, seen from time to time in
+69	caverns.  It can be found anywhere but is frequently a sign of a deep
+69	pit leading down to water.
 70	Your feet are now wet.
 71	I think I just lost my appetite.
-72	Thank you.  It was delicious!
-73	You have taken a drink from the stream.  The water tastes
-73	strongly of minerals, but is not unpleasant.  It is extremely
-73	cold.
+72	Thank you, it was delicious!
+73	You have taken a drink from the stream.  The water tastes strongly of
+73	minerals, but is not unpleasant.  It is extremely cold.
 74	The bottle of water is now empty.
-75	Rubbing the electric lamp is not particularly rewarding.
-75	Anyway, nothing exciting happens.
+75	Rubbing the electric lamp is not particularly rewarding.  Anyway,
+75	nothing exciting happens.
 76	Peculiar.  Nothing unexpected happens.
 77	Your bottle is empty and the ground is wet.
 78	You can't pour that.
 79	Watch it!
 80	Which way?
-81	Oh dear, you seem to have gotten yourself killed.  I might
-81	be able to help you out, but I've never really done this
-81	before.  Do you want me to try to reincarnate you?
+81	Oh dear, you seem to have gotten yourself killed.  I might be able to
+81	help you out, but I've never really done this before.  Do you want me
+81	to try to reincarnate you?
 82	All right.  But don't blame me if something goes wr......
-82	                    --- POOF !! ---
-82	You are engulfed in a cloud of orange smoke.  Coughing and
-82	gasping, you emerge from the smoke and find...
-83	You clumsy oaf, you've done it again!  I don't know how long
-83	I can keep this up.  Do you want me to try reincarnating
-83	you again?
-84	Okay, now where did I put my orange smoke? ... > POOF! <
+82			    --- POOF!! ---
+82	You are engulfed in a cloud of orange smoke.  Coughing and gasping,
+82	you emerge from the smoke and find....
+83	You clumsy oaf, you've done it again!  I don't know how long I can
+83	keep this up.  Do you want me to try reincarnating you again?
+84	Okay, now where did I put my orange smoke?....  >POOF!<
 84	Everything disappears in a dense cloud of orange smoke.
-85	Now you've really done it!  I'm out of orange smoke!  You
-85	don't expect me to do a decent reincarnation without any
-85	orange smoke, do you?
-86	Okay, If you're so smart, do it yourself!  I'm leaving!
-90	>>> Messages 81 thru 90 are reserved for "obituaries". <<<
-91	Sorry, but I no longer seem to remember how it was you
-91	got here.
-92	You can't carry anything more.  You'll have to drop something
-92	first.
+85	Now you've really done it!  I'm out of orange smoke!  You don't expect
+85	me to do a decent reincarnation without any orange smoke, do you?
+86	Okay, if you're so smart, do it yourself!  I'm leaving!
+90	>>> messages 81 thru 90 are reserved for "obituaries". <<<
+91	Sorry, but I no longer seem to remember how it was you got here.
+92	You can't carry anything more.  You'll have to drop something first.
 93	You can't go through a locked steel grate!
 94	I believe what you want is right here with you.
 95	You don't fit through a two-inch slit!
-96	I respectfully suggest you go across the bridge instead
-96	of jumping.
+96	I respectfully suggest you go across the bridge instead of jumping.
 97	There is no way across the fissure.
 98	You're not carrying anything.
 99	You are currently holding the following:
-100	It's not hungry (It's merely pinin' for the Fjords).  Besides,
-100	you have no bird seed.
+100	It's not hungry (it's merely pinin' for the fjords).  Besides, you
+100	have no bird seed.
 101	The snake has now devoured your bird.
 102	There's nothing here it wants to eat (except perhaps you).
-103	You fool, dwarves eat only coal!  Now you've made
-103	him REALLY mad!!
+103	You fool, dwarves eat only coal!  Now you've made him *REALLY* mad!!
 104	You have nothing in which to carry it.
 105	Your bottle is already full.
 106	There is nothing here with which to fill the bottle.
@@ -1566,133 +1487,114 @@
 109	You can't fill that.
 110	Don't be ridiculous!
 111	The door is extremely rusty and refuses to open.
-112	The plant indignantly shakes the oil off its leaves and asks:
-112	"Water?".
+112	The plant indignantly shakes the oil off its leaves and asks, "Water?"
 113	The hinges are quite thoroughly rusted now and won't budge.
 114	The oil has freed up the hinges so that the door will now move,
 114	although it requires some effort.
 115	The plant has exceptionally deep roots and cannot be pulled free.
 116	The dwarves' knives vanish as they strike the walls of the cave.
-117	Something you're carrying won't fit through the tunnel with
-117	you.  You'd best take inventory and drop something.
+117	Something you're carrying won't fit through the tunnel with you.
+117	You'd best take inventory and drop something.
 118	You can't fit this five-foot clam through that little passage!
 119	You can't fit this five-foot oyster through that little passage!
-120	I advise you to put down the clam before opening it. >STRAIN!<
-121	I advise you to put down the oyster before opening it.
-121	>WRENCH!<
+120	I advise you to put down the clam before opening it.  >STRAIN!<
+121	I advise you to put down the oyster before opening it.  >WRENCH!<
 122	You don't have anything strong enough to open the clam.
 123	You don't have anything strong enough to open the oyster.
-124	A glistening pearl falls out of the clam and rolls away.
-124	Goodness, this must really be an oyster.  (I never was
-124	very good at identifying bivalves.)  Whatever it is,
-124	it has now snapped shut again.
-125	The oyster creaks open, revealing nothing but oyster inside.
-125	It promptly snaps shut again.
-126	You have crawled around in some little holes and found your
-126	way blocked by a recent cave-in.  You are now back in the
-126	main passage.
-127	There are faint rustling noises from the darkness behind
-127	you.
-128	Out from the shadows behind you pounces a bearded pirate!
-128	"Har, har," he chortles.  "I'll just take all this booty and
-128	hide it away with me chest deep in the maze!"  He snatches
-128	your treasure and vanishes into the gloom.
-129	A sepulchral voice reverberating through the cave says:
-129	"Cave closing soon.  All adventurers exit immediately
-129	through main office."
+124	A glistening pearl falls out of the clam and rolls away.  Goodness,
+124	this must really be an oyster.  (I never was very good at identifying
+124	bivalves.)  Whatever it is, it has now snapped shut again.
+125	The oyster creaks open, revealing nothing but oyster inside.  It
+125	promptly snaps shut again.
+126	You have crawled around in some little holes and found your way
+126	blocked by a recent cave-in.  You are now back in the main passage.
+127	There are faint rustling noises from the darkness behind you.
+128	Out from the shadows behind you pounces a bearded pirate!  "Har, har,"
+128	he chortles, "I'll just take all this booty and hide it away with me
+128	chest deep in the maze!"  He snatches your treasure and vanishes into
+128	the gloom.
+129	A sepulchral voice reverberating through the cave, says, "Cave closing
+129	soon.  All adventurers exit immediately through main office."
 130	A mysterious recorded voice groans into life and announces:
-130	"This exit is closed.  Please leave via main office."
-131	It looks as though you're dead.  Well, seeing as how it's so
-131	close to closing time anyway, I think we'll just call it a day.
-132	The sepulchral voice intones, "The cave is now closed."  As
-132	the echoes fade, there is a blinding flash of light (and a
-132	small puff of orange smoke). . . . 
-132	As your eyes refocus you look around and find...
-133	There is a loud explosion, and a twenty-foot hole appears in
-133	the far wall, burying the dwarves in the rubble.  You march
-133	through the hole and find yourself in the main office, where
-133	a cheering band of friendly elves carry the conquering
-133	adventurer off into the sunset.
-134	There is a loud explosion, and a twenty-foot hole appears in
-134	the far wall, burying the snakes in the rubble.  A river of
-134	molten lava pours in through the hole, destroying
-134	everything in its path, including you!!
-135	There is a loud explosion, and you are suddenly splashed across
-135	the walls of the room.
-136	The resulting ruckus has awakened the dwarves.  There are now
-136	several threatening little dwarves in the room with you!
-136	Most of them throw knives at you!  All of them get you!
+130	   "This exit is closed.  Please leave via main office."
+131	It looks as though you're dead.  Well, seeing as how it's so close to
+131	closing time anyway, I think we'll just call it a day.
+132	The sepulchral voice intones, "The cave is now closed."  As the echoes
+132	fade, there is a blinding flash of light (and a small puff of orange
+132	smoke). . . .	 As your eyes refocus, you look around and find...
+133	There is a loud explosion, and a twenty-foot hole appears in the far
+133	wall, burying the dwarves in the rubble.  You march through the hole
+133	and find yourself in the main office, where a cheering band of
+133	friendly elves carry the conquering adventurer off into the sunset.
+134	There is a loud explosion, and a twenty-foot hole appears in the far
+134	wall, burying the snakes in the rubble.  A river of molten lava pours
+134	in through the hole, destroying everything in its path, including you!
+135	There is a loud explosion, and you are suddenly splashed across the
+135	walls of the room.
+136	The resulting ruckus has awakened the dwarves.  There are now several
+136	threatening little dwarves in the room with you!  Most of them throw
+136	knives at you!  All of them get you!
 137	Oh, leave the poor unhappy bird alone.
 138	I daresay whatever you want is around here somewhere.
-139	I don't know the word "stop".  Use "quit" if you want to
-139	give up.
+139	I don't know the word "stop".  Use "quit" if you want to give up.
 140	You can't get there from here.
 141	You are being followed by a very large, tame bear.
 142	If you want to end your adventure early, say "quit".  To suspend your
-142	adventure such that you can continue later say "suspend" (or "pause"
-142	or "save").  To load a previously saved game, say "load" or "restore".
+142	adventure such that you can continue later, say "suspend" (or "pause"
+142	or "save").  To see what hours the cave is normally open, say "hours".
 142	To see how well you're doing, say "score".  To get full credit for a
 142	treasure, you must have left it safely in the building, though you get
-142	partial credit just for locating it. You lose points for getting
-142	killed, or for quitting, though the former costs you more.
-142	There are also points based on how much (if any) of the cave you've
-142	managed to explore; in particular, there is a large bonus just for
-142	getting in (to distinguish the beginners from the rest of the pack),
-142	and there are other ways to determine whether you've been through some
-142	of the more harrowing sections.
-142	If you think you've found all the treasures, just keep exploring for a
-142	while.  If nothing interesting happens, you haven't found them all
-142	yet.  If something interesting DOES happen, it means you're getting a
-142	bonus and have an opportunity to garner many more points in the
-142	master's section.
-142	I may occasionally offer hints in you seem to be having trouble.  If I
-142	do, I'll warn you in advance how much it will affect your score to
-142	accept the hints.  Finally, to save paper, you may specify "brief",
-142	which tells me never to repeat the full description of a place unless
-142	you explicitly ask me to.
+142	partial credit just for locating it.  You lose points for getting
+142	killed, or for quitting, though the former costs you more.  There are
+142	also points based on how much (if any) of the cave you've managed to
+142	explore; in particular, there is a large bonus just for getting in (to
+142	distinguish the beginners from the rest of the pack), and there are
+142	other ways to determine whether you've been through some of the more
+142	harrowing sections.  If you think you've found all the treasures, just
+142	keep exploring for a while.  If nothing interesting happens, you
+142	haven't found them all yet.  If something interesting *DOES* happen,
+142	it means you're getting a bonus and have an opportunity to garner many
+142	more points in the Master's section.  I may occasionally offer hints
+142	if you seem to be having trouble.  If I do, I'll warn you in advance
+142	how much it will affect your score to accept the hints.  Finally, to
+142	save paper, you may specify "brief", which tells me never to repeat
+142	the full description of a place unless you explicitly ask me to.
 143	Do you indeed wish to quit now?
 144	There is nothing here with which to fill the vase.
-145	The sudden change in temperature has delicately shattered
-145	the vase.
+145	The sudden change in temperature has delicately shattered the vase.
 146	It is beyond your power to do that.
 147	I don't know how.
 148	It is too far up for you to reach.
-149	You killed a little dwarf.  The body vanishes in a cloud
-149	of greasy black smoke.
-150	The shell is very strong and impervious to attack.
-151	What's the matter, can't you read?  Now you'd best start
-151	over.
+149	You killed a little dwarf.  The body vanishes in a cloud of greasy
+149	black smoke.
+150	The shell is very strong and is impervious to attack.
+151	What's the matter, can't you read?  Now you'd best start over.
 152	The axe bounces harmlessly off the dragon's thick scales.
 153	The dragon looks rather nasty.  You'd best not try to get by.
-154	The little bird attacks the green dragon, and in an
-154	astounding flurry gets burnt to a cinder.  The ashes blow away.
+154	The little bird attacks the green dragon, and in an astounding flurry
+154	gets burnt to a cinder.  The ashes blow away.
 155	On what?
-156	Okay, from now on I'll only describe a place in full the
-156	first time you come to it.  To get the full description
-156	say "look".
-157	Trolls are close relatives with rocks and have skin as
-157	tough as that of a rhinoceros.  The troll fends off your
-157	blows effortlessly.
-158	The troll deftly catches the axe, examines it carefully,
-158	and tosses it back, declaring, "Good workmanship,
-158	but it's not valuable enough."
+156	Okay, from now on I'll only describe a place in full the first time
+156	you come to it.  To get the full description, say "look".
+157	Trolls are close relatives with the rocks and have skin as tough as
+157	that of a rhinoceros.  The troll fends off your blows effortlessly.
+158	The troll deftly catches the axe, examines it carefully, and tosses it
+158	back, declaring, "Good workmanship, but it's not valuable enough."
 159	The troll catches your treasure and scurries away out of sight.
 160	The troll refuses to let you cross.
 161	There is no longer any way across the chasm.
-162	Just as you reach the other side, the bridge buckles beneath
-162	the weight of the bear, which was still following you around.
-162	You scrabble desperately for support, but as the bridge
-162	collapses you stumble back and fall into the chasm.
-163	The bear lumbers toward the troll, who lets out a
-163	startled shriek and scurries away.  The bear soon gives
-163	up pursuit and wanders back.
-164	The axe misses and lands near the bear where you can't get
-164	at it.
-165	With what?  Your bare hands?  Against HIS bear hands??
+162	Just as you reach the other side, the bridge buckles beneath the
+162	weight of the bear, which was still following you around.  You
+162	scrabble desperately for support, but as the bridge collapses you
+162	stumble back and fall into the chasm.
+163	The bear lumbers toward the troll, who lets out a startled shriek and
+163	scurries away.  The bear soon gives up the pursuit and wanders back.
+164	The axe misses and lands near the bear where you can't get at it.
+165	With what?  Your bare hands?  Against *HIS* bear hands??
 166	The bear is confused; he only wants to be your friend.
 167	For crying out loud, the poor thing is already dead!
-168	The bear eagerly wolfs down your food, after which he seems
-168	to calm down considerably, and even becomes rather friendly.
+168	The bear eagerly wolfs down your food, after which he seems to calm
+168	down considerably and even becomes rather friendly.
 169	The bear is still chained to the wall.
 170	The chain is still locked.
 171	The chain is now unlocked.
@@ -1703,49 +1605,42 @@
 176	Do you need help getting out of the maze?
 177	You can make the passages look less alike by dropping things.
 178	Are you trying to explore beyond the plover room?
-179	There is a way to explore that region without having to
-179	worry about falling into a pit.  None of the objects
-179	available is immediately useful in discovering the secret.
+179	There is a way to explore that region without having to worry about
+179	falling into a pit.  None of the objects available is immediately
+179	useful in discovering the secret.
 180	Do you need help getting out of here?
 181	Don't go west.
 182	Gluttony is not one of the troll's vices.  Avarice, however, is.
-183	Your lamp is getting dim.  You'd best start wrapping this up,
-183	unless you can find some fresh batteries.  I seem to recall
-183	there's a vending machine in the maze.  Bring some coins
-183	with you.
+183	Your lamp is getting dim.  You'd best start wrapping this up, unless
+183	you can find some fresh batteries.  I seem to recall there's a vending
+183	machine in the maze.  Bring some coins with you.
 184	Your lamp has run out of power.
-185	There's not much point in wandering around out here, and you
-185	can't explore the cave without a lamp.  So let's just call
-185	it a day.
-186	There are faint rustling noises from the darkness behind you.
-186	As you turn toward them, the beam of your lamp falls across a
-186	bearded pirate.  He is carrying a large chest.  "Shiver me
-186	timbers!" he cries.  "I've been spotted!  I'd best hide
-186	meself off to the maze and hide me chest!"  With that,
-186	he vanishes into the gloom.
-187	Your lamp is getting dim.  You'd best go back for
-187	those batteries.
-188	Your lamp is getting dim.  I'm taking the liberty of replacing
-188	the batteries.
-189	Your lamp is getting dim, and you're out of spare batteries.
-189	You'd best start wrapping this up.
-190	I'm afraid the magazine is written in Dwarvish.
-191	"This is not the maze where the pirate leaves his treasure
-191	chest."
-192	Hmm, this looks like a clue, which means it'll cost you 10
-192	points to read it.  Should I go ahead and read it anyway?
-193	It says, "There is something strange about this place,
-193	such that one of the words I've always known now has
-193	a new effect."
+185	There's not much point in wandering around out here, and you can't
+185	explore the cave without a lamp.  So let's just call it a day.
+186	There are faint rustling noises from the darkness behind you.  As you
+186	turn toward them, the beam of your lamp falls across a bearded pirate.
+186	He is carrying a large chest.  "Shiver me timbers!" he cries, "I've
+186	been spotted!  I'd best hie meself off to the maze to hide me chest!"
+186	With that, he vanishes into the gloom.
+187	Your lamp is getting dim.  You'd best go back for those batteries.
+188	Your lamp is getting dim.  I'm taking the liberty of replacing the
+188	batteries.
+189	Your lamp is getting dim, and you're out of spare batteries.  You'd
+189	best start wrapping this up.
+190	I'm afraid the magazine is written in dwarvish.
+191	"This is not the maze where the pirate leaves his treasure chest."
+192	Hmmm, this looks like a clue, which means it'll cost you 10 points to
+192	read it.  Should I go ahead and read it anyway?
+193	It says, "There is something strange about this place, such that one
+193	of the words I've always known now has a new effect."
 194	It says the same thing it did before.
 195	I'm afraid I don't understand.
 196	"Congratulations on bringing light into the dark-room!"
-197	You strike the mirror a resounding blow, whereupon it
-197	shatters into a myriad tiny fragments.
-198	You have taken the vase and hurled it delicately to the
-198	ground.
-199	You prod the nearest dwarf, who wakes up grumpily, takes
-199	one look at you, curses, and grabs for his axe.
+197	You strike the mirror a resounding blow, whereupon it shatters into a
+197	myriad tiny fragments.
+198	You have taken the vase and hurled it delicately to the ground.
+199	You prod the nearest dwarf, who wakes up grumpily, takes one look at
+199	you, curses, and grabs for his axe.
 200	Is this acceptable?
 201	There's no point in suspending a demonstration game.
 =end adventData06
@@ -1881,6 +1776,4 @@
 9	20	3	180	181
 =end adventData11
 
-#
-# Insert section 12 here?
-#
+ #«« Insert section 12 here »»

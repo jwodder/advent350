@@ -16,9 +16,9 @@ my Str $magic;
 my int $magnm;  # magic number
 my int $latency;
 my Str $msg;  # MOTD, initially null
-my $saved;
-my $savet;
-my $setup;
+
+my int $saved;
+my int $savet;
 
 sub mspeak(int $msg) { speak @magicMsg[$msg] if $msg != 0 }
 
@@ -37,14 +37,15 @@ sub yesm(int $x, int $y, int $z --> Bool) {
  }
 }
 
-sub start( --> Bool) {
+sub start(Bool $restarting --> Bool) {
+# $restarting is true when resuming a saved game.
  my($d, $t) = datime;
  my bool @primetm[24] = @wkday;
  @primetm = @wkend if $d % 7 <= 1;
  @primetm = @holid if $hbegin <= $d <= $hend;
  my bool $ptime = @primetm[$t idiv 60];
  my bool $soon = False;
- if $setup < 0 {
+ if $restarting {
   $delay = ($d - $saved) * 1440 + ($t - $savet);
   if $delay < $latency {
    say "This adventure was suspended a mere $delay minutes ago.";
@@ -63,7 +64,7 @@ sub start( --> Bool) {
   hours;
   mspeak 4;
   if wizard {$saved = -1; return False; }
-  if $setup < 0 {mspeak 9; exit 0; }
+  if $restarting {mspeak 9; exit 0; }
   if yesm(5, 7, 7) {$saved = -1; return True; }
   exit 0;
  }
@@ -108,10 +109,9 @@ sub maint() {
  mspeak 30 if 0 < $x < 45;
  $latency = 45 max $x if $x > 0;
  motd(True) if yesm(14, 0, 0);
- $saved = 0;
- $setup = 2;
- @abb[1] = 0;
- mspeak 15;
+ # $saved = 0;
+ # @abb[1] = 0;
+ mspeak 15;  # Say something else?
  $blklin = True;
  ciao;
 }
