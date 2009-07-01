@@ -11,12 +11,12 @@
 - Add a README explaining what I'm doing and/or why I'm doing it, along with
   links to the IF Archive's downloads of the original Fortran source and the
   BDS C source
-- Add "save" and "restore"/"restart"/"resume"/"load" (2033) commands
+- Add "save" and "restore"/"restart"/"resume"/"load" (2032) commands
 - For the magic version, add a way to save changes made in maintenance mode
   (see how the NetBSD version does it)
 - Add transcripts?
 - Make the arrays be properly zero-based
 - Upload the repository to GitHub with the name "advent350" (description: "Yet
   another port of the Colossal Cave Adventure")
-- Update the list of bug numbers in bug()
 - Deal with what should happen if the user enters an empty line.
+- Write a manpage (using Perl 6 POD?)

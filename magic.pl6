@@ -8,17 +8,14 @@ my bool @wkday[24];
 my bool @wkend[24];
 my bool @holid[24];
 
-my int $hbegin;
-my int $hend;
-my Str $hname;
-my int $short;
-my Str $magic;
+my int $hbegin, $hend;  # start & end of next holiday
+my Str $hname;  # name of next holiday
+my int $short;  # turns allowed in a short/demonstration game
+my Str $magic;  # magic word
 my int $magnm;  # magic number
-my int $latency;
+my int $latency;  # time required to wait after saving
 my Str $msg;  # MOTD, initially null
-
-my int $saved;
-my int $savet;
+my int $saved, $savet;  # date & time game was saved
 
 sub mspeak(int $msg) { speak @magicMsg[$msg] if $msg != 0 }
 
@@ -89,7 +86,7 @@ sub maint() {
   $hend += $hbegin - 1;
   mspeak 29;
   print "\n> ";
-  $hname = $*IN.get;
+  $hname = $*IN.get.substr(0, 20);
  }
  say "Length of short game (null to leave at $short):";
  print "\n> ";
@@ -109,8 +106,6 @@ sub maint() {
  mspeak 30 if 0 < $x < 45;
  $latency = 45 max $x if $x > 0;
  motd(True) if yesm(14, 0, 0);
- # $saved = 0;
- # @abb[1] = 0;
  mspeak 15;  # Say something else?
  $blklin = True;
  ciao;
@@ -128,26 +123,25 @@ sub wizard( --> Bool) {
  my int @val[5];
  for ^5 -> $y {
   my $x = 79 + $d % 5;
-  $d /= 5;
-  $t = ($t * 1027) % 1048576 for 1..$x;
-  @wchrs[$y] += @val[$y] = ($t*26) / 1048576 + 1;
+  $d idiv= 5;
+  $t = ($t * 1027) % 1048576 for ^$x;
+  @wchrs[$y] += @val[$y] = ($t*26) idiv 1048576 + 1;
  }
  if yesm(18, 0, 0) {mspeak 20; return False; }
  .print for @wchrs.map: *.chr;
  print "\n> ";
  @wchrs = $*IN.get.words.[0].substr(0, 5).comb.map: *.ord;
-  #< What happens if the inputted word is less than five characters? >
+ # What happens if the inputted word is less than five characters?
  ($d, $t) = datime;
- $t = ($t/60)*40 + ($t/10)*10;
+ $t = ($t idiv 60) * 40 + ($t idiv 10) * 10;
  $d = $magnm;
  for ^5 -> $y {
   @wchrs[$y] -= ((@val[$y] - @val[($y+1) % 5]).abs * ($d % 10) + ($t % 10))
    % 26 + 1;
-  $t /= 10;
-  $d /= 10;
+  $t idiv= 10;
+  $d idiv= 10;
  }
- if @wchrs »==» 64 {mspeak 19; return True; }
- #< Is this ^^ right? >
+ if @wchrs.all == 64 {mspeak 19; return True; }
  else {mspeak 20; return False; }
 }
 
@@ -171,13 +165,13 @@ sub hoursx(bool @hours[24], Str $day) {
  if @hours.all == False { say ' ' x 10, "$day Open all day" }
  else {
   loop {
-   do { $from++ } while @hours[$from] && $from < 24;
+   repeat { $from++ } while @hours[$from] && $from < 24;
    if $from >= 24 {
     say ' ' x 10, $day, ' Closed all day' if $first;
     return;
    } else {
-    my $till = $from;
-    do { $till++ } while !@hours[$till] && $till != 24;
+    my int $till = $from;
+    repeat { $till++ } until @hours[$till] || $till == 24;
     if $first {
      print ' ' x 10, $day;
      printf "%4d:00 to%3d:00\n", $from, $till;
@@ -193,9 +187,9 @@ sub hoursx(bool @hours[24], Str $day) {
 
 sub newhrs() {
  mspeak 21;
- @wkday = newhrx('Weekdays:');
- @wkend = newhrx('Weekends:');
- @holid = newhrx('Holidays:');
+ @wkday = newhrx('weekdays:');
+ @wkend = newhrx('weekends:');
+ @holid = newhrx('holidays:');
  mspeak 22;
  hours;
 }
@@ -206,10 +200,10 @@ sub newhrx(Str $day --> bool[24] #< Right? > ) {
  loop {
   print "from: ";
   my int $from = $*IN.get.words.[0];
-  return @newhrx if $from < 0 || $from >= 24;
+  return @newhrx if $from !~~ 0..^24;
   print "till: ";
   my int $till = $*IN.get.words.[0] - 1;
-  return @newhrx if $till < $from || $till >= 24;
+  return @newhrx if $till !~~ $from..^24;
   @newhrx[$from..$till] = True, *;
  }
 }
@@ -233,8 +227,8 @@ sub motd(Bool $alter) {
 
 sub poof() {
  @wkday = False xx 8, True xx 10, False xx 6;
- @wkend = False;
- @holid = False;
+ @wkend = False, *;
+ @holid = False, *;
  $hbegin = 0;
  $hend = -1;
  $short = 30;
@@ -243,17 +237,16 @@ sub poof() {
  $latency = 90;
 }
 
-sub datime( --> List of Int) {
- # Return:
- # - number of days since 1 Jan 1977 (220924800 in Unix epoch time)
- # - minutes past midnight
+sub datime( --> List of int) {
+ # This function is supposed to return:
+ # - the number of days since 1 Jan 1977 (220924800 in Unix epoch time)
+ # - the number of minutes past midnight
 
- #<
+ constant Temporal::DateTime $start .= new(year => 1977, month => 1, day => 1);
+ # The time defaults to midnight, right?
+
  my Temporal::DateTime $now = Time::gmtime;
- return
-  ... ,
-  $now.hour * 60 + $now.minute;
- >#
-
- !!!
+ return ($now - $start) idiv 86400, $now.hour * 60 + $now.minute;
+  # I assume the difference between two DateTime objects is the number of
+  # seconds between them.
 }
