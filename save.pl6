@@ -2,11 +2,7 @@
 my int $loc, $newloc, $oldloc, $oldloc2, $limit;
 my int $turns, $iwest, $knifeloc, $detail;
 my int $numdie, $holding, $foobar, $bonus;
-my int $tally;
-my int $tally2;
-my int $abbnum;
-my int $clock1;
-my int $clock2;
+my int $tally, $tally2, $abbnum, $clock1, $clock2;
 my bool $wzdark, $closing, $lmwarn, $panic, $closed, $gaveup;
 my int @prop[65];
 my int @abb[141];
@@ -22,14 +18,14 @@ my int @atloc[141;*];
 # The magic version also needs to save $saved and $savet.
 
 sub writeInt(IO $out, int32 $i) {
- $out.write(Buf.new((^4).map: { $i +> 8*(3-$_) +& 0xFF }), 4)
+ $out.write(Buf.new($i, size => 32), 4)
 }
 
 sub writeBool(IO $out, bool *@bits) {
  my Int $x = 0;
  $x +|= 1 +< $_ if @bits[$_] for @bits.keys;
  my Buf $blob .= new($x);
- $out.write($blob, #< $blob.bytes ??? > );
+ $out.write($blob, $blob.bytes #< ??? > );
 }
 
 sub readInt(IO $in --> int32) {
@@ -63,5 +59,54 @@ sub savegame(Str $file) {
   writeInt $adv, $_.elems;
   writeInt $adv, $_ for @($_);
  }
+ #««
+  writeInt $adv, $saved;
+  writeInt $adv, $savet;
+ »»
 
 }
+
+
+# Restoration code:
+my IO $adv = open $file, :r, :bin;
+
+$loc = readInt $adv;
+$newloc = readInt $adv;
+$oldloc = readInt $adv;
+$oldloc2 = readInt $adv;
+$limit = readInt $adv;
+$turns = readInt $adv;
+$iwest = readInt $adv;
+$knifeloc = readInt $adv;
+$detail = readInt $adv;
+$numdie = readInt $adv;
+$holding = readInt $adv;
+$foobar = readInt $adv;
+$bonus = readInt $adv;
+$tally = readInt $adv;
+$tally2 = readInt $adv;
+$abbnum = readInt $adv;
+$clock1 = readInt $adv;
+$clock2 = readInt $adv;
+($wzdark, $closing, $lmwarn, $panic, $closed, $gaveup) = readBool $adv, 6;
+@prop[$_] = readInt $adv for ^@prop;
+@abb[$_] = readInt $adv for ^@abb;
+@hintlc[$_] = readInt $adv for ^@hintlc;
+@hinted = readBool $adv, +@hinted;
+@dloc[$_] = readInt $adv for ^@dloc;
+@odloc[$_] = readInt $adv for ^@odloc;
+@dseen = readBool $adv, +@dseen;
+$dflag = readInt $adv;
+$dkill = readInt $adv;
+@place[$_] = readInt $adv for ^@place;
+@fixed[$_] = readInt $adv for ^@fixed;
+for ^@atloc -> $i {
+ my int $qty = readInt $adv;
+ @atloc[$i;$_] = readInt $adv for ^$qty;
+}
+#««
+ # If the user attempts to restart a non-magic game with the magic version of
+ # this program, just assume that $saved is 0.
+ $saved = readInt($adv) // 0;
+ $savet = readInt($adv) // 0;
+»»

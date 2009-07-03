@@ -1,22 +1,17 @@
-- Finish translating the original Fortran to Perl 6
+- Implement the "save" and "restore"/"restart"/"resume"/"load" commands
+- Split advent350.pl6 into two versions: one with magic, one without
+- For the magic version, add a way to save changes made in maintenance mode
 - Translate the Perl 6 to C
  - Use preprocessor directives to configure:
   - whether to include magic
-  - (possibly) whether to include the second part of wizard authentication
   - whether to use C's rand() or the original Fortran's RAN() for random number
     generation
 - Write a script for converting advent350.pl6 from its "ideal" form into one
   that works on the current version of Rakudo
-- Split advent350.pl6 into two versions: one with magic, one without
-- Add a README explaining what I'm doing and/or why I'm doing it, along with
-  links to the IF Archive's downloads of the original Fortran source and the
-  BDS C source
-- Add "save" and "restore"/"restart"/"resume"/"load" (2032) commands
-- For the magic version, add a way to save changes made in maintenance mode
-  (see how the NetBSD version does it)
-- Add transcripts?
 - Make the arrays be properly zero-based
-- Upload the repository to GitHub with the name "advent350" (description: "Yet
-  another port of the Colossal Cave Adventure")
-- Deal with what should happen if the user enters an empty line.
-- Write a manpage (using Perl 6 POD?)
+- Write a manpage using Perl 6 POD
+- Write a Perl 6 program for solving the second part of wizard authentication
+  automatically
+- If the user enters "save" without a filename while playing a restored game,
+  save the game to the same path that it was restored from?
+- Check everything to make sure it works!

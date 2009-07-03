@@ -19,6 +19,7 @@ sub indexLines(Str *@lines --> List of Str) {
 }
 
 my Str @longDesc <== indexLines <== $=adventData01.lines(:!chomp);
+
 my Str @shortDesc <== indexLines <== $=adventData02.lines(:!chomp);
 
 my int @travel[*;*;*]
@@ -46,20 +47,8 @@ my Array of Str @itemDesc = gather for $=adventData05.lines(:!chomp) {
 
 my Str @rmsg <== indexLines <== $=adventData06.lines(:!chomp);
 
-my int @place[65];
-my int @fixed[65];
-my int @atloc[141;*];
-for $adventData07.lines {
- my($obj, $p, $f) = .split: "\t";
- @place[$obj] = $p;
- @fixed[$obj] = $f // 0;
-}
-for @fixed.keys({ @fixed[$_] > 0 }).reverse -> $k {
- drop($k + 100, @fixed[$k]);
- drop($k, @place[$k]);
-}
-drop($_, @place[$_])
- for @fixed.keys({ @place[$_] != 0 && @fixed[$_] <= 0 }).reverse;
+# Section 7 (containing the initial locations of the items) is only read in
+# when starting a new game (see MAIN below).
 
 my int @actspk[32] <== indexLines <== $adventData08.lines;
 
@@ -90,15 +79,15 @@ enum movement « :BACK(8) :NULL(21) :LOOK(57) :DEPRESSION(63) :ENTRANCE(64)
 
 enum action « :TAKE(1) DROP SAY OPEN NOTHING LOCK ON OFF WAVE CALM WALK KILL
  POUR EAT DRINK RUB THROW QUIT FIND INVENT FEED FILL BLAST SCORE FOO BRIEF READ
- BREAK WAKE SUSPEND HOURS {#< :RESUME >} »;
+ BREAK WAKE SUSPEND HOURS RESUME »;
 
 
 # Global variables:
 
 constant int MAXDIE, CHLOC, CHLOC2 = 3, 114, 140;
 my int $goto = 0;
- #«« my bool $demo; »»
 my bool $blklin = True;
+ #«« my bool $demo = False; »»
 my int $verb, $obj;
 my Str $in1, $in2, $word1, $word2;
 
@@ -106,12 +95,12 @@ my Str $in1, $in2, $word1, $word2;
 my int $loc, $newloc, $oldloc, $oldloc2, $limit;
 my int $turns, $iwest, $knifeloc, $detail = 0, *;
 my int $numdie, $holding, $foobar, $bonus = 0, *;
-my bool $wzdark, $closing, $lmwarn, $panic, $closed, $gaveup = False, *;
 my int $tally = 15;
 my int $tally2 = 0;
 my int $abbnum = 5;
 my int $clock1 = 30;
 my int $clock2 = 50;
+my bool $wzdark, $closing, $lmwarn, $panic, $closed, $gaveup = False, *;
 my int @prop[65] = 0 xx 50, -1 xx *;
 my int @abb[141] = 0, *;
 my int @hintlc[10] = 0, *;
@@ -120,6 +109,9 @@ my int @dloc[6] = 19, 27, 33, 44, 64, CHLOC;
 my int @odloc[6];
 my bool @dseen[6];
 my int $dflag, $dkill = 0, *;
+my int @place[65];
+my int @fixed[65];
+my int @atloc[141;*];
 
 
 # Functions:
@@ -165,12 +157,11 @@ sub rspeak(int $msg) { speak @rmsg[$msg] if $msg != 0 }
 sub yes(int $x, int $y, int $z --> Bool) {
  loop {
   rspeak $x if $x != 0;
-  print "\n> ";
-  my Str $reply = $*IN.get;
-  if $reply ~~ m:i/^^\h*y/ {
+  my Str ($reply) = getin;  # Ignore everything after the first word.
+  if $reply eq 'YES' | 'Y' {
    rspeak $y if $y != 0;
    return True;
-  } elsif $reply ~~ m:i/^^\h*n/ {
+  } elsif $reply eq 'NO' | 'N' {
    rspeak $z if $z != 0;
    return False;
   } else { say "Please answer the question." }
@@ -244,6 +235,18 @@ sub vocab(Str $word, int $type --> int) {
  # When returning values of a specified type, there can be no more than one
  # match; if there is more than one, someone's been messing with the data
  # sections.
+}
+
+sub getin( --> List of Str) {
+ print "\n";
+ loop {
+  print "> ";
+  my Str $raw1, $raw2 = $*IN.get.words;
+  next if !$raw1.defined && $blklin;
+  my Str $word1, $word2 = ($raw1, $raw2).map:
+   { .defined ?? .substr(0, 5).uc !! undef };
+  return $word1, $raw1, $word2, $raw2;
+ }
 }
 
 sub domove(int $motion) {
@@ -430,11 +433,36 @@ sub doaction() {
 }
 
 
-sub MAIN #< Insert command-line stuff here > {
+sub MAIN(Str $oldGame?) {
+ if $oldGame.defined {
+  # Load a saved game
+  vresume($oldGame);
+  # Check for failure?
+ } else {
+ #««
+  poof;
+  $demo = start;
+  motd(False);
+ »»
 
- #«« poof; $demo = start(False); motd(False); »»
- $newloc = 1;
- $limit = (@hinted[3] = yes(65, 1, 0)) ?? 1000 !! 330;
+  # Read in the item locations from data section 7:
+  for $adventData07.lines {
+   my($obj, $p, $f) = .split: "\t";
+   @place[$obj] = $p;
+   @fixed[$obj] = $f // 0;
+  }
+  for @fixed.keys({ @fixed[$_] > 0 }).reverse -> $k {
+   drop $k + 100, @fixed[$k];
+   drop $k, @place[$k];
+  }
+  drop $_, @place[$_]
+   for @fixed.keys({ @place[$_] != 0 && @fixed[$_] <= 0 }).reverse;
+
+  $newloc = 1;
+  $limit = (@hinted[3] = yes(65, 1, 0)) ?? 1000 !! 330;
+ }
+
+ # ...and begin!
 
  # A note on the flow control used in this program:
 
@@ -467,7 +495,6 @@ sub MAIN #< Insert command-line stuff here > {
  bigLoop: loop {
   given $goto {
    when *..2 {
-# 2:
     if 0 < $newloc < 9 && $closing {
      rspeak 130;
      $newloc = $loc;
@@ -578,7 +605,6 @@ sub MAIN #< Insert command-line stuff here > {
    }
 
    when *..2000 {
-# 2000:
     if $loc == 0 {death; next bigLoop; }
     my Str $kk = @shortdesc[$loc];
     $kk = @longdesc[$loc] if @abb[$loc] % $abbnum == 0 || !$kk.defined;
@@ -612,14 +638,9 @@ sub MAIN #< Insert command-line stuff here > {
     continue;
    }
 
-   when *..2012 {
-# 2012:
-    ($verb, $obj) = 0, 0;
-    continue;
-   }
+   when *..2012 {($verb, $obj) = 0, 0; continue; }
 
    when *..2600 {
-# 2600:
     hintLoop: for 4..9 -> $hint {
      next if @hinted[$hint];
      @hintlc[$hint] = -1 if !bitset $loc, $hint;
@@ -663,15 +684,11 @@ sub MAIN #< Insert command-line stuff here > {
 # 2605:
     $wzdark = dark;
     $knifeloc = 0 if 0 < $knifeloc != $loc;
-    print "\n> ";
-    ($in1, $in2) = $*IN.get.words.[0,1];
-    ($word1, $word2) = ($in1, $in2).map:
-     { .defined ?? .substr(0, 5).uc !! undef };
+    ($word1, $in1, $word2, $in2) = getin;
     continue;
    }
 
    when *..2608 {
-# 2608:
     $foobar = 0 min -$foobar;
     #«« maint if $turns == 0 && $word1 eq 'MAGIC' && $word2 eq 'MODE'; »»
     $turns++;
@@ -750,13 +767,11 @@ sub MAIN #< Insert command-line stuff here > {
    }
 
    when *..2610 {
-# 2610:
     rspeak 17 if $word1 eq 'WEST' && ++$iwest == 10;
     continue;
    }
 
    when *..2630 {
-# 2630:
     my int $i = vocab $word1, -1;
     if $i == -1 {
      rspeak(pct(20) ?? 61 !! pct(20) ?? 13 !! 60);
@@ -797,16 +812,15 @@ sub MAIN #< Insert command-line stuff here > {
      when 2 {
 # 4000:
       $verb = $k;
-      if $word2 && $verb != SAY {
+      if $word2 && !($verb == SAY | SUSPEND | RESUME) {
        ($word1, $in1) = ($word2, $in2);
        $word2 = $in2 = undef;
        $goto = 2610;
        next bigLoop;
       }
-      $obj = $word2.defined if $verb == SAY;
-      # This assignment just indicates whether an object was supplied to the
-      # "SAY" verb.
-      $obj == 0 ?? intransitive !! transitive;
+      $obj = $word2.defined if $verb == SAY | SUSPEND | RESUME;
+      # This assignment just indicates whether an object was supplied.
+      $obj ?? transitive !! intransitive;
      }
      when 3 {rspeak $k; $goto = 2012; }
      default { bug 22 }
@@ -823,10 +837,12 @@ sub MAIN #< Insert command-line stuff here > {
 
 sub intransitive() {
 # Label 4080 (intransitive verb handling):
+
 # As this function is only called at a single point in the code, it doesn't
 # actually need to be a separate routine, but I think we can all agree that
 # MAIN is complicated enough as it is without stuffing yet another 120-line
 # "given" block inside of it.
+
  $goto = 2012;
  given $verb {
   when NOTHING { rspeak 54 }
@@ -921,21 +937,8 @@ sub intransitive() {
     say "$in1 what?"; $obj = 0; $goto = 2600;
    } else { vread }
   }
-  when SUSPEND {
-  #««
-   if $demo {rspeak 201; return; }
-   say "I can suspend your adventure for you so that you can resume later, but";
-   say "you will have to wait at least $latency minutes before continuing.";
-   if yes(200, 54, 54) {
-    ($saved, $savet) = datime;
-    #< Actually save the game data somewhere in here. >
-    ciao;
-   }
-  »»
-   
-   # See label 8305 for what to (possibly) do on restoration.
-
-  }
+  when SUSPEND { vsuspend("%*ENV<HOME>/.adventure") }
+  when RESUME { vresume("%*ENV<HOME>/.adventure") }
   when HOURS {
    #«« mspeak 6; hours; »»
    # Possible non-magic version:
@@ -973,8 +976,8 @@ sub transitive() {
     pspeak FISSUR, 2 - @prop[FISSUR];
    }
   }
-  when CALM | WALK | QUIT | SCORE | FOO | BRIEF | SUSPEND | HOURS {
-   rspeak @actspk[$verb];
+  when CALM | WALK | QUIT | SCORE | FOO | BRIEF | HOURS {
+   rspeak @actspk[$verb]
   }
   when KILL { vkill }
   when POUR { vpour }
@@ -1057,6 +1060,8 @@ sub transitive() {
    if $obj == DWARF && $closed {rspeak 199; rspeak 136; normend; }
    else { rspeak @actspk[$verb] }
   }
+  when SUSPEND { vsuspend($in2) }
+  when RESUME { vresume($in2) }
   default { bug 24 }
  }
 }
@@ -1203,15 +1208,8 @@ sub vkill() {
    else {
     rspeak 49;
     ($verb, $obj) = (0, 0);
-    print "\n> ";
-    my Str $reply = $*IN.get;
-    if $reply !~~ m:i/^^\h*y/ {
-     ($in1, $in2) = $reply.words.[0,1];
-     ($word1, $word2) = ($in1, $in2).map:
-      { .defined ?? .substr(0, 5).uc !! undef };
-     $goto = 2608;
-     return;
-    }
+    ($word1, $in1, $word2, $in2) = getin;
+    if !($word1 eq 'YES' | 'Y') {$goto = 2608; return; }
     pspeak DRAGON, 1;
     @prop[DRAGON, RUG] = 2, 0;
     move DRAGON+100, -1;
@@ -1419,6 +1417,47 @@ sub vsay() {
   $obj = 0;
   $goto = 2630;
  } else { say "Okay, \"$tk\"." }
+}
+
+sub vsuspend(Str $file) {
+ #«« Magic version:
+ if $demo {rspeak 201; return; }
+ say "I can suspend your adventure for you so that you can resume later, but";
+ say "you will have to wait at least $latency minutes before continuing.";
+ if yes(200, 54, 54) {
+  ($saved, $savet) = datime;
+  say "\nSaving to $file ...";
+
+  # Save game data here
+
+  ciao;
+ }
+ »»
+
+ # Non-magic version:
+ say "I can suspend your adventure for you so that you can resume later.";
+ if yes(200, 54, 54) {
+  say "\nSaving to $file ...";
+
+  # Save game data here
+
+  exit 0;
+ }
+
+}
+
+sub vresume(Str $file) {
+ if $turns != 0 {
+  say "To resume an earlier Adventure, you must abandon the current one.";
+  # This message is taken from the 430 pt. version of Adventure (version 2.5).
+  return if !yes(200, 54, 54);
+ }
+ say "\nRestoring from $file ...";
+
+ # Restore game data here.
+ 
+ #«« start; »»
+ domove NULL;
 }
 
 

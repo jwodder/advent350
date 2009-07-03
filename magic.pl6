@@ -15,53 +15,47 @@ my Str $magic;  # magic word
 my int $magnm;  # magic number
 my int $latency;  # time required to wait after saving
 my Str $msg;  # MOTD, initially null
-my int $saved, $savet;  # date & time game was saved
+my int $saved, $savet = -1, 0;  # date & time game was saved
 
 sub mspeak(int $msg) { speak @magicMsg[$msg] if $msg != 0 }
 
 sub yesm(int $x, int $y, int $z --> Bool) {
  loop {
   mspeak $x if $x != 0;
-  print "\n> ";
-  my Str $reply = $*IN.get;
-  if $reply ~~ m:i/^^\h*y/ {
+  my Str ($reply) = getin;
+  if $reply eq 'YES' | 'Y' {
    mspeak $y if $y != 0;
    return True;
-  } elsif $reply ~~ m:i/^^\h*n/ {
+  } elsif $reply eq 'NO' | 'N' {
    mspeak $z if $z != 0;
    return False;
   } else { say "Please answer the question." }
  }
 }
 
-sub start(Bool $restarting --> Bool) {
-# $restarting is true when resuming a saved game.
+sub start( --> Bool) {
  my($d, $t) = datime;
- my bool @primetm[24] = @wkday;
- @primetm = @wkend if $d % 7 <= 1;
- @primetm = @holid if $hbegin <= $d <= $hend;
- my bool $ptime = @primetm[$t idiv 60];
- my bool $soon = False;
- if $restarting {
-  $delay = ($d - $saved) * 1440 + ($t - $savet);
+ if $saved != -1 {
+  my int $delay = ($d - $saved) * 1440 + ($t - $savet);
   if $delay < $latency {
    say "This adventure was suspended a mere $delay minutes ago.";
-   $soon = True;
    if $delay < $latency/3 {mspeak 2; exit 0; }
+   else {
+    mspeak 8;
+    if wizard() {$saved = -1; return False; }
+    mspeak 9;
+    exit 0;
+   }
   }
  }
- if $soon {
-  mspeak 8;
-  if wizard {$saved = -1; return False; }
-  mspeak 9;
-  return False;
- }
- if $ptime {
+ if ($hbegin <= $d <= $hend ?? @holid !! $d % 7 <= 1 ?? @wkend !! @wkday)\
+  [$t idiv 60] {
+  # Prime time (cave closed)
   mspeak 3;
   hours;
   mspeak 4;
-  if wizard {$saved = -1; return False; }
-  if $restarting {mspeak 9; exit 0; }
+  if wizard() {$saved = -1; return False; }
+  if $saved != -1 {mspeak 9; exit 0; }
   if yesm(5, 7, 7) {$saved = -1; return True; }
   exit 0;
  }
@@ -90,12 +84,10 @@ sub maint() {
  }
  say "Length of short game (null to leave at $short):";
  print "\n> ";
- my $x = $*IN.get;
+ my int $x = $*IN.get;
  $short = $x if $x > 0;
  mspeak 12;
- print "\n> ";
- $x = $*IN.get.words.[0];
- $magic = $x.substr(0, 5) if $x.defined;
+ $magic = (getin)[0] // $magic;
  mspeak 13;
  print "\n> ";
  $x = $*IN.get;
@@ -115,7 +107,7 @@ sub wizard( --> Bool) {
  return False if !yesm(16, 0, 7);
  mspeak 17;
  print "\n> ";
- my $word = $*IN.get.words.[0].substr(0, 5);
+ my Str $word = (getin)[0];
  if $word !eq $magic {mspeak 20; return False; }
  my($d, $t) = datime;
  $t = $t * 2 + 1;
@@ -128,9 +120,8 @@ sub wizard( --> Bool) {
   @wchrs[$y] += @val[$y] = ($t*26) idiv 1048576 + 1;
  }
  if yesm(18, 0, 0) {mspeak 20; return False; }
- .print for @wchrs.map: *.chr;
- print "\n> ";
- @wchrs = $*IN.get.words.[0].substr(0, 5).comb.map: *.ord;
+ .print for ' ', @wchrs.map(*.chr), "\n";
+ @wchrs = (getin)[0].comb.map: *.ord;
  # What happens if the inputted word is less than five characters?
  ($d, $t) = datime;
  $t = ($t idiv 60) * 40 + ($t idiv 10) * 10;
