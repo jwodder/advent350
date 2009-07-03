@@ -233,7 +233,7 @@ sub datime( --> List of int) {
  # - the number of days since 1 Jan 1977 (220924800 in Unix epoch time)
  # - the number of minutes past midnight
 
- constant Temporal::DateTime $start .= new(year => 1977, month => 1, day => 1);
+ state Temporal::DateTime $start .= new(year => 1977, month => 1, day => 1);
  # The time defaults to midnight, right?
 
  my Temporal::DateTime $now = Time::gmtime;

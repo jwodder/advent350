@@ -16,18 +16,18 @@ begun learning Perl 6, a developing language which lacks examples of real
 working code, and it seemed like as good a choice as any.  Some time later,
 here we are.
 
-I have tried to make this translation be as accurate to the original as
-possible (in end behavior, not internal logic, that is).  The biggest change is
-that there is now a "> " prompt for input (and, of course, the letters aren't
-all uppercase).  Games are saved to ordinary files (~/.adventure by default,
-though you can supply a filename to the "save" command) and can be resumed
-either with the "resume" (or "restore" or "restart" or "load") command during
-play or by specifying the name of the save file on the command line.
+I have tried to make this translation be as true to the original as possible
+(in end behavior, not internal logic, at least).  The biggest change is that
+there is now a "> " prompt for input, and, of course, the letters aren't all
+uppercase.  Games are saved to ordinary files (~/.adventure by default, though
+you can supply a different filename to the "save" command) and can be resumed
+later either with the "resume" (or "restore" or "restart" or "load") command
+during play or by specifying the name of the save file on the command line.
 Additionally, as the time-sharing mechanics are unnecessary and likely to get
-in the way on modern computers, there are two different versions of the
-program: one with all of the "magic" features of the original (delays before
+in the way on modern computers, two different versions of the program are
+available: one with all of the "magic" features of the original (delays before
 restarting a saved game, only allowing games during specific hours, and being
-able to bypass or configure this behavior through a maintenance/wizard mode)
+able to bypass or reconfigure this behavior through maintenance/wizard mode)
 and one without.
 
 The current plan is for the "master" branch to contain the "ideal" Perl 6

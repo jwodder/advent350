@@ -1,4 +1,7 @@
-- Implement the "save" and "restore"/"restart"/"resume"/"load" commands
+- Implement readInt() and readBool()
+- Add the appropriate error checking to vsuspend() & vresume()
+ - Make the magic version of vresume() recognize a missing $saved or $savet
+   value correctly (possibly using a "try" block?)
 - Split advent350.pl6 into two versions: one with magic, one without
 - For the magic version, add a way to save changes made in maintenance mode
 - Translate the Perl 6 to C
@@ -15,3 +18,5 @@
 - If the user enters "save" without a filename while playing a restored game,
   save the game to the same path that it was restored from?
 - Check everything to make sure it works!
+- Reorder the function definitions so that they are always declared before they
+  are used.

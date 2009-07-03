@@ -1419,31 +1419,70 @@ sub vsay() {
  } else { say "Okay, \"$tk\"." }
 }
 
+
+# Below are the routines for saving & restoring games.  All user data is
+# written out in binary form in the order that the variables are declared.
+# @atloc is stored by preceding each sub-array by the number of elements within
+# it.  As pack() and unpack() have not been fully specified for Perl 6 yet (and
+# thus certainly won't be available in Rakudo for a while), the data is written
+# & read using homemade routines.
+
+sub writeInt(IO $out, int32 $i) {
+ $out.write(Buf.new($i, size => 32), 4)
+}
+
+sub writeBool(IO $out, bool *@bits) {
+ my Int $x = 0;
+ $x +|= 1 +< $_ if @bits[$_] for ^@bits;
+ #for @bits.kv -> $k, $v { $x +|= 1 +< $k if $v }
+ my Buf $blob .= new($x);
+ $out.write($blob, $blob.bytes #< ??? > );
+}
+
+sub readInt(IO $in --> int32) {
+ !!!
+}
+
+sub readBool(IO $in, int $qty --> List of bool) {
+ !!!
+}
+
 sub vsuspend(Str $file) {
- #«« Magic version:
+ #««
  if $demo {rspeak 201; return; }
  say "I can suspend your adventure for you so that you can resume later, but";
  say "you will have to wait at least $latency minutes before continuing.";
- if yes(200, 54, 54) {
-  ($saved, $savet) = datime;
-  say "\nSaving to $file ...";
-
-  # Save game data here
-
-  ciao;
- }
  »»
 
- # Non-magic version:
  say "I can suspend your adventure for you so that you can resume later.";
- if yes(200, 54, 54) {
-  say "\nSaving to $file ...";
 
-  # Save game data here
+ return if !yes(200, 54, 54);
+ #«« ($saved, $savet) = datime; »»
+ say "\nSaving to $file ...";
 
-  exit 0;
+ my IO $adv = open $file, :w, :bin;
+ # What exactly happens if the file fails to open?
+
+ writeInt $adv, $_ for $loc, $newloc, $oldloc, $oldloc2, $limit, $turns,
+  $iwest, $knifeloc, $detail, $numdie, $holding, $foobar, $bonus, $tally,
+  $tally2, $abbnum, $clock1, $clock2;
+ writeBool $adv, $wzdark, $closing, $lmwarn, $panic, $closed, $gaveup;
+ writeInt $adv, $_ for @prop, @abb, @hintlc;
+ writeBool $adv, @hinted;
+ writeInt $adv, $_ for @dloc, @odloc;
+ writeBool $adv, @dseen;
+ writeInt $adv, $_ for $dflag, $dkill, @place, @fixed;
+ for @atloc {
+  writeInt $adv, $_.elems;
+  writeInt $adv, $_ for @($_);
  }
+ #««
+  writeInt $adv, $saved;
+  writeInt $adv, $savet;
+ »»
 
+ #«« ciao; »»
+ exit 0;
 }
 
 sub vresume(Str $file) {
@@ -1454,8 +1493,53 @@ sub vresume(Str $file) {
  }
  say "\nRestoring from $file ...";
 
- # Restore game data here.
- 
+ my IO $adv = open $file, :r, :bin;
+ $loc = readInt $adv;
+ $newloc = readInt $adv;
+ $oldloc = readInt $adv;
+ $oldloc2 = readInt $adv;
+ $limit = readInt $adv;
+ $turns = readInt $adv;
+ $iwest = readInt $adv;
+ $knifeloc = readInt $adv;
+ $detail = readInt $adv;
+ $numdie = readInt $adv;
+ $holding = readInt $adv;
+ $foobar = readInt $adv;
+ $bonus = readInt $adv;
+ $tally = readInt $adv;
+ $tally2 = readInt $adv;
+ $abbnum = readInt $adv;
+ $clock1 = readInt $adv;
+ $clock2 = readInt $adv;
+ ($wzdark, $closing, $lmwarn, $panic, $closed, $gaveup) = readBool $adv, 6;
+ # Doesn't Perl 6 have some built-in way to initialize an array of known length
+ # with the return values from calling a function repeatedly?  I thought I saw
+ # something like that somewhere in the Synopses.
+ @prop[$_] = readInt $adv for ^@prop;
+ @abb[$_] = readInt $adv for ^@abb;
+ @hintlc[$_] = readInt $adv for ^@hintlc;
+ @hinted = readBool $adv, +@hinted;
+ @dloc[$_] = readInt $adv for ^@dloc;
+ @odloc[$_] = readInt $adv for ^@odloc;
+ @dseen = readBool $adv, +@dseen;
+ $dflag = readInt $adv;
+ $dkill = readInt $adv;
+ @place[$_] = readInt $adv for ^@place;
+ @fixed[$_] = readInt $adv for ^@fixed;
+ for ^@atloc -> $i {
+  my int $qty = readInt $adv;
+  @atloc[$i;$_] = readInt $adv for ^$qty;
+ }
+ #««
+  # If the user attempts to restart a non-magic game with the magic version of
+  # this program, just assume that $saved is 0.  (Yes, I know an int32 can't be
+  # undefined.  This is just a placeholder/reminder until I actually add in IO
+  # error checking.)
+  $saved = readInt($adv) // 0;
+  $savet = readInt($adv) // 0;
+ »»
+
  #«« start; »»
  domove NULL;
 }
