@@ -2,7 +2,6 @@
 - Add the appropriate error checking to vsuspend() & vresume()
  - Make the magic version of vresume() recognize a missing $saved or $savet
    value correctly (possibly using a "try" block?)
-- Split advent350.pl6 into two versions: one with magic, one without
 - For the magic version, add a way to save changes made in maintenance mode
 - Translate the Perl 6 to C
  - Use preprocessor directives to configure:
