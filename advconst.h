@@ -18,4 +18,7 @@ enum action {TAKE = 1, DROP, SAY, OPEN, NOTHING, LOCK, ON, OFF, WAVE, CALM,
 #define CHLOC   114
 #define CHLOC2  140
 
+#define WORDQTY ???  /* number of words in the vocabulary table */
+#define MAXROUTE ???  /* maximum number of travel rows for a location */
+
 #endif

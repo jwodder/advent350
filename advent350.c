@@ -22,9 +22,9 @@ char* in1, in2, word1, word2;
 
 #ifdef ADVMAGIC
 /* These arrays hold the times when adventurers are allowed into Colossal Cave;
- * @wkday is for weekdays, @wkend for weekends, and @holid for holidays (days
- * with special hours).  If element $n of an array is true, then the hour $n:00
- * through $n:59 is considered "prime time," i.e., the cave is closed then. */
+ * wkday is for weekdays, wkend for weekends, and holid for holidays (days with
+ * special hours).  If element N of an array is true, then the hour N:00
+ * through N:59 is considered "prime time," i.e., the cave is closed then. */
 bool wkday[24];
 bool wkend[24];
 bool holid[24];
@@ -49,10 +49,13 @@ int clock1 = 30;
 int clock2 = 50;
 bool wzdark = false, closing = false, lmwarn = false, panic = false
 bool closed = false, gaveup = false;
-int prop[65] = 0 xx 50, -1 xx *;
-int abb[141] = 0, *;
-int hintlc[10] = 0, *;
-bool hinted[10] = False, *;
+int prop[65] = {
+ /* Elements 0 through 49 are implicitly set to zero. */
+ [50] = -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1
+};
+int abb[141];
+int hintlc[10];
+bool hinted[10];
 int dloc[6] = {19, 27, 33, 44, 64, CHLOC};
 int odloc[6];
 bool dseen[6];
@@ -62,7 +65,7 @@ int fixed[65];
 int atloc[65];
 int link[65];
 #ifdef ADVMAGIC
-int saved, savet = -1, 0;
+int saved = -1, savet = 0;
 #endif
 
 
@@ -120,336 +123,352 @@ int main(int argc, char** argv) {
 void turn(void) {
  switch (togoto) {
   case 2:
-
-   if 0 < $newloc < 9 && $closing {
-    rspeak 130;
-    $newloc = $loc;
-    $clock2 = 15 if !$panic;
-    $panic = True;
+   if (0 < newloc && newloc < 9 && closing) {
+    rspeak(130);
+    newloc = loc;
+    if (!panic) clock2 = 15;
+    panic = true;
    }
-   if $newloc != $loc && !forced($loc) && !bitset($loc, 3)
+   if (newloc != loc && !forced(loc) && !bitset(loc, 3)
     && { @odloc[$^i] == $newloc && @dseen[$^i] }(any ^5) {
-    $newloc = $loc;
-    rspeak 2;
+    newloc = loc;
+    rspeak(2);
    }
-   $loc = $newloc;
+   loc = newloc;
    # Dwarven logic:
-   return if $loc == 0 || forced($loc) || bitset $newloc, 3;
-   if $dflag == 0 {
-    $dflag = 1 if $loc >= 15;
+   togoto = 2000;  /* in preparation for an early `return' */
+   if (loc == 0 || forced(loc) || bitset(newloc, 3)) return;
+   if (dflag == 0) {
+    if (loc >= 15) dflag = 1;
     return;
    }
-   if $dflag == 1 {
-    return if $loc < 15 || pct 95;
-    $dflag = 2;
-    @dloc[(^5).pick] = 0 if pct 50 for 1, 2;
-    for ^5 -> $i {
-     @dloc[$i] = 18 if @dloc[$i] == $loc;
-     @odloc[$i] = @dloc[$i];
+   if (dflag == 1) {
+    if (loc < 15 || pct(95)) return;
+    dflag = 2;
+    if (pct(50)) dloc[ran(5)] = 0;
+    /* Yes, this is supposed to be done twice. */
+    if (pct(50)) dloc[ran(5)] = 0;
+    for (int i=0; i<5; i++) {
+     if (dloc[i] == loc) dloc[i] = 18;
+     odloc[i] = dloc[i];
     }
-    rspeak 3;
-    drop AXE, $loc;
+    rspeak(3);
+    drop(AXE, loc);
     return;
    }
-   my int $dtotal, $attack, $stick = 0, *;
-   L6030: for ^6 -> $i {
-    # The individual dwarven movement loop, named L6030 because that's the
-    # GOTO label at which it ends and TO which numerous statements try to GO.
-    next if @dloc[$i] == 0;
-    my int @tk = grep {
-     my $newloc = $_ % 1000;
-     15 <= $newloc <= 300 && $newloc != @odloc[$i] & @dloc[$i]
-      && !forced($newloc) && !($i == 5 && bitset($newloc, 3))
-      && $_ idiv 1000 != 100;
-    } @travel[@dloc[$i];*;0];
-    @tk.push: @odloc[$i];
-    (@odloc[$i], @dloc[$i]) = @dloc[$i], @tk.pick;
-    @dseen[$i] = (@dseen[$i] && $loc >= 15) || @dloc[$i] | @odloc[$i] == $loc;
-    if @dseen[$i] {
-     @dloc[$i] = $loc;
-     if $i == 5 {
-      # Pirate logic:
-      next L6030 if $loc == CHLOC || @prop[CHEST] >= 0;
-      my Bool $k = False;
-      for 50..64 -> $j {
-       next if $j == PYRAM && $loc == 100 | 101;
-       if toting $j {
-	rspeak 128;
-	move CHEST, CHLOC if @place[MESSAG] == 0;
-	move MESSAG, CHLOC2;
-	for 50..64 -> $j {
-	 next if $j == PYRAM && $loc == 100 | 101;
-	 carry $j, $loc if at($j) && @fixed[$j] == 0;
-	 drop $j, CHLOC if toting $j;
+   int dtotal = 0, attack = 0, stick = 0;
+   for (int i=0; i<6; i++) {  /* The individual dwarven movement loop */
+    if (dloc[i] == 0) continue;
+    int kk=0, tk;
+    for (int j=0; j<MAXROUTE; j++) {
+     if (travel[dloc[i]][j][0] == -1) break;
+     int newloc = travel[dloc[i]][j][0] % 1000;
+     if (15 <= newloc && newloc <= 300 && newloc != odloc[i]
+      && newloc != dloc[i] && !forced(newloc) && !(i == 5 && bitset(newloc, 3))
+      && travel[dloc[i]][j][0] / 1000 != 100 && ran(++kk) == 0) tk = newloc;
+    }
+    if (ran(kk+1) == 0) tk = odloc[i];
+    odloc[i] = dloc[i];
+    dloc[i] = tk;
+    dseen[i] = (dseen[i] && loc >= 15) || dloc[i] == loc || odloc[i] == loc;
+    if (dseen[i]) {
+     dloc[i] = loc;
+     if (i == 5) {
+      /* Pirate logic: */
+      if (loc == CHLOC || prop[CHEST] >= 0) continue;
+      bool k = false;
+      for (int j=50; j<65; j++) {
+       if (j == PYRAM && (loc == 100 || loc == 101)) continue;
+       if (toting(j)) {
+        rspeak(128);
+	if (place[MESSAG] == 0) move(CHEST, CHLOC);
+	move(MESSAG, CHLOC2);
+	for (j=50; j<65; j++) {
+	 if (j == PYRAM && (loc == 100 || loc == 101)) continue;
+	 if (at(j) && fixed[j] == 0) carry(j, loc);
+	 if (toting(j)) drop(j, CHLOC);
 	}
-	@dloc[5] = @odloc[5] = CHLOC;
-	@dseen[5] = False;
-	next L6030;
+	dloc[5] = odloc[5] = CHLOC;
+	dseen[5] = false;
+
+	/* GOTO next dwarfLoop */
+
        }
-       $k = True if here $j;
+       if (here(j)) k = true;
       }
-      if $tally == $tally2 + 1 && !$k && @place[CHEST] == 0 && here(LAMP) 
-       && @prop[LAMP] == 1 {
-       rspeak 186;
-       move CHEST, CHLOC;
-       move MESSAG, CHLOC2;
-       @dloc[5] = @odloc[5] = CHLOC;
-       @dseen[5] = False;
-       next L6030;
-      }
-      rspeak 127 if @odloc[5] != @dloc[5] && pct 20;
-      next L6030;
+      if (tally == tally2 + 1 && !k && place[CHEST] == 0 && here(LAMP)
+       && prop[LAMP] == 1) {
+       rspeak(186);
+       move(CHEST, CHLOC);
+       move(MESSAG, CHLOC2);
+       dloc[5] = odloc[5] = CHLOC;
+       dseen[5] = false;
+      } else if (odloc[5] != dloc[5] && pct(20)) {rspeak(127); }
      } else {
-      $dtotal++;
-      next L6030 if @odloc[$i] != @dloc[$i];
-      $attack++;
-      $knifeloc = $loc if $knifeloc >= 0;
-      $stick++ if (^1000).pick < 95 * ($dflag - 2);
+      dtotal++;
+      if (odloc[i] == dloc[i]) {
+       attack++;
+       if (knifeloc >= 0) knifeloc = loc;
+       if (ran(1000) < 95 * (dflag - 2)) stick++;
+      }
      }
     }
-   } # end of individual dwarf loop
-   continue if $dtotal == 0;
-   if $dtotal != 1 {
-    say "There are $dtotal threatening little dwarves in the room with you."
-   } else { rspeak 4 }
-   continue if $attack == 0;
-   $dflag = 3 if $dflag == 2;
-   my int $k;
-   if $attack != 1 {
-    say "$attack of them throw knives at you!";
-    $k = 6;
-   } else {rspeak 5; $k = 52; }
-   if $stick <= 1 {
-    rspeak $k + $stick;
-    continue if $stick == 0;
-   } else { say "$stick of them get you!" }
-   $oldloc2 = $loc;
-   death;
-   # If the player is reincarnated after being killed by a dwarf, they GOTO
-   # label 2000 using fallthrough rather than with any special flow control.
+   } /* end of individual dwarven movement loop */
+   if (dtotal == 0) return;
+   if (dtotal == 1) rspeak(4);
+   else
+    printf("There are %d threatening little dwarves in the room with you.\n",
+     dtotal);
+   if (attack == 0) return;
+   if (dflag == 2) dflag = 3;
+   int k;
+   if (attack == 1) {rspeak(5); k = 52; }
+   else {printf("%d of them throw knives at you!\n", attack); k = 6; }
+   if (stick <= 1) {
+    rspeak(k + stick);
+    if (stick == 0) return;
+   } else printf("%d of them get you!\n", stick);
+   oldloc2 = loc;
+   death();
+  /* If the player is reincarnated after being killed by a dwarf, they GOTO
+   * label 2000 using fallthrough rather than with any special flow control. */
 
   case 2000:
-
-   if $loc == 0 {death; return; }
-   my Str $kk = @shortdesc[$loc];
-   $kk = @longdesc[$loc] if @abb[$loc] % $abbnum == 0 || !$kk.defined;
-   if !forced($loc) && dark() {
-    if $wzdark && pct 35 {
-     rspeak 23;
-     $oldloc2 = $loc;
-     death;
+   if (loc == 0) {death(); return; }
+   const char* kk = shortdesc[loc];
+   if (abb[loc] % abbnum == 0 || kk == NULL) kk = longdesc[loc];
+   if (!forced(loc) && dark()) {
+    if (wzdark && pct(35)) {
+     rspeak(23);
+     oldloc2 = loc;
+     death();
      return;
     }
-    $kk = @rmsg[16];
+    kk = rmsg[16];
    }
-   rspeak 141 if toting BEAR;
-   speak $kk;
-   if forced $loc {domove 1; return; }
-   rspeak 8 if $loc == 33 && pct(25) && !$closing;
-   if !dark() {
-    @abb[$loc]++;
-    for @atloc[$loc] -> $obj {
-     $obj -= 100 if $obj > 100;
-     next if $obj == STEPS && toting NUGGET;
-     if @prop[$obj] < 0 {
-      next if $closed;
-      @prop[$obj] = $obj == RUG | CHAIN ?? 1 !! 0;
-      $tally--;
-      $limit = 35 min $limit if $tally == $tally2 && $tally != 0;
+   if (toting(BEAR)) rspeak(141);
+   speak(kk);
+   if (forced(loc)) {domove(1); return; }
+   if (loc == 33 && pct(25) && !closing) rspeak(8);
+   if (!dark()) {
+    abb[loc]++;
+    for (int i = atloc[loc]; i != 0; i = link[i]) {
+     int obj = i > 100 ? i - 100 : i;
+     if (obj == STEPS && toting(NUGGET)) continue;
+     if (prop[obj] < 0) {
+      if (closed) continue;
+      prop[obj] = obj == RUG || obj == CHAIN;
+      tally--;
+      if (tally == tally2 && tally != 0) limit = limit < 35 ? limit : 35;
      }
-     pspeak $obj, $obj == STEPS && $loc == @fixed[STEPS] ?? 1 !! @prop[$obj];
+     pspeak(obj, obj == STEPS && loc == fixed[STEPS] ? 1 : prop[obj]);
     }
    }
 
-  case 2012:
-   verb = obj = 0;
+  case 2012: verb = obj = 0;
 
   case 2600:
-
-   hintLoop: for 4..9 -> $hint {
-    next if @hinted[$hint];
-    @hintlc[$hint] = -1 if !bitset $loc, $hint;
-    @hintlc[$hint]++;
-    if @hintlc[$hint] >= @hints[$hint;0] {
-     given $hint {
-      when 4 {
-       if @prop[GRATE] != 0 || here(KEYS) {@hintlc[$hint] = 0; next hintLoop; }
-      }
-      when 5 { next hintLoop if !here(BIRD) || !toting(ROD) || $obj != BIRD }
-      when 6 {
-       if !here(SNAKE) || here(BIRD) {@hintlc[$hint] = 0; next hintLoop; }
-      }
-      when 7 {
-       if @atloc[$loc, $oldloc, $oldloc2] || $holding <= 1 {
-       # This ^^ is supposed to check whether there is at least one item at
-       # any of the given locations; does it work right?
-	@hintlc[$hint] = 0;
-	next hintLoop;
+   for (int hint = 4; hint<10; hint++) {
+    if (hinted[hint]) continue;
+    if (!bitset(loc, hint)) hintlc[hint] = -1;
+    hintlc[hint]++;
+    if (hintlc[hint] >= hints[hint][0]) {
+     bool hintable = true;
+     switch (hint) {
+      case 4:
+       if (prop[GRATE] != 0 || here(KEYS)) {
+        hintlc[hint] = 0;
+	hintable = false;
        }
-      }
-      when 8 {
-       if @prop[EMERALD] == -1 || @prop[PYRAM] != -1 {
-	@hintlc[$hint] = 0;
-	next hintLoop;
+       break;
+      case 5:
+       if (!here(BIRD) || !toting(ROD) || obj != BIRD) hintable = false;
+       break;
+      case 6:
+       if (!here(SNAKE) || here(BIRD)) {hintlc[hint] = 0; hintable = false; }
+       break;
+      case 7:
+       if (atloc[loc] || atloc[oldloc] || atloc[oldloc2] || holding <= 1) {
+        hintlc[hint] = 0;
+	hintable = false;
        }
+       break;
+      case 8:
+       if (prop[EMERALD] == -1 || prop[PYRAM] != -1) {
+        hintlc[hint] = 0;
+	hintable = false;
+       }
+       break;
+     }
+     if (hintable) {
+      hintlc[hint] = 0;
+      if (yes(hints[hint][2], 0, 54)) {
+       printf("I am prepared to give you a hint, but it will cost you %d"
+        " points.\n", hints[hint][1]);
+       hinted[hint] = yes(175, hints[hint][3], 54);
+       if (hinted[hint] && limit > 30) limit += 30 * hints[hint][1];
       }
      }
-     @hintlc[$hint] = 0;
-     next hintLoop if !yes(@hints[$hint;2], 0, 54);
-     say "I am prepared to give you a hint, but it will cost you ",
-      @hints[$hint;1], " points.";
-     @hinted[$hint] = yes(175, @hints[$hint;3], 54);
-     limit += 30 * @hints[$hint;1] if @hinted[$hint] && $limit > 30;
     }
    }
-   if $closed {
-    pspeak OYSTER, 1 if @prop[OYSTER] < 0 && toting OYSTER;
-    @prop[$_] = -1 - @prop[$_] for grep { toting $_ && @prop[$_] < 0 }, 1..64;
+   if (closed) {
+    if (prop[OYSTER] < 0 && toting(OYSTER)) pspeak(OYSTER, 1);
+    for (int i=1; i<65; i++)
+     if (toting(i) && prop[i] < 0) prop[i] = -1 - prop[i];
    }
-   $wzdark = dark;
-   $knifeloc = 0 if 0 < $knifeloc != $loc;
-   ($word1, $in1, $word2, $in2) = getin;
+   wzdark = dark();
+   if (0 < knifeloc && knifeloc != loc) knifeloc = 0;
+   getin(word1, in1, word2, in2);
 
   case 2608:
-
-   $foobar = 0 min -$foobar;
+   foobar = foobar > 0 ? -foobar : 0;
 #ifdef ADVMAGIC
    if (turns == 0 && strcmp(word1, "MAGIC") == 0 && strcmp(word2, "MODE") == 0)
     maint();
 #endif
-   $turns++;
+   turns++;
 #ifdef ADVMAGIC
    if (demo && turns >= shortGame) {
     mspeak(1);
     normend();
    }
 #endif
-   $verb = 0 if $verb == SAY && $word2;
-   if $verb == SAY {vsay; return; }
-   $clock1-- if $tally == 0 && 15 <= $loc != 33;
-   if $clock1 == 0 {
-    @prop[GRATE, FISSUR] = 0, 0;
-    (@dseen[$_], @dloc[$_]) = False, 0 for ^6;
-    move TROLL, 0;
-    move TROLL+100, 0;
-    move TROLL2, 117;  # There are no trolls in *Troll 2*.
-    move TROLL2+100, 122;
-    juggle CHASM;
-    destroy BEAR if @prop[BEAR] != 3;
-    @prop[CHAIN, AXE] = 0, 0;
-    @fixed[CHAIN, AXE] = 0, 0;
-    rspeak 129;
-    $clock1 = -1;
-    $closing = True;
-    continue;  # GOTO 19999, a.k.a. 2609
+   if (verb == SAY) {
+    if (*word2) verb = 0;
+    else {vsay(); return; }
    }
-   $clock2-- if $clock1 < 0;
-   if $clock2 == 0 {
-    @prop[$_] = put $_, 115, $_ == BOTTLE ?? 1 !! 0
-     for BOTTLE, PLANT, OYSTER, LAMP, ROD, DWARF;
-    ($loc, $oldloc, $newloc) = 115, *;
-    put GRATE, 116, 0;
-    @prop[$_] = put $_, 116, $_ == SNAKE | BIRD ?? 1 !! 0
-     for SNAKE, BIRD, CAGE, ROD2, PILLOW;
-    @prop[MIRROR] = put MIRROR, 115, 0;
-    @fixed[MIRROR] = 116;
-    destroy $_ for grep { toting $_ }, 1..64;
-    # Could this be written as ".destroy for (1..64).grep: *.toting" ?
-    rspeak 132;
-    $closed = True;
-    $goto = 2;
+   if (tally == 0 && 15 <= loc && loc != 33) clock1--;
+   if (clock1 == 0) {
+    prop[GRATE] = prop[FISSUR] = 0;
+    for (int i=0; i<6; i++) dseen[i] = dloc[i] = 0;
+    move(TROLL, 0);
+    move(TROLL+100, 0);
+    move(TROLL2, 117);  /* There are no trolls in _Troll 2_. */
+    move(TROLL2+100, 122);
+    juggle(CHASM);
+    if (prop[BEAR] != 3) destroy(BEAR);
+    prop[CHAIN] = prop[AXE] = 0;
+    fixed[CHAIN] = fixed[AXE] = 0;
+    rspeak(129);
+    clock1 = -1;
+    closing = true;
+    togoto = 19999;
     return;
    }
-   $limit-- if @prop[LAMP] == 1;
-   if $limit <= 30 && here(BATTER) && @prop[BATTER] == 0 && here(LAMP) {
-    rspeak 188;
-    @prop[BATTER] = 1;
-    drop BATTER, $loc if toting BATTER;
-    $limit += 2500;
-    $lmwarn = False;
-   } elsif $limit == 0 {
-    $limit = -1;
-    @prop[LAMP] = 0;
-    rspeak 184 if here LAMP;
-   } elsif $limit < 0 && $loc <= 8 {
-    rspeak 185;
-    $gaveup = True;
-    normend;
-   } elsif $limit <= 30 && !$lmwarn && here LAMP {
-    $lmwarn = True;
-    rspeak(@place[BATTER] == 0 ?? 183 !! @prop[BATTER] == 1 ?? 189 !! 187);
-   }
-
-  case 2609:
-
-# This label is 19999 in the original Fortran, but it is being treated here as
-# 2609 so that fall-through will work correctly.
-   if $word1 eq 'ENTER' && $word2 eq 'STREA' | 'WATER' {
-    rspeak(liqloc($loc) == WATER ?? 70 !! 43);
-    $goto = 2012;
+   if (clock1 < 0) clock2--;
+   if (clock2 == 0) {
+    prop[BOTTLE] = put(BOTTLE, 115, 1);
+    prop[PLANT] = put(PLANT, 115, 0);
+    prop[OYSTER] = put(OYSTER, 115, 0);
+    prop[LAMP] = put(LAMP, 115, 0);
+    prop[ROD] = put(ROD, 115, 0);
+    prop[DWARF] = put(DWARF, 115, 0);
+    loc = oldloc = newloc = 115;
+    put(GRATE, 116, 0);
+    prop[SNAKE] = put(SNAKE, 116, 1);
+    prop[BIRD] = put(BIRD, 116, 1);
+    prop[CAGE] = put(CAGE, 116, 0);
+    prop[ROD2] = put(ROD2, 116, 0);
+    prop[PILLOW] = put(PILLOW, 116, 0);
+    prop[MIRROR] = put(MIRROR, 115, 0);
+    fixed[MIRROR] = 116;
+    for (int i=1; i<65; i++) if (toting(i)) destroy(i);
+    rspeak(132);
+    closed = true;
+    togoto = 2;
     return;
    }
-   if $word1 eq 'ENTER' && $word2 { ($word1, $word2) = ($word2, undef) }
-   elsif $word1 eq 'WATER' | 'OIL' && $word2 eq 'PLANT' | 'DOOR' {
-    $word2 = 'POUR' if at vocab($word2, 1)
+   if (prop[LAMP] == 1) limit--;
+   if (limit <= 30 && here(BATTER) && prop[BATTER] == 0 && here(LAMP)) {
+    rspeak(188);
+    prop[BATTER] = 1;
+    if (toting(BATTER)) drop(BATTER, loc);
+    limit += 2500;
+    lmwarn = false;
+   } else if (limit == 0) {
+    limit = -1;
+    prop[LAMP] = 0;
+    if (here(LAMP)) rspeak(184);
+   } else if (limit < 0 && loc <= 8) {
+    rspeak(185);
+    gaveup = true;
+    normend();
+   } else if (limit <= 30 && !lmwarn && here(LAMP)) {
+    lmwarn = true;
+    rspeak(place[BATTER] == 0 ? 183 : prop[BATTER] == 1 ? 189 : 187);
+   }
+
+  case 19999:
+   if (strcmp(word1, "ENTER") == 0 && (strcmp(word2, "STREA") == 0
+    || strcmp(word2, "WATER") == 0)) {
+    rspeak(liqloc(loc) == WATER ? 70 : 43);
+    togoto = 2012;
+    return;
+   }
+   if (strcmp(word1, "ENTER") == 0 && *word2) {
+    strcpy(word1, word2);
+    strcpy(in1, in2);
+    *word2 = *in2 = 0;
+   } else if ((strcmp(word1, "WATER") == 0 || strcmp(word1, "OIL") == 0)
+    && (strcmp(word2, "PLANT") == 0 || strcmp(word2, "DOOR") == 0)) {
+    if (at(vocab(word2, 1))) strcpy(word2, "POUR");
    }
 
   case 2610:
+   if (strcmp(word1, "WEST") == 0 && ++iwest == 10) rspeak(17);
 
-   rspeak 17 if $word1 eq 'WEST' && ++$iwest == 10;
-
-  case 2630:
-
-   my int $i = vocab $word1, -1;
-   if $i == -1 {
-    rspeak(pct(20) ?? 61 !! pct(20) ?? 13 !! 60);
-    $goto = 2600;
+  case 2630: {
+   int i = vocab(word1, -1);
+   if (i == -1) {
+    rspeak(pct(20) ? 61 : pct(20) ? 13 : 60);
+    togoto = 2600;
     return;
    }
-   my int $k = $i % 1000;
-   given $i idiv 1000 {
-    when 0 { domove $k }
-    when 1 {
-     $obj = $k;
-     if @fixed[$obj] == $loc || here $obj { doaction }
+   int k = i % 1000;
+   switch (i / 1000) {
+    case 0: domove(k); break;
+    case 1:
+     obj = k;
+     if (fixed[obj] == loc || here(obj)) doaction();
      else {
-      # You would think that this part would be better expressed as a "given"
-      # block, but that turns out to be far less concise.
-      if $obj == GRATE {
-       $k = DEPRESSION if $loc == 1 | 4 | 7;
-       $k = ENTRANCE if 9 < $loc < 15;
-       if $k != GRATE { domove $k }
-       elsif $verb == FIND | INVENT && !$word2 { doaction }
-       else {say "I see no $in1 here."; $goto = 2012; }
-      } elsif $obj == DWARF && $dflag >= 2 && @dloc[^5].any == $loc
-       || $obj == liq() && here(BOTTLE) || $obj == liqloc($loc) {
-       doaction
-      } elsif $obj == PLANT && at(PLANT2) && @prop[PLANT2] != 0 {
-       $obj = PLANT2;
-       doaction;
-      } elsif $obj == KNIFE && $knifeloc == $loc {
-       $knifeloc = -1;
-       rspeak 116;
-       $goto = 2012;
-      } elsif $obj == ROD && here ROD2 {$obj = ROD2; doaction; }
-      elsif $verb == FIND | INVENT && !$word2 { doaction }
-      else {say "I see no $in1 here."; $goto = 2012; }
+     /* You would think that this part would be better expressed as a "switch"
+      * block, but that turns out to be far less concise. */
+      if (obj == GRATE) {
+       if (loc == 1 || loc == 4 || loc == 7) k = DEPRESSION;
+       if (9 < loc && loc < 15) k = ENTRANCE;
+       if (k != GRATE) domove(k);
+       else if ((verb == FIND || verb == INVENT) && !*word2) doaction();
+       else {printf("I see no %s here.\n", in1); togoto = 2012; }
+      } else if (obj == DWARF && dflag >= 2 && /*** @dloc[^5].any == $loc ***/
+       || obj == liq() && here(BOTTLE) || obj == liqloc(loc)) doaction();
+      else if (obj == PLANT && at(PLANT2) && prop[PLANT2] != 0) {
+       obj = PLANT2;
+       doaction();
+      } else if (obj == KNIFE && knifeloc == loc) {
+       knifeloc = -1;
+       rspeak(116);
+       togoto = 2012;
+      } else if (obj == ROD && here(ROD2)) {obj = ROD2; doaction(); }
+      else if ((verb == FIND || verb == INVENT) && !*word2) doaction();
+      else {printf("I see no %s here.\n", in1); togoto = 2012; }
      }
-    }
-    when 2 {
-     $verb = $k;
-     if $word2 && !($verb == SAY | SUSPEND | RESUME) {
-      ($word1, $in1) = ($word2, $in2);
-      $word2 = $in2 = undef;
-      $goto = 2610;
+     break;
+    case 2:
+     verb = k;
+     if (verb == SAY || verb == SUSPEND || verb == RESUME) obj = *word2;
+     /* This assignment just indicates whether an object was supplied. */
+     else if (*word2) {
+      strcpy(word1, word2);
+      strcpy(in1, in2);
+      *word2 = *in2 = 0;
+      togoto = 2610;
       return;
      }
-     $obj = $word2.defined if $verb == SAY | SUSPEND | RESUME;
-     # This assignment just indicates whether an object was supplied.
-     $obj ?? transitive !! intransitive;
-    }
-    when 3 {rspeak $k; $goto = 2012; }
-    default { bug 22 }
+     obj ? transitive() : intransitive();
+     break;
+    case 3: rspeak(k); togoto = 2012; break;
+    default: bug(22);
+   }
   }
  }
 }

@@ -1,4 +1,5 @@
 - Finish translating the Perl 6 code into C
+ - Translate the getin() function
 - Translate the original RAN() function to C
 - Write a Makefile
 - Add a header file containing declarations for all of the functions & global
@@ -10,3 +11,5 @@
   save the game to the same path that it was restored from?
 - Check everything to make sure it works!
 - Reorganize the partitioning of functions into files into something sane
+- Store all of the user data variables in a single struct for ease of reading &
+  writing and so that bit fields can be used?

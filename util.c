@@ -1,117 +1,160 @@
-sub toting(int $item --> Bool) { @place[$item] == -1 }
-
-sub here(int $item --> Bool) { @place[$item] == $loc || toting $item }
-
-sub at(int $item --> Bool) { $loc == @place[$item] | @fixed[$item] }
-
-sub liq2(int $p --> int) { (WATER, 0, OIL)[$p] }
-
-sub liq( --> int) { liq2(@prop[BOTTLE] max -1-@prop[BOTTLE]) }
-
-sub liqloc(int $loc --> int) { liq2(@cond[$loc] +& 4 ?? @cond[$loc] +& 2 !! 1) }
-
-sub bitset(int $loc, int $n --> Bool) { @cond[$loc] +& 1 +< $n }
-
-sub forced(int $loc --> Bool) { @travel[$loc;0;1] == 1 }
-
-sub dark( --> Bool) { !(@cond[$loc] +& 1 || (@prop[LAMP] && here(LAMP)) }
-
-sub pct(int $x --> Bool) { (^100).pick < $x }
-
-sub speak(Str $s) {
- return if !$s;
- print "\n" if $blklin;
- print $s;
+bool toting(int item) {
+ return place[item] == -1;
 }
 
-sub pspeak(int $item, int $state) { speak @itemDesc[$item;$state+1] }
-sub rspeak(int $msg) { speak @rmsg[$msg] if $msg != 0 }
+bool here(int item) {
+ return place[item] == loc || toting(item);
+}
 
-sub yes(int $x, int $y, int $z --> Bool) {
- loop {
-  rspeak $x if $x != 0;
-  my Str ($reply) = getin;  # Ignore everything after the first word.
-  if $reply eq 'YES' | 'Y' {
-   rspeak $y if $y != 0;
-   return True;
-  } elsif $reply eq 'NO' | 'N' {
-   rspeak $z if $z != 0;
-   return False;
-  } else { say "Please answer the question." }
+bool at(int item) {
+ return loc == place[item] || loc == fixed[item];
+}
+
+int liq2(int p) {
+ return p == 0 ? WATER : p == 2 ? OIL : 0;
+}
+
+int liq(void) {
+ return liq2(prop[BOTTLE] < 0 ? -1-prop[BOTTLE] : prop[BOTTLE]);
+}
+
+int liqloc(int loc) {
+ return liq2(cond[loc] & 4 ? cond[loc] & 2 : 1);
+}
+
+bool bitset(int loc, int n) {
+ return cond[loc] & 1 << n;
+}
+
+bool forced(int loc) {
+ return travel[loc][0][1] == 1;
+}
+
+bool dark(void) {
+ return !(cond[loc] & 1 || (prop[LAMP] && here(LAMP)));
+}
+
+bool pct(int x) {
+ return ran(100) < x;
+}
+
+void speak(char* s) {
+ if (s == NULL) return;
+ if (blklin) putchar('\n');
+ fputs(s, stdout);
+}
+
+void pspeak(int item, int state) {
+ speak(itemDesc[item][state+1]);
+}
+
+void rspeak(int msg) {
+ if (msg != 0) speak(rmsg[msg]);
+}
+
+bool yes(int x, int y, int z) {
+ for (;;)
+  rspeak(x);
+  char reply[6];
+  getin(reply, NULL, NULL, NULL); /* Ignore everything after the first word. */
+  if (strcmp(reply, "YES") == 0 || strcmp(reply, "Y") == 0) {
+   rspeak(y);
+   return true;
+  } else if (strcmp(reply, "NO") == 0 || strcmp(reply, "N") == 0) {
+   rspeak(z);
+   return false;
+  } else {printf("Please answer the question.\n"); }
  }
 }
 
-sub destroy(int $obj) { move $obj, 0 }
+void destroy(int obj) {move(obj, 0); }
 
-sub juggle(int $obj) {
- move $obj, @place[$obj];
- move $obj+100, @fixed[$obj];
+void juggle(int obj) {
+ move(obj, place[obj]);
+ move(obj+100, fixed[obj]);
 }
 
-sub move(int $obj, int $where) {
- my int $from = $obj > 100 ?? @fixed[$obj-100] !! @place[$obj];
- carry $obj, $from if 0 < $from <= 300;
- drop $obj, $where;
+void move(int obj, int where) {
+ int from = obj > 100 ? fixed[obj-100] : place[obj];
+ if (0 < from && from <= 300) carry(obj, from);
+ drop(obj, where);
 }
 
-sub put(int $obj, int $where, int $pval --> int) {
- move $obj, $where;
- return -1 - $pval;
+int put(int obj, int where, int pval) {
+ move(obj, where);
+ return -1 - pval;
 }
 
-sub carry(int $obj, int $where) {
- if $obj <= 100 {
-  return if @place[$obj] == -1;
-  @place[$obj] = -1;
-  $holding++;
+void carry(int obj, int where) {
+ if (obj <= 100) {
+  if (place[obj] == -1) return;
+  place[obj] = -1;
+  holding++;
  }
- @atloc[$where].splice:
-  @atloc[$where].keys.first({ @atloc[$where;$_] == $obj }), 1;
+ if (atloc[where] == obj) {atloc[where] = link[obj]; }
+ else {
+  int tmp;
+  for (tmp = atloc[where]; link[tmp] != obj; tmp = link[tmp]);
+  link[tmp] = link[obj];
+ }
 }
 
-sub drop(int $obj, int $where) {
- if $obj > 100 {
-  @fixed[$obj-100] = $where
+void drop(int obj, int where) {
+ if (obj > 100) {
+  fixed[obj-100] = where;
  } else {
-  $holding-- if @place[$obj] == -1;
-  @place[$obj] = $where;
+  if (place[obj] == -1) holding--;
+  place[obj] = where;
  }
- @atloc[$where].unshift: $obj if $where > 0;
+ if (where > 0) {
+  link[obj] = atloc[where];
+  atloc[where] = obj;
+ }
 }
 
-sub bug(int $num) {
- say "Fatal error, see source code for interpretation.";
+void bug(int num) {
+ printf("Fatal error, see source code for interpretation.\n");
 
-# Given the above message, I suppose I should list the possible bug numbers in
-# the source somewhere, and right here is as good a place as any:
-# 5 - Required vocabulary word not found
-# 20 - Special travel number (500>L>300) is outside of defined range
-# 22 - Vocabulary type (N/1000) not between 0 and 3
-# 23 - Intransitive action verb not defined
-# 24 - Transitive action verb not defined
-# 26 - Location has no travel entries
+/* Given the above message, I suppose I should list the possible bug numbers in
+ * the source somewhere, and right here is as good a place as any:
+ * 5 - Required vocabulary word not found
+ * 20 - Special travel number (500>L>300) is outside of defined range
+ * 22 - Vocabulary type (N/1000) not between 0 and 3
+ * 23 - Intransitive action verb not defined
+ * 24 - Transitive action verb not defined
+ * 26 - Location has no travel entries
+ */
 
- #say "Probable cause: erroneous info in database.";  # Not in this version
- say "Error code = $num";
- exit -1;
+ /* printf("Probable cause: erroneous info in database.\n");
+  * (Not in this version) */
+ printf("Error code = %d\n", num);
+ exit(1);
 }
 
-sub vocab(Str $word, int $type --> int) {
- my int @matches = %vocab{$word};
- if $type >= 0 { @matches.=grep: { $_ idiv 1000 == $type } }
- if !@matches {
-  if $type >= 0 { bug 5 }
+int vocab(const char* word, int type) {
+ int low = 0, high = WORDQTY-1, i;
+ while (low <= high) {
+  i = (low+high)/2;
+  int cmp = strcmp(word, vocabulary[i].word);
+  if (cmp < 0) high = i-1;
+  else if (cmp > 0) low = i+1;
+  else break;
+ }
+ if (low > high) {
+  if (type >= 0) bug(5);
   return -1;
- } else { return $type >= 0 ?? @matches[0] % 1000 !! [min] @matches }
- # When returning values of a specified type, there can be no more than one
- # match; if there is more than one, someone's been messing with the data
- # sections.
+ }
+ return type >= 0 ? (vocabulary[i].val1 / 1000 == type ? vocabulary[i].val1
+  : vocabulary[i].val2) % 1000 : vocabulary[i].val1;
 }
 
-sub getin( --> List of Str) {
- print "\n";
- loop {
-  print "> ";
+void getin(char* w1, char* r1, char* w2, char* r2) {
+ putchar('\n');
+ for (;;) {
+  printf("> ");
+
+  /***** Work on this!!! *****/
+
   my Str $raw1, $raw2 = $*IN.get.words;
   next if !$raw1.defined && $blklin;
   my Str $word1, $word2 = ($raw1, $raw2).map:
