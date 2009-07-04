@@ -50,7 +50,7 @@ my Str @rmsg <== indexLines <== $=adventData06.lines(:!chomp);
 # Section 7 (containing the initial locations of the items) is only read in
 # when starting a new game (see MAIN below).
 
-my int @actspk[32] <== indexLines <== $adventData08.lines;
+my int @actspk[32] <== indexLines <== $=adventData08.lines;
 
 my int @cond = 0, *;
 for $=adventData09.lines {
@@ -58,12 +58,14 @@ for $=adventData09.lines {
  @cond[$_] +|= 1 +< $bit for @locs;
 }
 
-my Pair @classes <== map { [=>] .split("\t") } <== $adventData10.lines(:!chomp);
+my Pair @classes
+ <== map { [=>] .split("\t") }
+ <== $=adventData10.lines(:!chomp);
 
 my int @hints[*;4] <== map { .defined ?? .split("\t") !! undef }
- <== indexLines <== $adventData11.lines;
+ <== indexLines <== $=adventData11.lines;
 
-my Str @magicMsg <== indexLines <== $=adventData12.lines(!:chomp);
+my Str @magicMsg <== indexLines <== $=adventData12.lines(:!chomp);
 
 
 # Object & verb numbers:
@@ -161,7 +163,7 @@ sub bitset(int $loc, int $n --> Bool) { @cond[$loc] +& 1 +< $n }
 
 sub forced(int $loc --> Bool) { @travel[$loc;0;1] == 1 }
 
-sub dark( --> Bool) { !(@cond[$loc] +& 1 || (@prop[LAMP] && here(LAMP)) }
+sub dark( --> Bool) { !(@cond[$loc] +& 1 || (@prop[LAMP] && here(LAMP))) }
 
 sub pct(int $x --> Bool) { (^100).pick < $x }
 
@@ -176,13 +178,13 @@ sub rspeak(int $msg) { speak @rmsg[$msg] if $msg != 0 }
 
 sub yes(int $x, int $y, int $z --> Bool) {
  loop {
-  rspeak $x if $x != 0;
+  rspeak $x;
   my Str ($reply) = getin;  # Ignore everything after the first word.
   if $reply eq 'YES' | 'Y' {
-   rspeak $y if $y != 0;
+   rspeak $y;
    return True;
   } elsif $reply eq 'NO' | 'N' {
-   rspeak $z if $z != 0;
+   rspeak $z;
    return False;
   } else { say "Please answer the question." }
  }
@@ -712,17 +714,17 @@ sub datime( --> List of int) {
 
 
 sub MAIN(Str $oldGame?) {
+ poof;
  if $oldGame.defined {
   # Load a saved game
   vresume($oldGame);
   # Check for failure?
  } else {
-  poof;
   $demo = start;
   motd(False);
 
   # Read in the item locations from data section 7:
-  for $adventData07.lines {
+  for $=adventData07.lines {
    my($obj, $p, $f) = .split: "\t";
    @place[$obj] = $p;
    @fixed[$obj] = $f // 0;
@@ -802,16 +804,12 @@ sub MAIN(Str $oldGame?) {
      continue;
     }
     my int $dtotal, $attack, $stick = 0, *;
-    L6030: for ^6 -> $i {
-     # The individual dwarven movement loop, named L6030 because that's the
-     # GOTO label at which it ends and TO which numerous statements try to GO.
+    dwarfLoop: for ^6 -> $i {  # The individual dwarven movement loop
      next if @dloc[$i] == 0;
      my int @tk = grep {
-      my $newloc = $_ % 1000;
-      15 <= $newloc <= 300 && $newloc != @odloc[$i] & @dloc[$i]
-       && !forced($newloc) && !($i == 5 && bitset($newloc, 3))
-       && $_ idiv 1000 != 100;
-     } @travel[@dloc[$i];*;0];
+      15 <= $_ <= 300 && $_ != @odloc[$i] & @dloc[$i] && !forced($_)
+       && !($i == 5 && bitset($_, 3))
+     }, map { $_ % 1000 }, grep { $_ idiv 1000 != 100 }, @travel[@dloc[$i];*;0];
      @tk.push: @odloc[$i];
      (@odloc[$i], @dloc[$i]) = @dloc[$i], @tk.pick;
      @dseen[$i] = (@dseen[$i] && $loc >= 15) || @dloc[$i] | @odloc[$i] == $loc;
@@ -819,7 +817,7 @@ sub MAIN(Str $oldGame?) {
       @dloc[$i] = $loc;
       if $i == 5 {
        # Pirate logic:
-       next L6030 if $loc == CHLOC || @prop[CHEST] >= 0;
+       next if $loc == CHLOC || @prop[CHEST] >= 0;
        my Bool $k = False;
        for 50..64 -> $j {
 	next if $j == PYRAM && $loc == 100 | 101;
@@ -834,7 +832,7 @@ sub MAIN(Str $oldGame?) {
 	 }
 	 @dloc[5] = @odloc[5] = CHLOC;
 	 @dseen[5] = False;
-	 next L6030;
+	 next dwarfLoop;
 	}
 	$k = True if here $j;
        }
@@ -845,30 +843,27 @@ sub MAIN(Str $oldGame?) {
 	move MESSAG, CHLOC2;
 	@dloc[5] = @odloc[5] = CHLOC;
 	@dseen[5] = False;
-	next L6030;
-       }
-       rspeak 127 if @odloc[5] != @dloc[5] && pct 20;
-       next L6030;
+       } elsif @odloc[5] != @dloc[5] && pct 20 { rspeak 127 }
       } else {
        $dtotal++;
-       next L6030 if @odloc[$i] != @dloc[$i];
-       $attack++;
-       $knifeloc = $loc if $knifeloc >= 0;
-       $stick++ if (^1000).pick < 95 * ($dflag - 2);
+       if @odloc[$i] == @dloc[$i] {
+	$attack++;
+	$knifeloc = $loc if $knifeloc >= 0;
+	$stick++ if (^1000).pick < 95 * ($dflag - 2);
+       }
       }
      }
     } # end of individual dwarf loop
     continue if $dtotal == 0;
-    if $dtotal != 1 {
+    if $dtotal == 1 { rspeak 4 }
+    else {
      say "There are $dtotal threatening little dwarves in the room with you."
-    } else { rspeak 4 }
+    }
     continue if $attack == 0;
     $dflag = 3 if $dflag == 2;
     my int $k;
-    if $attack != 1 {
-     say "$attack of them throw knives at you!";
-     $k = 6;
-    } else {rspeak 5; $k = 52; }
+    if $attack == 1 {rspeak 5; $k = 52; }
+    else {say "$attack of them throw knives at you!"; $k = 6; }
     if $stick <= 1 {
      rspeak $k + $stick;
      continue if $stick == 0;
@@ -883,7 +878,7 @@ sub MAIN(Str $oldGame?) {
    when *..2000 {
     if $loc == 0 {death; next bigLoop; }
     my Str $kk = @shortdesc[$loc];
-    $kk = @longdesc[$loc] if @abb[$loc] % $abbnum == 0 || !$kk.defined;
+    $kk = @longdesc[$loc] if @abb[$loc] !% $abbnum || !$kk.defined;
     if !forced($loc) && dark() {
      if $wzdark && pct 35 {
       rspeak 23;
@@ -904,7 +899,7 @@ sub MAIN(Str $oldGame?) {
       next if $obj == STEPS && toting NUGGET;
       if @prop[$obj] < 0 {
        next if $closed;
-       @prop[$obj] = $obj == RUG | CHAIN ?? 1 !! 0;
+       @prop[$obj] = $obj == RUG | CHAIN;
        $tally--;
        $limit = 35 min $limit if $tally == $tally2 && $tally != 0;
       }
@@ -955,7 +950,7 @@ sub MAIN(Str $oldGame?) {
     }
     if $closed {
      pspeak OYSTER, 1 if @prop[OYSTER] < 0 && toting OYSTER;
-     @prop[$_] = -1 - @prop[$_] for grep { toting $_ && @prop[$_] < 0 }, 1..64;
+     @prop[$_] = -1 - @prop[$_] for grep { toting($_) && @prop[$_] < 0 }, 1..64;
     }
 # 2605:
     $wzdark = dark;
@@ -1035,8 +1030,10 @@ sub MAIN(Str $oldGame?) {
      $goto = 2012;
      next bigLoop;
     }
-    if $word1 eq 'ENTER' && $word2 { ($word1, $word2) = ($word2, undef) }
-    elsif $word1 eq 'WATER' | 'OIL' && $word2 eq 'PLANT' | 'DOOR' {
+    if $word1 eq 'ENTER' && $word2 {
+     ($word1, $in1) = ($word2, $in2);
+     $word2 = $in2 = undef;
+    } elsif $word1 eq 'WATER' | 'OIL' && $word2 eq 'PLANT' | 'DOOR' {
      $word2 = 'POUR' if at vocab($word2, 1)
     }
     continue;
@@ -1088,14 +1085,14 @@ sub MAIN(Str $oldGame?) {
      when 2 {
 # 4000:
       $verb = $k;
-      if $word2 && !($verb == SAY | SUSPEND | RESUME) {
+      if $verb == SAY | SUSPEND | RESUME { $obj = $word2.defined }
+      # This assignment just indicates whether an object was supplied.
+      elsif $word2 {
        ($word1, $in1) = ($word2, $in2);
        $word2 = $in2 = undef;
        $goto = 2610;
        next bigLoop;
       }
-      $obj = $word2.defined if $verb == SAY | SUSPEND | RESUME;
-      # This assignment just indicates whether an object was supplied.
       $obj ?? transitive !! intransitive;
      }
      when 3 {rspeak $k; $goto = 2012; }
