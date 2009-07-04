@@ -1,21 +1,12 @@
-- Implement readInt() and readBool()
-- Add the appropriate error checking to vsuspend() & vresume()
- - Make the magic version of vresume() recognize a missing $saved or $savet
-   value correctly (possibly using a "try" block?)
-- For the magic version, add a way to save changes made in maintenance mode
-- Translate the Perl 6 to C
- - Use preprocessor directives to configure:
-  - whether to include magic
-  - whether to use C's rand() or the original Fortran's RAN() for random number
-    generation
-- Write a script for converting advent350.pl6 from its "ideal" form into one
-  that works on the current version of Rakudo
+- Finish translating the Perl 6 code into C
+- Translate the original RAN() function to C
+- Write a Makefile
+- Add a header file containing declarations for all of the functions & global
+  variables
+- Write a Perl 6 program to convert the old-format data file(s) into a C source
+  file containing arrays of strings
 - Make the arrays be properly zero-based
-- Write a manpage using Perl 6 POD
-- Write a Perl 6 program for solving the second part of wizard authentication
-  automatically
 - If the user enters "save" without a filename while playing a restored game,
   save the game to the same path that it was restored from?
 - Check everything to make sure it works!
-- Reorder the function definitions so that they are always declared before they
-  are used.
+- Reorganize the partitioning of functions into files into something sane
