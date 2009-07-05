@@ -180,15 +180,15 @@ sub transitive() {
       rspeak(++$dkill == 1 ?? 149 !! 47);
      }
      drop AXE, $loc;
-     domove NULL;
+     domove NULLMOVE;
     } elsif at(DRAGON) && @prop[DRAGON] == 0 {
      rspeak 152;
      drop AXE, $loc;
-     domove NULL;
+     domove NULLMOVE;
     } elsif at(TROLL) {
      rspeak 158;
      drop AXE, $loc;
-     domove NULL;
+     domove NULLMOVE;
     } elsif here(BEAR) && @prop[BEAR] == 0 {
      drop AXE, $loc;
      @fixed[AXE] = -1;
@@ -385,7 +385,7 @@ sub vkill() {
     move RUG, 120;
     move $_, 120 for grep { @place[$_] == 119 | 121 }, ^65;
     $loc = 120;
-    domove NULL;
+    domove NULLMOVE;
    }
   }
   when TROLL { rspeak 157 }
@@ -411,7 +411,7 @@ sub vpour() {
     pspeak PLANT, @prop[PLANT] + 1;
     @prop[PLANT] = (@prop[PLANT] + 2) % 6;
     @prop[PLANT2] = @prop[PLANT] idiv 2;
-    domove NULL;
+    domove NULLMOVE;
    }
   } else { rspeak 77 }
  }
@@ -712,5 +712,5 @@ sub vresume(Str $file) {
 
  start();
 #endif
- domove NULL;
+ domove NULLMOVE;
 }

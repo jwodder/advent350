@@ -53,7 +53,7 @@ void rspeak(int msg) {
 }
 
 bool yes(int x, int y, int z) {
- for (;;)
+ for (;;) {
   rspeak(x);
   char reply[6];
   getin(reply, NULL, NULL, NULL); /* Ignore everything after the first word. */

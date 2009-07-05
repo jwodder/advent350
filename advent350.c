@@ -25,17 +25,18 @@ char* in1, in2, word1, word2;
  * wkday is for weekdays, wkend for weekends, and holid for holidays (days with
  * special hours).  If element N of an array is true, then the hour N:00
  * through N:59 is considered "prime time," i.e., the cave is closed then. */
-bool wkday[24];
-bool wkend[24];
-bool holid[24];
+bool wkday[24] = {[8] = true, true, true, true, true, true, true, true, true,
+ true};  /* The remaining elements are initialized to false. */
+bool wkend[24]; /* all false */
+bool holid[24]; /* all false */
 
-int hbegin, hend;  /* start & end of next holiday */
-char* hname;  /* name of next holiday */
-int shortGame;  /* turns allowed in a short/demonstration game */
-char* magic;  /* magic word */
-int magnm;  /* magic number */
-int latency;  /* time required to wait after saving */
-char* msg;  /* MOTD, initially null */
+int hbegin = 0, hend = -1;	/* start & end of next holiday */
+char hname[21];			/* name of next holiday */
+int shortGame = 30;		/* turns allowed in a short/demo game */
+char magic[6] = "DWARF";	/* magic word */
+int magnm = 11111;		/* magic number */
+int latency = 90;		/* time required to wait after saving */
+char msg[500];			/* MOTD, initially null */
 #endif
 
 /* User's game data: */

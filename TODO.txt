@@ -1,5 +1,7 @@
 - Finish translating the Perl 6 code into C
  - Translate the getin() function
+ - Translate the portions of maint() and poof() for reading & writing the magic
+   values to/from a file
 - Translate the original RAN() function to C
 - Write a Makefile
 - Add a header file containing declarations for all of the functions & global
@@ -13,3 +15,6 @@
 - Reorganize the partitioning of functions into files into something sane
 - Store all of the user data variables in a single struct for ease of reading &
   writing and so that bit fields can be used?
+- In maint(), the prompts for several integral values say that entering a null
+  line will leave the value unchanged, yet C's scanf() doesn't easily allow for
+  that.  Fix this.

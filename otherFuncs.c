@@ -4,7 +4,7 @@ sub domove(int $motion) {
  $newloc = $loc;
  bug 26 if !@travel[$loc];
  given $motion {
-  when NULL { return }
+  when NULLMOVE { return }
   when BACK {
    my int $k = forced($oldloc) ?? $oldloc2 !! $oldloc;
    ($oldloc2, $oldloc) = ($oldloc, $loc);
