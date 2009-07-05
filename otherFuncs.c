@@ -1,182 +1,191 @@
-sub domove(int $motion) {
-# 8:
- $goto = 2;
- $newloc = $loc;
- bug 26 if !@travel[$loc];
- given $motion {
-  when NULLMOVE { return }
-  when BACK {
-   my int $k = forced($oldloc) ?? $oldloc2 !! $oldloc;
-   ($oldloc2, $oldloc) = ($oldloc, $loc);
-   if $k == $loc { rspeak 91 }
+void domove(int motion) {
+ togoto = 2;
+ newloc = loc;
+ /*if (travel[loc][0][0] == -1) bug(26);*/
+ switch (motion) {
+  case NULLMOVE: return;
+  case BACK: {
+   int k = forced(oldloc) ? oldloc2 : oldloc;
+   oldloc2 = oldloc;
+   oldloc = loc;
+   if (k == loc) rspeak(91);
    else {
-    my int $k2 = 0;
-    for @travel[$loc].keys -> $kk {
-     my $ll = @travel[$loc;$kk;0] % 1000;
-     if $ll == $k {
-      dotrav @travel[$loc;$kk;1];
+    int k2 = 0;
+    for (int kk=0; travel[loc][kk][0] != -1; kk++) {
+     int ll = travel[loc][kk][0] % 1000;
+     if (ll == k) {
+      dotrav(travel[loc][kk][1]);
       return;
-     } elsif $ll <= 300 {
-      $k2 = $kk if forced $ll && @travel[$ll;0;0] % 1000 == $k
+     } else if (ll <= 300) {
+      if (forced(ll) && travel[ll][0][0] % 1000 == k) k2 = kk;
      }
     }
-    if $k2 != 0 { dotrav @travel[$loc;$k2;1] }
-    else { rspeak 140 }
+    if (k2 != 0) dotrav(travel[loc][k2][1]);
+    else rspeak(140);
    }
+   break;
   }
-  when LOOK {
-   rspeak 15 if $detail++ < 3;
-   $wzdark = False;
-   @abb[$loc] = 0;
-  }
-  when CAVE { rspeak($loc < 8 ?? 57 !! 58) }
-  default {($oldloc2, $oldloc) = ($oldloc, $loc); dotrav $motion; }
+  case LOOK:
+   if (detail++ < 3) rspeak(15);
+   wzdark = false;
+   abb[loc] = 0;
+   break;
+  case CAVE:
+   rspeak(loc < 8 ? 57 : 58);
+   break;
+  default:
+   oldloc2 = oldloc;
+   oldloc = loc;
+   dotrav(motion);
  }
- # next bigLoop;
 }
 
-sub dotrav(int $motion) {
-# 9:
- my int $rdest = -1;
- for @travel[$loc] -> $kk {
-  if $kk[1..*].any == 1 | $motion ff * {
-   my int $ll = $kk[0];
-   my int $rcond = $ll idiv 1000;
-   my int $robject = $rcond % 100;
-   given $rcond {
-    when 0 | 100 { $rdest = $ll % 1000 }
-    when 0 ^..^ 100 { $rdest = $ll % 1000 if pct $_ }
-    when 100 ^.. 200 { $rdest = $ll % 1000 if toting $robject }
-    when 200 ^.. 300 { $rdest = $ll % 1000 if toting($robject) || at $robject }
-    default { $rdest = $ll % 1000 if @prop[$robject] != $_ idiv 100 - 3 }
-   }
-   last if $rdest != -1;
-  }
- }
- given $rdest {
-  when -1 {
-   given $motion {
-    when 29 | 30 | (43..50) { rspeak 9 }
-    when  7 | 36 | 37 { rspeak 10 }
-    when 11 | 19 { rspeak 11 }
-    when 62 | 65 { rspeak 42 }
-    when 17 { rspeak 80 }
-    default { rspeak($verb == FIND | INVENT ?? 59 !! 12) }
-   }
-  }
-  when 0..300 { $newloc = $rdest }
-  when 301 {
-   if !$holding || $holding == 1 && toting EMERALD { $newloc = 99 + 100 - $loc }
-   else {$newloc = $loc; rspeak 117; }
-  }
-  when 302 {
-   drop EMERALD, $loc;
-   $newloc = $loc == 33 ?? 100 !! 33;
-  }
-  when 303 {
-   if @prop[TROLL] == 1 {
-    pspeak TROLL, 1;
-    @prop[TROLL] = 0;
-    move TROLL2, 0;
-    move TROLL2+100, 0;
-    move TROLL, 117;
-    move TROLL+100, 122;
-    juggle CHASM;
-    $newloc = $loc;
-   } else {
-    $newloc = $loc == 117 ?? 122 !! 117;
-    @prop[TROLL] = 1 if @prop[TROLL] == 0;
-    if toting BEAR {
-     rspeak 162;
-     @prop[CHASM] = 1;
-     @prop[TROLL] = 2;
-     drop BEAR, $newloc;
-     @fixed[BEAR] = -1;
-     @prop[BEAR] = 3;
-     $tally2++ if @prop[SPICES] < 0;
-     $oldloc2 = $newloc;
-     death;
+void dotrav(int motion) {
+ int rdest = -1;
+ bool matched = false;
+ for (int kk=0; travel[loc][kk][0] != -1; kk++) {
+  if (!matched) {
+   for (int i=1; travel[loc][kk][i] != -1; i++) {
+    if (travel[loc][kk][i] == 1 || travel[loc][kk][i] == motion) { 
+     matched = true;
+     break;
     }
    }
   }
-  when 500 ^.. * { rspeak $rdest-500 }
-  default { bug 20 }
- }
-}
-
-sub death() {
-# 99:
- if $closing {
-  rspeak 131;
-  $numdie++;
-  normend;
- } else {
-  my $yea = yes(81 + $numdie*2, 82 + $numdie*2, 54);
-  $numdie++;
-  normend if $numdie == MAXDIE || !$yea;
-  @place[WATER, OIL] = 0, 0;
-  @prop[LAMP] = 0 if toting LAMP;
-  drop $_, $_ == LAMP ?? 1 !! $oldloc2 for (^65).grep(*.toting).reverse;
-  ($loc, $oldloc) = 3, 3;
-  $goto = 2000;
-  # next bigLoop;
- }
-}
-
-sub score(Bool $scoring --> int) {
- my int $score = 0;
- for 50..64 -> $i {
-  $score += 2 if @prop[$i] >= 0;
-  $score += $i == CHEST ?? 12 !! $i > CHEST ?? 14 !! 10
-   if @place[$i] == 3 && @prop[$i] == 0;
- }
- $score += (MAXDIE - $numdie) * 10;
- $score += 4 if !($scoring || $gaveup);
- $score += 25 if $dflag != 0;
- $score += 25 if $closing;
- if $closed {
-  given $bonus {
-   when 0 { $score += 10 }
-   when 133 { $score += 45 }
-   when 134 { $score += 30 }
-   when 135 { $score += 25 }
+  if (matched) {
+   int ll = travel[loc][kk][0];
+   int rcond = ll / 1000;
+   int robject = rcond % 100;
+   if (rcond == 0 || rcond == 100) rdest = ll % 1000;
+   else if (rcond < 100) {if (pct(rcond)) rdest = ll % 1000; }
+   else if (rcond <= 200) {if (toting(robject)) rdest = ll % 1000; }
+   else if (rcond <= 300) {
+    if (toting(robject) || at(robject)) rdest = ll % 1000;
+   } else if (prop[robject] != rcond / 100 - 3) rdest = ll % 1000;
+   if (rdest != -1) break;
   }
  }
- $score++ if @place[MAGZIN] == 108;
- $score += 2;
- $score -= @hints[$_;1] if @hinted[$_] for 1..9;
- return $score;
-}
-
-sub normend() {
- my $score = score(False);
- say "You scored $score out of a possible 350 using $turns turns.";
- my($rank, $next) = @classes.grep({ .key >= $score }).[0,1];
- if $rank {
-  speak $rank.value;
-  if $next {
-   my $diff = $next.key - $score + 1;
-   say "To achieve the next higher rating, you need $diff more point",
-    $diff == 1 ?? '.' !! 's.';
+ if (rdest == -1) {
+  switch (motion) {
+   case 29: case 30: case 43: case 44: case 45:
+   case 46: case 47: case 48: case 49: case 50:
+    rspeak(9);
+    break;
+   case 7: case 36: case 37: rspeak(10); break;
+   case 11: case 19: rspeak(11); break;
+   case 62: case 65: rspeak(42); break;
+   case 17: rspeak(80); break;
+   default:
+    rspeak(verb == FIND || verb == INVENT ? 59 : 12);
+  }
+ } else if (0 <= rdest && rdest <= 300) newloc = rdest;
+ else if (rdest == 301) {
+  if (!holding || holding == 1 && toting(EMERALD)) newloc = 99 + 100 - loc;
+  else {newloc = loc; rspeak(117); }
+ } else if (rdest == 302) {
+  drop(EMERALD, loc);
+  newloc = (loc == 33 ? 100 : 33);
+ } else if (rdest == 303) {
+  if (prop[TROLL] == 1) {
+   pspeak(TROLL, 1);
+   prop[TROLL] = 0;
+   move(TROLL2, 0);
+   move(TROLL2+100, 0);
+   move(TROLL, 117);
+   move(TROLL+100, 122);
+   juggle(CHASM);
+   newloc = loc;
   } else {
-   say "To achieve the next higher rating would be a neat trick!";
-   say "Congratulations!!";
+   newloc = (loc == 117 ? 122 : 117);
+   if (prop[TROLL] == 0) prop[TROLL] = 1;
+   if (toting(BEAR)) {
+    rspeak(162);
+    prop[CHASM] = 1;
+    prop[TROLL] = 2;
+    drop(BEAR, newloc);
+    fixed[BEAR] = -1;
+    prop[BEAR] = 3;
+    if (prop[SPICES] < 0) tally2++;
+    oldloc2 = newloc;
+    death();
+   }
   }
- } else { say "You just went off my scale!!" }
- exit 0;
+ } else if (rdest > 500) rspeak(rdest-500);
+ else bug(20);
 }
 
-sub doaction() {
-# 5010:
- if $word2 {
-# 2800:
-  ($word1, $in1) = ($word2, $in2);
-  $word2 = $in2 = undef;
-  $goto = 2610;
- } elsif $verb { transitive }
- else {
-  say "What do you want to do with the $in1?";
-  $goto = 2600;
+void death(void) {
+ if (closing) {
+  rspeak(131);
+  numdie++;
+  normend();
+ } else {
+  bool yea = yes(81 + numdie*2, 82 + numdie*2, 54);
+  numdie++;
+  if (numdie == MAXDIE || !yea) normend();
+  place[WATER] = place[OIL] = 0;
+  if (toting(LAMP)) prop[LAMP] = 0;
+  for (int i=64; i>0; i--) {
+   if (toting(i)) drop(i, i == LAMP ? 1 : oldloc2);
+  }
+  loc = oldloc = 3;
+  togoto = 2000;
  }
- # next bigLoop;
+}
+
+int score(bool scoring) {
+ int scr = 0;
+ for (int i=50; i<65; i++) {
+  if (prop[i] >= 0) scr += 2;
+  if (place[i] == 3 && prop[i] == 0)
+   scr += (i == CHEST ? 12 : i > CHEST ? 14 : 10);
+ }
+ scr += (MAXDIE - numdie) * 10;
+ if (!scoring && !gaveup) scr += 4;
+ if (dflag != 0) scr += 25;
+ if (closing) scr += 25;
+ if (closed) {
+  switch (bonus) {
+   case 0: scr += 10; break;
+   case 133: scr += 45; break;
+   case 134: scr += 30; break;
+   case 135: scr += 25; break;
+  }
+ }
+ if (place[MAGZIN] == 108) scr++;
+ scr += 2;
+ for (int i=1; i<10; i++) if (hinted[i]) scr -= hints[i][1];
+ return scr;
+}
+
+void normend(void) {
+ int scr = score(false);
+ printf("You scored %d out of a possible 350 using %d turns.\n", scr, turns);
+ int i;
+ for (i=0; classes[i].score != 0; i++) if (classes[i].score >= scr) break;
+ if (classes[i].score != 0) {
+  speak(classes[i].rank);
+  if (classes[i+1].score != 0) {
+   int diff = classes[i+1].score - scr + 1;
+   printf("To achieve the next higher rating, you need %d more point%s.\n",
+    diff, diff == 1 ? "" : "s");
+  } else {
+   puts("To achieve the next higher rating would be a neat trick!");
+   puts("Congratulations!!");
+  }
+ } else puts("You just went off my scale!!");
+ exit(0);
+}
+
+void doaction(void) {
+ if (*word2) {
+  strcpy(word1, word2);
+  strcpy(in1, in2);
+  *word2 = *in2 = 0;
+  togoto = 2610;
+ } else if (verb) transitive();
+ else {
+  printf("What do you want to do with the %s?\n", in1);
+  togoto = 2600;
+ }
 }
