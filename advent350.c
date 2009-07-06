@@ -13,12 +13,13 @@ const char* magicMsg[] = { ... };
 /* Global variables: */
 
 int togoto = 2;
-bool blklin = true;
+bool blklin = true, gaveup = false;
 #ifdef ADVMAGIC
 bool demo = false;
 #endif
+int bonus = 0;
 int verb, obj;
-char* in1, in2, word1, word2;
+char *in1, *in2, *word1, *word2;
 
 #ifdef ADVMAGIC
 /* These arrays hold the times when adventurers are allowed into Colossal Cave;
@@ -42,14 +43,14 @@ char msg[500];			/* MOTD, initially null */
 /* User's game data: */
 int loc, newloc, oldloc, oldloc2, limit;
 int turns = 0, iwest = 0, knifeloc = 0, detail = 0;
-int numdie = 0, holding = 0, foobar = 0, bonus = 0;
+int numdie = 0, holding = 0, foobar = 0;
 int tally = 15;
 int tally2 = 0;
 int abbnum = 5;
 int clock1 = 30;
 int clock2 = 50;
 bool wzdark = false, closing = false, lmwarn = false, panic = false
-bool closed = false, gaveup = false;
+bool closed = false;
 int prop[65] = {
  /* Elements 0 through 49 are implicitly set to zero. */
  [50] = -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1
@@ -61,14 +62,32 @@ int dloc[6] = {19, 27, 33, 44, 64, CHLOC};
 int odloc[6];
 bool dseen[6];
 int dflag = 0, dkill = 0;
-int place[65];
-int fixed[65];
+
+int place[65] = {
+ 0, 3, 3, 8, 10, 11, 0, 14, 13, 94,
+ 96, 19, 17, 101, 103, 0, 106, 0, 0, 3,
+ 3, 0, 0, 109, 25, 23, 111, 35, 0, 97,
+ 0, 119, 117, 117, 0, 130, 0, 126, 140, 0,
+ 96, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+ 18, 27, 28, 29, 30, 0, 92, 95, 97, 100,
+ 101, 0, 119, 127, 130,
+};
+
+int fixed[65] = {
+ 0, 0, 0, 9, 0, 0, 0, 15, 0, -1,
+ 0, -1, 27, -1, 0, 0, 0, -1, 0, 0,
+ 0, 0, 0, -1, -1, 67, -1, 110, 0, -1,
+ -1, 121, 122, 122, 0, -1, -1, -1, -1, 0,
+ -1, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+ 0, 0, 121, 0, -1,
+};
+
 int atloc[65];
 int link[65];
 #ifdef ADVMAGIC
 int saved = -1, savet = 0;
 #endif
-
 
 int main(int argc, char** argv) {
 #ifdef ADVMAGIC
