@@ -189,3 +189,8 @@ void doaction(void) {
   togoto = 2600;
  }
 }
+
+bool dwarfHere(void) {
+ for (int i=0; i<5; i++) if (dloc[i] == loc) return true;
+ return false;
+}

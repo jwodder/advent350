@@ -1,14 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <time.h>
 #include "advconfig.h"
 #include "advconst.h"
-
-
-#ifdef ADVMAGIC
-const char* magicMsg[] = { ... };
-#endif
-
 
 /* Global variables: */
 
@@ -70,7 +65,7 @@ int place[65] = {
  0, 119, 117, 117, 0, 130, 0, 126, 140, 0,
  96, 0, 0, 0, 0, 0, 0, 0, 0, 0,
  18, 27, 28, 29, 30, 0, 92, 95, 97, 100,
- 101, 0, 119, 127, 130,
+ 101, 0, 119, 127, 130
 };
 
 int fixed[65] = {
@@ -80,7 +75,7 @@ int fixed[65] = {
  -1, 121, 122, 122, 0, -1, -1, -1, -1, 0,
  -1, 0, 0, 0, 0, 0, 0, 0, 0, 0,
  0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
- 0, 0, 121, 0, -1,
+ 0, 0, 121, 0, -1
 };
 
 int atloc[65];
@@ -90,6 +85,9 @@ int saved = -1, savet = 0;
 #endif
 
 int main(int argc, char** argv) {
+#ifndef ORIG_RAND
+ srand(time(NULL));
+#endif
 #ifdef ADVMAGIC
  poof();
 #endif
@@ -459,7 +457,7 @@ void turn(void) {
        if (k != GRATE) domove(k);
        else if ((verb == FIND || verb == INVENT) && !*word2) doaction();
        else {printf("I see no %s here.\n", in1); togoto = 2012; }
-      } else if (obj == DWARF && dflag >= 2 && /*** @dloc[^5].any == $loc ***/
+      } else if (obj == DWARF && dflag >= 2 && dwarfHere()
        || obj == liq() && here(BOTTLE) || obj == liqloc(loc)) doaction();
       else if (obj == PLANT && at(PLANT2) && prop[PLANT2] != 0) {
        obj = PLANT2;

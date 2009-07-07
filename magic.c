@@ -250,10 +250,12 @@ sub poof() {
  >
 }
 
+#endif
+
+#if defined(ADVMAGIC) || defined(ORIG_RAND)
 void datime(int* d, int* t) {
  time_t now = time(NULL);
  *d = (now - 220924800) / 86400;
  *t = (now % 86400) / 60;
 }
-
 #endif

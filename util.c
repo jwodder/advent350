@@ -162,3 +162,19 @@ void getin(char* w1, char* r1, char* w2, char* r2) {
   return $word1, $raw1, $word2, $raw2;
  }
 }
+
+int ran(int max) {
+#ifdef ORIG_RAND
+ static int r = 0;
+ int d = 1;
+ if (r == 0) {
+  datime(&d, &r);
+  r = 18 * r + 5;
+  d = 1000 + d % 1000;
+ }
+ for (int i=0; i<d; i++) r = (r * 1021) % 1048576;
+ return (max * r) / 1048576;
+#else
+ return rand() % max;
+#endif
+}

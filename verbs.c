@@ -19,7 +19,7 @@ void intransitive(void) {
    break;
 
   case TAKE:
-   if (!(atloc[loc] && link[atloc[loc]] == 0) || dflag >= 2 && /***** @dloc[^5].any == $loc *****/ ) {
+   if (!(atloc[loc] && link[atloc[loc]] == 0) || dflag >= 2 && dwarfHere()) {
     printf("%s what?\n", in1);
     obj = 0;
     togoto = 2600;
@@ -236,8 +236,7 @@ void transitive(void) {
   case INVENT:
    if (toting(obj)) rspeak(24);
    else if (closed) rspeak(138);
-   else if (obj == DWARF && dflag >= 2 && /***** @dloc[^5].any == $loc *****/ )
-    rspeak(94);
+   else if (obj == DWARF && dflag >= 2 && dwarfHere()) rspeak(94);
    else if (at(obj) || (liq() == obj && at(BOTTLE)) || obj == liqloc(loc))
     rspeak(94);
    else rspeak(actspk[verb]);
@@ -379,7 +378,7 @@ void vread(void) {
 
 void vkill(void) {
  if (obj == 0) {
-  if (dflag >= 2 && /***** @dloc[^5].any == $loc *****/ ) obj = DWARF;
+  if (dflag >= 2 && dwarfHere()) obj = DWARF;
   if (here(SNAKE)) obj = obj * 100 + SNAKE;
   if (at(DRAGON) && prop[DRAGON] == 0) obj = obj * 100 + DRAGON;
   if (at(TROLL)) obj = obj * 100 + TROLL;
@@ -624,50 +623,22 @@ void vsay(void) {
  } else printf("Okay, \"%s\".\n", tk);
 }
 
-
-# Below are the routines for saving & restoring games.  All user data is
-# written out in binary form in the order that the variables are declared.
-# @atloc is stored by preceding each sub-array by the number of elements within
-# it.  As pack() and unpack() have not been fully specified for Perl 6 yet (and
-# thus certainly won't be available in Rakudo for a while), the data is written
-# & read using homemade routines.
-
-sub writeInt(IO $out, int32 $i) {
- $out.write(Buf.new($i, size => 32), 4)
-}
-
-sub writeBool(IO $out, bool *@bits) {
- my Int $x = 0;
- $x +|= 1 +< $_ if @bits[$_] for ^@bits;
- #for @bits.kv -> $k, $v { $x +|= 1 +< $k if $v }
- my Buf $blob .= new($x);
- $out.write($blob, $blob.bytes #< ??? > );
-}
-
-sub readInt(IO $in --> int32) {
- !!!
-}
-
-sub readBool(IO $in, int $qty --> List of bool) {
- !!!
-}
-
-sub vsuspend(Str $file) {
+void vsuspend(char* file) {
 #ifdef ADVMAGIC
- if $demo {rspeak 201; return; }
- say "I can suspend your adventure for you so that you can resume later, but";
- say "you will have to wait at least $latency minutes before continuing.";
+ if (demo) {rspeak(201); return; }
+ datime(&saved, &savet);
+ printf("I can suspend your adventure for you so that you can resume later,"
+  " but\nyou will have to wait at least %d minutes before continuing.\n",
+  latency);
 #else
- say "I can suspend your adventure for you so that you can resume later.";
+ puts("I can suspend your adventure for you so that you can resume later.");
 #endif
  return if !yes(200, 54, 54);
-#ifdef ADVMAGIC
- datime(&saved, &savet);
-#endif
- say "\nSaving to $file ...";
+ printf("\nSaving to %s ...\n", file);
 
- my IO $adv = open $file, :w, :bin;
- # What exactly happens if the file fails to open?
+ FILE* adv = fopen(file, "wb");
+
+ /***** Check for failure!!! *****/
 
  writeInt $adv, $_ for $loc, $newloc, $oldloc, $oldloc2, $limit, $turns,
   $iwest, $knifeloc, $detail, $numdie, $holding, $foobar, $bonus, $tally,
@@ -694,15 +665,18 @@ sub vsuspend(Str $file) {
 #endif
 }
 
-sub vresume(Str $file) {
- if $turns != 0 {
-  say "To resume an earlier Adventure, you must abandon the current one.";
-  # This message is taken from the 430 pt. version of Adventure (version 2.5).
-  return if !yes(200, 54, 54);
+void vresume(char* file) {
+ if (turns != 0) {
+  puts("To resume an earlier Adventure, you must abandon the current one.");
+/* This message is taken from the 430 pt. version of Adventure (version 2.5). */
+  if (!yes(200, 54, 54)) return;
  }
- say "\nRestoring from $file ...";
+ printf("\nRestoring from %s ...\n", file);
 
- my IO $adv = open $file, :r, :bin;
+ FILE* adv = fopen(file, "rb");
+
+ /***** Check for failure!!! *****/
+
  $loc = readInt $adv;
  $newloc = readInt $adv;
  $oldloc = readInt $adv;
@@ -722,9 +696,6 @@ sub vresume(Str $file) {
  $clock1 = readInt $adv;
  $clock2 = readInt $adv;
  ($wzdark, $closing, $lmwarn, $panic, $closed, $gaveup) = readBool $adv, 6;
- # Doesn't Perl 6 have some built-in way to initialize an array of known length
- # with the return values from calling a function repeatedly?  I thought I saw
- # something like that somewhere in the Synopses.
  @prop[$_] = readInt $adv for ^@prop;
  @abb[$_] = readInt $adv for ^@abb;
  @hintlc[$_] = readInt $adv for ^@hintlc;
@@ -750,5 +721,6 @@ sub vresume(Str $file) {
 
  start();
 #endif
- domove NULLMOVE;
+ fclose(adv);
+ domove(NULLMOVE);
 }
