@@ -637,30 +637,55 @@ void vsuspend(char* file) {
  printf("\nSaving to %s ...\n", file);
 
  FILE* adv = fopen(file, "wb");
-
- /***** Check for failure!!! *****/
-
- writeInt $adv, $_ for $loc, $newloc, $oldloc, $oldloc2, $limit, $turns,
-  $iwest, $knifeloc, $detail, $numdie, $holding, $foobar, $bonus, $tally,
-  $tally2, $abbnum, $clock1, $clock2;
- writeBool $adv, $wzdark, $closing, $lmwarn, $panic, $closed, $gaveup;
- writeInt $adv, $_ for @prop, @abb, @hintlc;
- writeBool $adv, @hinted;
- writeInt $adv, $_ for @dloc, @odloc;
- writeBool $adv, @dseen;
- writeInt $adv, $_ for $dflag, $dkill, @place, @fixed;
- for @atloc {
-  writeInt $adv, $_.elems;
-  writeInt $adv, $_ for @($_);
+ if (adv == NULL) {
+  printf("Error: could not write to %s: ", file);
+  perror(NULL);
+  return;
  }
-#ifdef ADVMAGIC
- writeInt $adv, $saved;
- writeInt $adv, $savet;
+
+ /* Check the return values of all of these calls for failure! */
+ fwrite(&loc, sizeof loc, 1, adv);
+ fwrite(&newloc, sizeof newloc, 1, adv);
+ fwrite(&oldloc, sizeof oldloc, 1, adv);
+ fwrite(&oldloc2, sizeof oldloc2, 1, adv);
+ fwrite(&limit, sizeof limit, 1, adv);
+ fwrite(&turns, sizeof turns, 1, adv);
+ fwrite(&iwest, sizeof iwest, 1, adv);
+ fwrite(&knifeloc, sizeof knifeloc, 1, adv);
+ fwrite(&detail, sizeof detail, 1, adv);
+ fwrite(&numdie, sizeof numdie, 1, adv);
+ fwrite(&holding, sizeof holding, 1, adv);
+ fwrite(&foobar, sizeof foobar, 1, adv);
+ fwrite(&tally, sizeof tally, 1, adv);
+ fwrite(&tally2, sizeof tally2, 1, adv);
+ fwrite(&abbnum, sizeof abbnum, 1, adv);
+ fwrite(&clock1, sizeof clock1, 1, adv);
+ fwrite(&clock2, sizeof clock2, 1, adv);
+ fwrite(&wzdark, sizeof wzdark, 1, adv);
+ fwrite(&closing, sizeof closing, 1, adv);
+ fwrite(&lmwarn, sizeof lmwarn, 1, adv);
+ fwrite(&panic, sizeof panic, 1, adv);
+ fwrite(&closed, sizeof closed, 1, adv);
+ fwrite(prop, sizeof(prop[0]), sizeof(prop)/sizeof(prop[0]), adv);
+ fwrite(abb, sizeof(abb[0]), sizeof(abb)/sizeof(abb[0]), adv);
+ fwrite(hintlc, sizeof(hintlc[0]), sizeof(hintlc)/sizeof(hintlc[0]), adv);
+ fwrite(hinted, sizeof(hinted[0]), sizeof(hinted)/sizeof(hinted[0]), adv);
+ fwrite(dloc, sizeof(dloc[0]), sizeof(dloc)/sizeof(dloc[0]), adv);
+ fwrite(odloc, sizeof(odloc[0]), sizeof(odloc)/sizeof(odloc[0]), adv);
+ fwrite(dseen, sizeof(dseen[0]), sizeof(dseen)/sizeof(dseen[0]), adv);
+ fwrite(&dflag, sizeof dflag, 1, adv);
+ fwrite(&dkill, sizeof dkill, 1, adv);
+ fwrite(place, sizeof(place[0]), sizeof(place)/sizeof(place[0]), adv);
+ fwrite(fixed, sizeof(fixed[0]), sizeof(fixed)/sizeof(fixed[0]), adv);
+ fwrite(atloc, sizeof(atloc[0]), sizeof(atloc)/sizeof(atloc[0]), adv);
+ fwrite(link, sizeof(link[0]), sizeof(link)/sizeof(link[0]), adv);
+ fwrite(&saved, sizeof saved, 1, adv);
+ fwrite(&savet, sizeof savet, 1, adv);
  
  fclose(adv);
+#ifdef ADVMAGIC
  ciao();
 #else
- fclose(adv);
  exit(0);
 #endif
 }
@@ -674,53 +699,54 @@ void vresume(char* file) {
  printf("\nRestoring from %s ...\n", file);
 
  FILE* adv = fopen(file, "rb");
-
- /***** Check for failure!!! *****/
-
- $loc = readInt $adv;
- $newloc = readInt $adv;
- $oldloc = readInt $adv;
- $oldloc2 = readInt $adv;
- $limit = readInt $adv;
- $turns = readInt $adv;
- $iwest = readInt $adv;
- $knifeloc = readInt $adv;
- $detail = readInt $adv;
- $numdie = readInt $adv;
- $holding = readInt $adv;
- $foobar = readInt $adv;
- $bonus = readInt $adv;
- $tally = readInt $adv;
- $tally2 = readInt $adv;
- $abbnum = readInt $adv;
- $clock1 = readInt $adv;
- $clock2 = readInt $adv;
- ($wzdark, $closing, $lmwarn, $panic, $closed, $gaveup) = readBool $adv, 6;
- @prop[$_] = readInt $adv for ^@prop;
- @abb[$_] = readInt $adv for ^@abb;
- @hintlc[$_] = readInt $adv for ^@hintlc;
- @hinted = readBool $adv, +@hinted;
- @dloc[$_] = readInt $adv for ^@dloc;
- @odloc[$_] = readInt $adv for ^@odloc;
- @dseen = readBool $adv, +@dseen;
- $dflag = readInt $adv;
- $dkill = readInt $adv;
- @place[$_] = readInt $adv for ^@place;
- @fixed[$_] = readInt $adv for ^@fixed;
- for ^@atloc -> $i {
-  my int $qty = readInt $adv;
-  @atloc[$i;$_] = readInt $adv for ^$qty;
+ if (adv == NULL) {
+  printf("Error: could not read %s: ", file);
+  perror(NULL);
+  return;
  }
-#ifdef ADVMAGIC
- # If the user attempts to restart a non-magic game with the magic version of
- # this program, just assume that $saved is 0.  (Yes, I know an int32 can't be
- # undefined.  This is just a placeholder/reminder until I actually add in IO
- # error checking.)
- $saved = readInt($adv) // 0;
- $savet = readInt($adv) // 0;
 
+ /* Check the return values of all of these calls for failure! */
+ fread(&loc, sizeof loc, 1, adv);
+ fread(&newloc, sizeof newloc, 1, adv);
+ fread(&oldloc, sizeof oldloc, 1, adv);
+ fread(&oldloc2, sizeof oldloc2, 1, adv);
+ fread(&limit, sizeof limit, 1, adv);
+ fread(&turns, sizeof turns, 1, adv);
+ fread(&iwest, sizeof iwest, 1, adv);
+ fread(&knifeloc, sizeof knifeloc, 1, adv);
+ fread(&detail, sizeof detail, 1, adv);
+ fread(&numdie, sizeof numdie, 1, adv);
+ fread(&holding, sizeof holding, 1, adv);
+ fread(&foobar, sizeof foobar, 1, adv);
+ fread(&tally, sizeof tally, 1, adv);
+ fread(&tally2, sizeof tally2, 1, adv);
+ fread(&abbnum, sizeof abbnum, 1, adv);
+ fread(&clock1, sizeof clock1, 1, adv);
+ fread(&clock2, sizeof clock2, 1, adv);
+ fread(&wzdark, sizeof wzdark, 1, adv);
+ fread(&closing, sizeof closing, 1, adv);
+ fread(&lmwarn, sizeof lmwarn, 1, adv);
+ fread(&panic, sizeof panic, 1, adv);
+ fread(&closed, sizeof closed, 1, adv);
+ fread(prop, sizeof(prop[0]), sizeof(prop)/sizeof(prop[0]), adv);
+ fread(abb, sizeof(abb[0]), sizeof(abb)/sizeof(abb[0]), adv);
+ fread(hintlc, sizeof(hintlc[0]), sizeof(hintlc)/sizeof(hintlc[0]), adv);
+ fread(hinted, sizeof(hinted[0]), sizeof(hinted)/sizeof(hinted[0]), adv);
+ fread(dloc, sizeof(dloc[0]), sizeof(dloc)/sizeof(dloc[0]), adv);
+ fread(odloc, sizeof(odloc[0]), sizeof(odloc)/sizeof(odloc[0]), adv);
+ fread(dseen, sizeof(dseen[0]), sizeof(dseen)/sizeof(dseen[0]), adv);
+ fread(&dflag, sizeof dflag, 1, adv);
+ fread(&dkill, sizeof dkill, 1, adv);
+ fread(place, sizeof(place[0]), sizeof(place)/sizeof(place[0]), adv);
+ fread(fixed, sizeof(fixed[0]), sizeof(fixed)/sizeof(fixed[0]), adv);
+ fread(atloc, sizeof(atloc[0]), sizeof(atloc)/sizeof(atloc[0]), adv);
+ fread(link, sizeof(link[0]), sizeof(link)/sizeof(link[0]), adv);
+ fread(&saved, sizeof saved, 1, adv);
+ fread(&savet, sizeof savet, 1, adv);
+ 
+ fclose(adv);
+#ifdef ADVMAGIC
  start();
 #endif
- fclose(adv);
  domove(NULLMOVE);
 }

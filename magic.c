@@ -95,21 +95,24 @@ void maint(void) {
  mspeak(15);  /* Say something else? */
  blklin = true;
 
- /*****
-  # Save values to MAGICFILE
-  my IO $abra = open MAGICFILE, :w, :bin;
-  writeBool $abra, @wkday;
-  writeBool $abra, @wkend;
-  writeBool $abra, @holid;
-  writeInt $abra, $hbegin;
-  writeInt $abra, $hend;
-  # write out $hname
-  writeInt $abra, $shortGame;
-  # write out $magic
-  writeInt $abra, $magnm;
-  writeInt $abra, $latency;
-  # write out $msg
- *****/
+ FILE* abra = fopen(MAGICFILE, "wb");
+ if (abra == NULL) {
+  perror("Error: could not write to " MAGICFILE);
+  exit(1);
+ }
+ /* Check all of these function calls for failure! */
+ fwrite(wkday, sizeof(wkday[0]), sizeof(wkday)/sizeof(wkday[0]), abra);
+ fwrite(wkend, sizeof(wkend[0]), sizeof(wkend)/sizeof(wkend[0]), abra);
+ fwrite(holid, sizeof(holid[0]), sizeof(holid)/sizeof(holid[0]), abra);
+ fwrite(&hbegin, sizeof hbegin, 1, abra);
+ fwrite(&hend, sizeof hend, 1, abra);
+ fwrite(hname, 1, sizeof hname, abra);
+ fwrite(&shortGame, sizeof shortGame, 1, abra);
+ fwrite(magic, 1, sizeof magic, abra);
+ fwrite(&magnm, sizeof magnm, 1, abra);
+ fwrite(&latency, sizeof latency, 1, abra);
+ fwrite(msg, 1, sizeof msg, abra);
+ fclose(abra);
 
  ciao();
 }
@@ -232,22 +235,25 @@ void motd(bool alter) {
  } else if (*msg) fputs(msg, stdout);
 }
 
-sub poof() {
- #<
-  # Read in values from MAGICFILE
-  my IO $abra = open MAGICFILE, :r, :bin;
-  @wkday = readBool $abra, +@wkday;
-  @wkend = readBool $abra, +@wkend;
-  @holid = readBool $abra, +@holid;
-  $hbegin = readInt $abra;
-  $hend = readInt $abra;
-  # read in $hname
-  $shortGame = readInt $abra;
-  # read in $magic
-  $magnm = readInt $abra;
-  $latency = readInt $abra;
-  # read in $msg
- >
+void poof(void) {
+ FILE* abra = fopen(MAGICFILE, "rb");
+ if (abra == NULL) return;
+ /* If MAGICFILE cannot be opened, assume it does not exist and quietly leave
+  * the default magic values in place. */
+
+ /* Check all of these function calls for failure! */
+ fread(wkday, sizeof(wkday[0]), sizeof(wkday)/sizeof(wkday[0]), abra);
+ fread(wkend, sizeof(wkend[0]), sizeof(wkend)/sizeof(wkend[0]), abra);
+ fread(holid, sizeof(holid[0]), sizeof(holid)/sizeof(holid[0]), abra);
+ fread(&hbegin, sizeof hbegin, 1, abra);
+ fread(&hend, sizeof hend, 1, abra);
+ fread(hname, 1, sizeof hname, abra);
+ fread(&shortGame, sizeof shortGame, 1, abra);
+ fread(magic, 1, sizeof magic, abra);
+ fread(&magnm, sizeof magnm, 1, abra);
+ fread(&latency, sizeof latency, 1, abra);
+ fread(msg, 1, sizeof msg, abra);
+ fclose(abra);
 }
 
 #endif

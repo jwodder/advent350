@@ -44,7 +44,7 @@ int tally2 = 0;
 int abbnum = 5;
 int clock1 = 30;
 int clock2 = 50;
-bool wzdark = false, closing = false, lmwarn = false, panic = false
+bool wzdark = false, closing = false, lmwarn = false, panic = false;
 bool closed = false;
 int prop[65] = {
  /* Elements 0 through 49 are implicitly set to zero. */
@@ -78,11 +78,13 @@ int fixed[65] = {
  0, 0, 121, 0, -1
 };
 
-int atloc[65];
-int link[65];
-#ifdef ADVMAGIC
+int atloc[141];
+int link[165];
 int saved = -1, savet = 0;
-#endif
+/* Although `saved' and `savet' are only used when ADVMAGIC is defined, they
+ * are declared in and saved & restored by both forms of the game in order to
+ * make the save files compatible. */
+
 
 int main(int argc, char** argv) {
 #ifndef ORIG_RAND
