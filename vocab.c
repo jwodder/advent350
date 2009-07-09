@@ -1,4 +1,4 @@
-struct {char word[6]; int val1, val2; } vocabulary[WORDQTY] = {
+const struct {char word[6]; int val1, val2; } vocabulary[WORDQTY] = {
  {"\"SPEL", 1016, 0},
  {"?", 3051, 0},
  {"ABOVE", 29, 0},

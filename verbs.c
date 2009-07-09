@@ -1,4 +1,6 @@
-/* Verb functions: */
+/* Verb functions */
+
+static bool freeable;
 
 void intransitive(void) {
 /* Label 4080 (intransitive verb handling): */
@@ -121,13 +123,19 @@ void intransitive(void) {
    } else vread();
    break;
 
-  case SUSPEND: 
-   /***** vsuspend("%*ENV<HOME>/.adventure"); *****/
+  case SUSPEND: {
+   char* file = defaultSaveFile();
+   vsuspend(file);
+   if (freeable) free(file);
    break;
+  }
 
-  case RESUME:
-   /***** vresume("%*ENV<HOME>/.adventure"); *****/
+  case RESUME: {
+   char* file = defaultSaveFile();
+   vresume(file);
+   if (freeable) free(file);
    break;
+  }
 
   case HOURS:
 #ifdef ADVMAGIC
@@ -749,4 +757,21 @@ void vresume(char* file) {
  start();
 #endif
  domove(NULLMOVE);
+}
+
+char* defaultSaveFile(void) {
+ freeable = false;
+ char* home = getenv("HOME");
+ if (home != NULL) {
+  size_t homeLen = strlen(home);
+  size_t baseLen = strlen(DEFAULT_SAVE_NAME);
+  char* filename = malloc(homeLen + baseLen + 2);
+  if (filename == NULL) return DEFAULT_SAVE_NAME;
+  strncpy(filename, home, homeLen);
+  filename[homeLen] = '/';
+  strncpy(filename + homeLen + 1, DEFAULT_SAVE_NAME, baseLen);
+  filename[homeLen+baseLen+1] = 0;
+  freeable = true;
+  return filename;
+ } else return DEFAULT_SAVE_NAME;
 }

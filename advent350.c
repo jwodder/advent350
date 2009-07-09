@@ -149,11 +149,13 @@ void turn(void) {
     if (!panic) clock2 = 15;
     panic = true;
    }
-   if (newloc != loc && !forced(loc) && !bitset(loc, 3)
-    && { @odloc[$^i] == $newloc && @dseen[$^i] }(any ^5) {
-    newloc = loc;
-    rspeak(2);
-   }
+   if (newloc != loc && !forced(loc) && !bitset(loc, 3))
+    for (int i=0; i<5; i++)
+     if (odloc[i] == newloc && dseen[i]) {
+      newloc = loc;
+      rspeak(2);
+      break;
+     }
    loc = newloc;
    # Dwarven logic:
    togoto = 2000;  /* in preparation for an early `return' */
@@ -196,7 +198,7 @@ void turn(void) {
      if (i == 5) {
       /* Pirate logic: */
       if (loc == CHLOC || prop[CHEST] >= 0) continue;
-      bool k = false;
+      bool k = false, stole = false;
       for (int j=50; j<65; j++) {
        if (j == PYRAM && (loc == 100 || loc == 101)) continue;
        if (toting(j)) {
@@ -210,20 +212,21 @@ void turn(void) {
 	}
 	dloc[5] = odloc[5] = CHLOC;
 	dseen[5] = false;
-
-	/* GOTO next dwarfLoop */
-
+	stole = true;
+	break;
        }
        if (here(j)) k = true;
       }
-      if (tally == tally2 + 1 && !k && place[CHEST] == 0 && here(LAMP)
-       && prop[LAMP] == 1) {
-       rspeak(186);
-       move(CHEST, CHLOC);
-       move(MESSAG, CHLOC2);
-       dloc[5] = odloc[5] = CHLOC;
-       dseen[5] = false;
-      } else if (odloc[5] != dloc[5] && pct(20)) {rspeak(127); }
+      if (!stole) {
+       if (tally == tally2 + 1 && !k && place[CHEST] == 0 && here(LAMP)
+	&& prop[LAMP] == 1) {
+	rspeak(186);
+	move(CHEST, CHLOC);
+	move(MESSAG, CHLOC2);
+	dloc[5] = odloc[5] = CHLOC;
+	dseen[5] = false;
+       } else if (odloc[5] != dloc[5] && pct(20)) rspeak(127);
+      }
      } else {
       dtotal++;
       if (odloc[i] == dloc[i]) {

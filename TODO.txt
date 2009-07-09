@@ -1,7 +1,5 @@
 - Translate the getin() function
 - Write a Makefile
-- Add a header file containing declarations for all of the functions & global
-  variables
 - Make the arrays be properly zero-based
 - If the user enters "save" without a filename while playing a restored game,
   save the game to the same path that it was restored from?

@@ -1,3 +1,58 @@
+extern int togoto;
+extern bool blklin, gaveup;
+#ifdef ADVMAGIC
+extern bool demo;
+#endif
+extern int bonus;
+extern int verb, obj;
+extern char *in1, *in2, *word1, *word2;
+
+#ifdef ADVMAGIC
+extern bool wkday[24];
+extern bool wkend[24];
+extern bool holid[24];
+extern int hbegin, hend;
+extern char hname[21];
+extern int shortGame;
+extern char magic[6];
+extern int magnm;
+extern int latency;
+extern char msg[500];
+#endif
+
+extern int loc, newloc, oldloc, oldloc2, limit;
+extern int turns, iwest, knifeloc, detail;
+extern int numdie, holding, foobar;
+extern int tally, tally2, abbnum, clock1, clock2;
+extern bool wzdark, closing, lmwarn, panic, closed;
+extern int prop[65];
+extern int abb[141];
+extern int hintlc[10];
+extern bool hinted[10];
+extern int dloc[6];
+extern int odloc[6];
+extern bool dseen[6];
+extern int dflag, dkill;
+extern int place[65];
+extern int fixed[65];
+extern int atloc[141];
+extern int link[165];
+extern int saved, savet;
+
+extern const char* longdesc[141];
+extern const char* shortdesc[141];
+extern const char* itemDesc[65][7];
+extern const char* rmsg[];
+#ifdef ADVMAGIC
+extern const char* magicMsg[];
+#endif
+extern const int travel[141][MAXROUTE][MAXTRAV];
+extern const struct {char word[6]; int val1, val2; } vocabulary[WORDQTY];
+extern const int actspk[32];
+extern const int cond[141];
+extern const struct {int score; char* rank; } classes[];
+extern const int hints[10][4];
+
 void turn(void);
 bool toting(int item);
 bool here(int item);
@@ -47,6 +102,7 @@ void vfeed(void);
 void vsay(void);
 void vsuspend(char* file);
 void vresume(char* file);
+char* defaultSaveFile(void);
 
 #ifdef ADVMAGIC
 void ciao(void);

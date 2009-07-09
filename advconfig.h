@@ -8,4 +8,7 @@
 
 /* #define ORIG_RAND */
 
+/* #define DEFAULT_SAVE_NAME  ".adventure" */
+/* name of the default save file */
+
 #endif

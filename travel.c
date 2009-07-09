@@ -1,4 +1,4 @@
-int travel[141][MAXROUTE][MAXTRAV] = {
+const int travel[141][MAXROUTE][MAXTRAV] = {
  {{-1}},
 
  {{2, 2, 44, 29, -1},
