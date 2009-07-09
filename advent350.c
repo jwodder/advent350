@@ -14,7 +14,8 @@ bool demo = false;
 #endif
 int bonus = 0;
 int verb, obj;
-char *in1, *in2, *word1, *word2;
+char in1[MAX_INPUT_LENGTH+1], in2[MAX_INPUT_LENGTH+1];
+char word1[6], word2[6];
 
 #ifdef ADVMAGIC
 /* These arrays hold the times when adventurers are allowed into Colossal Cave;

@@ -5,7 +5,8 @@ extern bool demo;
 #endif
 extern int bonus;
 extern int verb, obj;
-extern char *in1, *in2, *word1, *word2;
+extern char in1[MAX_INPUT_LENGTH+1], in2[MAX_INPUT_LENGTH+1];
+extern char word1[6], word2[6];
 
 #ifdef ADVMAGIC
 extern bool wkday[24];

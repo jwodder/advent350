@@ -1,8 +1,7 @@
-- Translate the getin() function
-- Write a Makefile
+- Write a Makefile and get the code to compile
 - Make the arrays be properly zero-based
 - If the user enters "save" without a filename while playing a restored game,
-  save the game to the same path that it was restored from?
+  should the game be saved to the same path that it was restored from?
 - Check everything to make sure it works!
 - Reorganize the partitioning of functions into files into something sane
 - In maint(), the prompts for several integral values say that entering a null
@@ -11,3 +10,5 @@
 - Prevent restoring a saved game while playing a demo game.
 - Check the return values of all of the fread/fwrite calls in vsuspend(),
   vresume(), maint(), and poof() for failure
+- Somehow deal with the historical messages about saving your "core image" when
+  suspending a game or finishing maintenance mode in the magic version

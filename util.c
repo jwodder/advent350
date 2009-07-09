@@ -149,17 +149,48 @@ int vocab(const char* word, int type) {
 }
 
 void getin(char* w1, char* r1, char* w2, char* r2) {
+ static char line[MAX_INPUT_LENGTH+1];
  putchar('\n');
  for (;;) {
   printf("> ");
-
-  /***** Work on this!!! *****/
-
-  my Str $raw1, $raw2 = $*IN.get.words;
-  next if !$raw1.defined && $blklin;
-  my Str $word1, $word2 = ($raw1, $raw2).map:
-   { .defined ?? .substr(0, 5).uc !! undef };
-  return $word1, $raw1, $word2, $raw2;
+  fgets(line, MAX_INPUT_LENGTH+1, stdin);
+  char* start1 = line;
+  while (isspace(*start1) && *start1 != 0) start1++;
+  if (*start1 == 0) {
+   if (blklin) continue;
+   else {
+    *w1 = 0;
+    if (r1 != NULL) *r1 = 0;
+    if (w2 != NULL) *w2 = 0;
+    if (r2 != NULL) *r2 = 0;
+    return;
+   }
+  }
+  char* end1 = start1;
+  while (!isspace(*end1) && *end1 != 0) end1++;
+  int i;
+  for (i=0; i<5 && start1 + i < end1; i++) w1[i] = toupper(start1[i]);
+  w1[i] = 0;
+  if (r1 != NULL) {
+   strncpy(r1, start1, end1 - start1);
+   r1[end1-start1] = 0;
+  }
+  if (w2 != NULL) {
+   char* start2 = end1;
+   while (isspace(*start2) && *start2 != 0) start2++;
+   if (*start2 == 0) {*w2 = 0; if (r2 != NULL) *r2 = 0; }
+   else {
+    char* end2 = start2;
+    while (!isspace(*end2) && *end2 != 0) end2++;
+    for (i=0; i<5 && start2 + i < end2; i++) w2[i] = toupper(start2[i]);
+    w2[i] = 0;
+    if (r2 != NULL) {
+     strncpy(r2, start2, end2 - start2);
+     r2[end2-start2] = 0;
+    }
+   }
+  }
+  return;
  }
 }
 
