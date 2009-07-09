@@ -1,9 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <string.h>
 #include <time.h>
 #include "advconfig.h"
 #include "advconst.h"
+#include "advdecl.h"
 
 /* Global variables: */
 
@@ -158,7 +160,7 @@ void turn(void) {
       break;
      }
    loc = newloc;
-   # Dwarven logic:
+   /* Dwarven logic: */
    togoto = 2000;  /* in preparation for an early `return' */
    if (loc == 0 || forced(loc) || bitset(newloc, 3)) return;
    if (dflag == 0) {

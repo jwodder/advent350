@@ -1,3 +1,5 @@
+#include <stddef.h>
+
 const char* longdesc[141] = {
  NULL,
 

@@ -1,3 +1,10 @@
+#ifndef ADVDECL_H
+#define ADVDECL_H
+
+#include <stdbool.h>
+#include "advconfig.h"
+#include "advconst.h"
+
 extern int togoto;
 extern bool blklin, gaveup;
 #ifdef ADVMAGIC
@@ -65,7 +72,7 @@ bool bitset(int loc, int n);
 bool forced(int loc);
 bool dark(void);
 bool pct(int x);
-void speak(char* s);
+void speak(const char* s);
 void pspeak(int item, int state);
 void rspeak(int msg);
 bool yes(int x, int y, int z);
@@ -122,4 +129,6 @@ void poof(void);
 
 #if defined(ADVMAGIC) || defined(ORIG_RAND)
 void datime(int* d, int* t);
+#endif
+
 #endif

@@ -1,7 +1,13 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "advconst.h"
+#include "advdecl.h"
+
 void domove(int motion) {
  togoto = 2;
  newloc = loc;
- /*if (travel[loc][0][0] == -1) bug(26);*/
+ if (travel[loc][0][0] == -1) bug(26);
  switch (motion) {
   case NULLMOVE: return;
   case BACK: {

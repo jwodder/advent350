@@ -1,3 +1,12 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
+#include <time.h>
+#include "advconfig.h"
+#include "advconst.h"
+#include "advdecl.h"
+
 bool toting(int item) {
  return place[item] == -1;
 }
@@ -38,7 +47,7 @@ bool pct(int x) {
  return ran(100) < x;
 }
 
-void speak(char* s) {
+void speak(const char* s) {
  if (s == NULL) return;
  if (blklin) putchar('\n');
  fputs(s, stdout);
@@ -209,3 +218,269 @@ int ran(int max) {
  return rand() % max;
 #endif
 }
+
+#ifdef ADVMAGIC
+void ciao(void) {
+ mspeak(32);
+ exit(0);
+}
+
+void mspeak(int msg) {
+ if (msg != 0) speak(magicMsg(msg));
+}
+
+bool yesm(int x, int y, int z) {
+ for (;;) {
+  mspeak(x);
+  char reply[6];
+  getin(reply, NULL, NULL, NULL); /* Ignore everything after the first word. */
+  if (strcmp(reply, "YES") == 0 || strcmp(reply, "Y") == 0) {
+   mspeak(y);
+   return true;
+  } else if (strcmp(reply, "NO") == 0 || strcmp(reply, "N") == 0) {
+   mspeak(z);
+   return false;
+  } else {printf("Please answer the question.\n"); }
+ }
+}
+
+bool start(void) {
+ int d, t;
+ datime(&d, &t);
+ if (saved != -1) {
+  int delay = (d - saved) * 1440 + (t - savet);
+  if (delay < latency) {
+   printf("This adventure was suspended a mere %d minutes ago.\n", delay);
+   if (delay < latency/3) {mspeak(2); exit(0); }
+   else {
+    mspeak(8);
+    if (wizard()) {saved = -1; return false; }
+    mspeak(9);
+    exit(0);
+   }
+  }
+ }
+ bool* primet = hbegin <= d && d <= hend ? holid : d % 7 <= 1 ? wkend : wkday;
+ if (primet[t/60]) {
+  /* Prime time (cave closed) */
+  mspeak(3);
+  hours();
+  mspeak(4);
+  if (wizard()) {saved = -1; return false; }
+  if (saved != -1) {mspeak(9); exit(0); }
+  if (yesm(5, 7, 7)) {saved = -1; return true; }
+  exit(0);
+ }
+ saved = -1;
+ return false;
+}
+
+void maint(void) {
+ if (!wizard()) return;
+ blklin = false;
+ if (yesm(10, 0, 0)) hours();
+ if (yesm(11, 0, 0)) newhrs();
+ if (yesm(26, 0, 0)) {
+  mspeak(27);
+  printf("> ");
+  scanf("%d", &hbegin);
+  mspeak(28);
+  printf("> ");
+  scanf("%d", &hend);
+  int d, t;
+  datime(&d, &t);
+  hbegin += d;
+  hend += hbegin - 1;
+  mspeak(29);
+  printf("> ");
+  scanf("%20s", hname);
+ }
+ printf("Length of short game (null to leave at %d):\n> ", shortGame);
+ int x;
+ scanf("%d", &x);
+ if (x > 0) shortGame = x;
+ mspeak(12);
+ char shamwow[6];
+ getin(shamwow, NULL, NULL, NULL);
+ if (*shamwow) strcpy(magic, shamwow);
+ mspeak(13);
+ printf("> ");
+ scanf("%d", &x);
+ if (x > 0) magnm = x;
+ printf("Latency for restart (null to leave at %d):\n> ", latency);
+ scanf("%d", &x);
+ if (0 < x && x < 45) mspeak(30);
+ if (x > 0) latency = x < 45 ? 45 : x;
+ if (yesm(14, 0, 0)) motd(true);
+ mspeak(15);  /* Say something else? */
+ blklin = true;
+
+ FILE* abra = fopen(MAGICFILE, "wb");
+ if (abra == NULL) {
+  perror("Error: could not write to " MAGICFILE);
+  exit(1);
+ }
+ /* Check all of these function calls for failure! */
+ fwrite(wkday, sizeof(wkday[0]), sizeof(wkday)/sizeof(wkday[0]), abra);
+ fwrite(wkend, sizeof(wkend[0]), sizeof(wkend)/sizeof(wkend[0]), abra);
+ fwrite(holid, sizeof(holid[0]), sizeof(holid)/sizeof(holid[0]), abra);
+ fwrite(&hbegin, sizeof hbegin, 1, abra);
+ fwrite(&hend, sizeof hend, 1, abra);
+ fwrite(hname, 1, sizeof hname, abra);
+ fwrite(&shortGame, sizeof shortGame, 1, abra);
+ fwrite(magic, 1, sizeof magic, abra);
+ fwrite(&magnm, sizeof magnm, 1, abra);
+ fwrite(&latency, sizeof latency, 1, abra);
+ fwrite(msg, 1, sizeof msg, abra);
+ fclose(abra);
+
+ ciao();
+}
+
+bool wizard(void) {
+ if (!yesm(16, 0, 7)) return false;
+ mspeak(17);
+ char word[6];
+ getin(word, NULL, NULL, NULL);
+ if (strcmp(word, magic) != 0) {mspeak(20); return false; }
+ int d, t;
+ datime(&d, &t);
+ t = t * 2 + 1;
+ word[0] = word[1] = word[2] = word[3] = word[4] = 64;
+ word[5] = 0;
+ int val[5];
+ for (int y=0; y<5; y++) {
+  int x = 79 + d % 5;
+  d /= 5;
+  for (; x>0; x--) t = (t * 1027) % 1048576;
+  word[y] += val[y] = (t*26) / 1048576 + 1;
+ }
+ if (yesm(18, 0, 0)) {mspeak(20); return false; }
+ printf(" %s\n", word);
+ getin(word, NULL, NULL, NULL);
+ datime(&d, &t);
+ t = (t/60) * 40 + (t/10) * 10;
+ d = magnm;
+ for (int y=0; y<5; y++) {
+  if (word[y] != (abs(val[y] - val[(y+1) % 5]) * (d % 10) + (t % 10)) % 26
+   + 65) {
+   mspeak(20);
+   return false;
+  }
+  t /= 10;
+  d /= 10;
+ }
+ mspeak(19);
+ return true;
+}
+
+void hours(void) {
+ putchar('\n');
+ hoursx(wkday, "Mon - Fri:");
+ hoursx(wkend, "Sat - Sun:");
+ hoursx(holid, "Holidays: ");
+ int d, t;
+ datime(&d, &t);
+ if (hend < d || hend < hbegin) return;
+ if (hbegin > d) {
+  d = hbegin - d;
+  printf("The next holiday will be in %d day%s, namely %s.\n",
+   d, d == 1 ? "" : "s", hname);
+ } else printf("Today is a holiday, namely %s.\n", hname);
+}
+
+void hoursx(const bool* hours, const char* day) {
+ bool first = true;
+ int from = -1;
+ for (;;) {
+  do from++ while (hours[from] && from < 24);
+  if (from >= 24) {
+   if (first) printf("%10s%s Closed all day\n", "", day);
+   return;
+  } else {
+   int till = from;
+   do till++ while (!hours[till] && till != 24);
+   if (from == 0 && till == 24) {
+    printf("%10s%s Open all day\n", "", day);
+    return;
+   } else if (first) printf("%10s%s%4d:00 to%3d:00\n", "", day, from, till);
+   else printf("%20s%4d:00 to%3d:00\n", "", from, till);
+   first = false;
+   from = till;
+  }
+ }
+}
+
+void newhrs(void) {
+ mspeak(21);
+ newhrx(wkday, "weekdays:");
+ newhrx(wkend, "weekends:");
+ newhrx(holid, "holidays:");
+ mspeak(22);
+ hours();
+}
+
+void newhrx(bool* hours, const char* day) {
+ for (int i=0; i<24; i++) hours[i] = false;
+ printf("Prime time on %s\n", day);
+ for (;;) {
+  int from, till;
+  printf("from: ");
+  scanf("%d", &from);
+  if (from < 0 || from >= 24) return;
+  printf("till: ");
+  scanf("%d", &till);
+  if (till <= from || till > 24) return;
+  for (; from < till; from++) hours[from] = true;
+ }
+}
+
+void motd(bool alter) {
+ if (alter) {
+  memset(msg, 0, sizeof msg);
+  mspeak(23);
+  size_t msgLen = 0;
+  for (;;) {
+   char line[71];
+   print("> ");
+   fgets(line, 70, stdin);
+   if (*line == '\n') return;
+   if (strchr(line, '\n') == NULL) {mspeak(24); fpurge(stdin); continue; }
+   msgLen += strlen(line);
+   strncat(msg, line, 70);
+  /* This doesn't exactly match the logic used in the original Fortran, but
+   * it's close: */
+   if (msgLen + 70 >= 500) {mspeak(25); return; }
+  }
+ } else if (*msg) fputs(msg, stdout);
+}
+
+void poof(void) {
+ FILE* abra = fopen(MAGICFILE, "rb");
+ if (abra == NULL) return;
+ /* If MAGICFILE cannot be opened, assume it does not exist and quietly leave
+  * the default magic values in place. */
+
+ /* Check all of these function calls for failure! */
+ fread(wkday, sizeof(wkday[0]), sizeof(wkday)/sizeof(wkday[0]), abra);
+ fread(wkend, sizeof(wkend[0]), sizeof(wkend)/sizeof(wkend[0]), abra);
+ fread(holid, sizeof(holid[0]), sizeof(holid)/sizeof(holid[0]), abra);
+ fread(&hbegin, sizeof hbegin, 1, abra);
+ fread(&hend, sizeof hend, 1, abra);
+ fread(hname, 1, sizeof hname, abra);
+ fread(&shortGame, sizeof shortGame, 1, abra);
+ fread(magic, 1, sizeof magic, abra);
+ fread(&magnm, sizeof magnm, 1, abra);
+ fread(&latency, sizeof latency, 1, abra);
+ fread(msg, 1, sizeof msg, abra);
+ fclose(abra);
+}
+#endif  /* #ifdef ADVMAGIC */
+
+#if defined(ADVMAGIC) || defined(ORIG_RAND)
+void datime(int* d, int* t) {
+ time_t now = time(NULL);
+ *d = (now - 220924800) / 86400;
+ *t = (now % 86400) / 60;
+}
+#endif

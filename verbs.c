@@ -1,5 +1,12 @@
 /* Verb functions */
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "advconfig.h"
+#include "advconst.h"
+#include "advdecl.h"
+
 static bool freeable;
 
 void intransitive(void) {
@@ -170,7 +177,7 @@ void transitive(void) {
   case OFF: voff(); break;
 
   case WAVE:
-   if (!toting(obj) && !(obj == ROD && toting(ROD2)) rspeak(29);
+   if (!toting(obj) && !(obj == ROD && toting(ROD2))) rspeak(29);
    else if (obj != ROD || !at(FISSUR) || !toting(obj) || closing)
     rspeak(actspk[verb]);
    else {
@@ -283,7 +290,7 @@ void vtake(void) {
  if (obj == PLANT && prop[PLANT] <= 0) spk = 115;
  if (obj == BEAR && prop[BEAR] == 1) spk = 169;
  if (obj == CHAIN && prop[BEAR] != 0) spk = 170;
- if (fixed(obj)) {rspeak(spk); return; }
+ if (fixed[obj]) {rspeak(spk); return; }
  if (obj == WATER || obj == OIL) {
   if (!here(BOTTLE) || liq() != obj) {
    obj = BOTTLE;
@@ -317,7 +324,7 @@ void vopen(void) {
   case OYSTER: {
    int k = (obj == OYSTER);
    spk = 124 + k;
-   if (toting(OBJ)) spk = 120 + k;
+   if (toting(obj)) spk = 120 + k;
    if (!toting(TRIDENT)) spk = 122 + k;
    if (verb == LOCK) spk = 61;
    if (spk == 124) {
@@ -452,7 +459,7 @@ void vpour(void) {
  else if (obj != OIL && obj != WATER) rspeak(78);
  else {
   prop[BOTTLE] = 1;
-  place[OBJ] = 0;
+  place[obj] = 0;
   if (at(DOOR)) {
    prop[DOOR] = (obj == OIL);
    rspeak(113 + prop[DOOR]);
@@ -497,7 +504,7 @@ void vfill(void) {
  * but even if it survives it is still marked as a fixed object and can't be
  * picked up again.  This is probably a bug in the original code, but who am I
  * to fix it? */
-   if (at(PILLOW)) prop[VASE] = 0
+   if (at(PILLOW)) prop[VASE] = 0;
    pspeak(VASE, prop[VASE] + 1);
    drop(obj, loc);
   }
@@ -544,7 +551,7 @@ void voff(void) {
  else {
   prop[LAMP] = 0;
   rspeak(40);
-  if (dark) rspeak(16);
+  if (dark()) rspeak(16);
  }
 }
 
@@ -641,7 +648,7 @@ void vsuspend(char* file) {
 #else
  puts("I can suspend your adventure for you so that you can resume later.");
 #endif
- return if !yes(200, 54, 54);
+ if (!yes(200, 54, 54)) return;
  printf("\nSaving to %s ...\n", file);
 
  FILE* adv = fopen(file, "wb");

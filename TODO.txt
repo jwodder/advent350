@@ -1,4 +1,3 @@
-- Write a Makefile and get the code to compile
 - Make the arrays be properly zero-based
 - If the user enters "save" without a filename while playing a restored game,
   should the game be saved to the same path that it was restored from?
