@@ -97,7 +97,6 @@ int main(int argc, char** argv) {
  poof();
 #endif
  if (argc > 1) {
-  /* Load a saved game */
   vresume(argv[1]);
   /* Check for failure? */
  } else {
@@ -105,6 +104,15 @@ int main(int argc, char** argv) {
   demo = start();
   motd(false);
 #endif
+  for (int k=64; k>0; k--) {
+   if (fixed[k] > 0) {
+    drop(k+100, fixed[k]);
+    drop(k, place[k]);
+   }
+  }
+  for (int k=64; k>0; k--) {
+   if (place[k] && fixed[k] <= 0) drop(k, place[k]);
+  }
   newloc = 1;
   limit = (hinted[3] = yes(65, 1, 0)) ? 1000 : 330;
  }

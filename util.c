@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include <string.h>
 #include <ctype.h>
 #include <time.h>
@@ -100,7 +101,7 @@ void carry(int obj, int where) {
   place[obj] = -1;
   holding++;
  }
- if (atloc[where] == obj) {atloc[where] = link[obj]; }
+ if (atloc[where] == obj) atloc[where] = link[obj];
  else {
   int tmp;
   for (tmp = atloc[where]; link[tmp] != obj; tmp = link[tmp]);
@@ -159,7 +160,7 @@ int vocab(const char* word, int type) {
 
 void getin(char* w1, char* r1, char* w2, char* r2) {
  static char line[MAX_INPUT_LENGTH+1];
- putchar('\n');
+ if (blklin) putchar('\n');
  for (;;) {
   printf("> ");
   fgets(line, MAX_INPUT_LENGTH+1, stdin);
@@ -226,7 +227,7 @@ void ciao(void) {
 }
 
 void mspeak(int msg) {
- if (msg != 0) speak(magicMsg(msg));
+ if (msg != 0) speak(magicMsg[msg]);
 }
 
 bool yesm(int x, int y, int z) {
@@ -282,37 +283,38 @@ void maint(void) {
  if (yesm(11, 0, 0)) newhrs();
  if (yesm(26, 0, 0)) {
   mspeak(27);
-  printf("> ");
-  scanf("%d", &hbegin);
+  getin(word1, in1, NULL, NULL);
+  hbegin = (int) strtol(in1, NULL, 10);
   mspeak(28);
-  printf("> ");
-  scanf("%d", &hend);
+  getin(word1, in1, NULL, NULL);
+  hend = (int) strtol(in1, NULL, 10);
   int d, t;
   datime(&d, &t);
   hbegin += d;
   hend += hbegin - 1;
   mspeak(29);
-  printf("> ");
-  scanf("%20s", hname);
+  getin(word1, in1, NULL, NULL);
+  strncpy(hname, in1, 20);
+  hname[20] = 0;
  }
- printf("Length of short game (null to leave at %d):\n> ", shortGame);
- int x;
- scanf("%d", &x);
+ printf("Length of short game (null to leave at %d):\n", shortGame);
+ getin(word1, in1, NULL, NULL);
+ int x = (int) strtol(in1, NULL, 10);
  if (x > 0) shortGame = x;
  mspeak(12);
- char shamwow[6];
- getin(shamwow, NULL, NULL, NULL);
- if (*shamwow) strcpy(magic, shamwow);
+ getin(word1, NULL, NULL, NULL);
+ if (*word1) {strncpy(magic, word1, 5); magic[5] = 0; }
  mspeak(13);
- printf("> ");
- scanf("%d", &x);
+ getin(word1, in1, NULL, NULL);
+ x = (int) strtol(in1, NULL, 10);
  if (x > 0) magnm = x;
- printf("Latency for restart (null to leave at %d):\n> ", latency);
- scanf("%d", &x);
+ printf("Latency for restart (null to leave at %d):\n", latency);
+ getin(word1, in1, NULL, NULL);
+ x = (int) strtol(in1, NULL, 10);
  if (0 < x && x < 45) mspeak(30);
  if (x > 0) latency = x < 45 ? 45 : x;
  if (yesm(14, 0, 0)) motd(true);
- mspeak(15);  /* Say something else? */
+ mspeak(15);
  blklin = true;
 
  FILE* abra = fopen(MAGICFILE, "wb");
@@ -393,15 +395,15 @@ void hoursx(const bool* hours, const char* day) {
  bool first = true;
  int from = -1;
  for (;;) {
-  do from++ while (hours[from] && from < 24);
+  do {from++; } while (hours[from] && from < 24);
   if (from >= 24) {
-   if (first) printf("%10s%s Closed all day\n", "", day);
+   if (first) printf("%10s%s  Closed all day\n", "", day);
    return;
   } else {
    int till = from;
-   do till++ while (!hours[till] && till != 24);
+   do {till++; } while (!hours[till] && till != 24);
    if (from == 0 && till == 24) {
-    printf("%10s%s Open all day\n", "", day);
+    printf("%10s%s  Open all day\n", "", day);
     return;
    } else if (first) printf("%10s%s%4d:00 to%3d:00\n", "", day, from, till);
    else printf("%20s%4d:00 to%3d:00\n", "", from, till);
@@ -442,7 +444,7 @@ void motd(bool alter) {
   size_t msgLen = 0;
   for (;;) {
    char line[71];
-   print("> ");
+   printf("> ");
    fgets(line, 70, stdin);
    if (*line == '\n') return;
    if (strchr(line, '\n') == NULL) {mspeak(24); fpurge(stdin); continue; }
@@ -479,8 +481,20 @@ void poof(void) {
 
 #if defined(ADVMAGIC) || defined(ORIG_RAND)
 void datime(int* d, int* t) {
+
+/* This function is supposed to set *d to the number of days since 1 Jan 1977
+ * and *t to the number of minutes since midnight.  Implementing this by
+ * performing basic arithmetic on the return value of time() (assuming POSIX
+ * compliance) doesn't work, as Unix time is measured according to UTC, so in
+ * any other timezone the cave's hours won't match the local time.  Thus, the
+ * time needs to be adjusted for the current timezone, and standard C provides
+ * only one way to do this. */
+
  time_t now = time(NULL);
- *d = (now - 220924800) / 86400;
- *t = (now % 86400) / 60;
+ struct tm* nower = localtime(&now);  /* nower - like now, but more so */
+ int year = nower->tm_year - 77;
+ *d = year*365 + nower->tm_yday + year/4 - (nower->tm_year-1)/100
+  + (nower->tm_year+299)/400;
+ *t = nower->tm_hour * 60 + nower->tm_min;
 }
 #endif

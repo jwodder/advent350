@@ -2,10 +2,6 @@
 - If the user enters "save" without a filename while playing a restored game,
   should the game be saved to the same path that it was restored from?
 - Check everything to make sure it works!
-- Reorganize the partitioning of functions into files into something sane
-- In maint(), the prompts for several integral values say that entering a null
-  line will leave the value unchanged, yet C's scanf() doesn't easily allow for
-  that.  Fix this.
 - Prevent restoring a saved game while playing a demo game.
 - Check the return values of all of the fread/fwrite calls in vsuspend(),
   vresume(), maint(), and poof() for failure

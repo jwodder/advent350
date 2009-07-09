@@ -1,4 +1,5 @@
 #include <stddef.h>
+#include "advconfig.h"
 
 const char* longdesc[141] = {
  NULL,
@@ -64,7 +65,7 @@ const char* longdesc[141] = {
  "You are at one end of a vast hall stretching forward out of sight to\n"
  "the west.  There are openings to either side.  Nearby, a wide stone\n"
  "staircase leads downward.  The hall is filled with wisps of white mist\n"
- "swaying to and fro almost as if alive.\n"
+ "swaying to and fro almost as if alive.  A cold wind blows up the\n"
  "staircase.  There is a passage at the top of a dome behind you.\n",
 
  /* 16 */
@@ -110,7 +111,7 @@ const char* longdesc[141] = {
  "You are on the west side of the fissure in the Hall of Mists.\n",
 
  /* 28 */
- "You are in a low n/s passage at a hole in the floor.  the hole goes\n"
+ "You are in a low n/s passage at a hole in the floor.  The hole goes\n"
  "down to an e/w passage.\n",
 
  /* 29 */

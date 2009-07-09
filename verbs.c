@@ -363,7 +363,7 @@ void vopen(void) {
    break;
 
   case GRATE:
-   if (here(KEYS)) spk = 31;
+   if (!here(KEYS)) spk = 31;
    else if (closing) {
     spk = 130;
     if (!panic) clock2 = 15;
@@ -547,7 +547,7 @@ void von(void) {
 }
 
 void voff(void) {
- if (here(LAMP)) rspeak(actspk[verb]);
+ if (!here(LAMP)) rspeak(actspk[verb]);
  else {
   prop[LAMP] = 0;
   rspeak(40);
