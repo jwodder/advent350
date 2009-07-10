@@ -2,14 +2,7 @@
 - Add the appropriate error checking to vsuspend() & vresume()
  - Make the magic version of vresume() recognize a missing $saved or $savet
    value correctly (possibly using a "try" block?)
-- For the magic version, add a way to save changes made in maintenance mode
-- Translate the Perl 6 to C
- - Use preprocessor directives to configure:
-  - whether to include magic
-  - whether to use C's rand() or the original Fortran's RAN() for random number
-    generation
-- Write a script for converting advent350.pl6 from its "ideal" form into one
-  that works on the current version of Rakudo
+- For the magic version, implement saving of changes made in maintenance mode
 - Make the arrays be properly zero-based
 - Write a manpage using Perl 6 POD
 - Write a Perl 6 program for solving the second part of wizard authentication
@@ -19,3 +12,4 @@
 - Check everything to make sure it works!
 - Reorder the function definitions so that they are always declared before they
   are used.
+- Prevent restoring a saved game while playing a demo game.

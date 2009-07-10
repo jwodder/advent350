@@ -188,7 +188,7 @@ sub yes(int $x, int $y, int $z --> Bool) {
   } elsif $reply eq 'NO' | 'N' {
    rspeak $z;
    return False;
-  } else { say "Please answer the question." }
+  } else { say "\nPlease answer the question." }
  }
 }
 
@@ -243,7 +243,7 @@ sub bug(int $num) {
 # 26 - Location has no travel entries
 
  #say "Probable cause: erroneous info in database.";  # Not in this version
- say "Error code = $num";
+ say "Error code = $num\n";
  exit -1;
 }
 
@@ -423,19 +423,19 @@ sub score(Bool $scoring --> int) {
 
 sub normend() {
  my $score = score(False);
- say "You scored $score out of a possible 350 using $turns turns.";
+ say "\n\n\nYou scored $score out of a possible 350 using $turns turns.";
  my($rank, $next) = @classes.grep({ .key >= $score }).[0,1];
  if $rank {
   speak $rank.value;
   if $next {
-   my $diff = $next.key - $score + 1;
-   say "To achieve the next higher rating, you need $diff more point",
-    $diff == 1 ?? '.' !! 's.';
+   my $diff = $rank.key - $score + 1;
+   say "\nTo achieve the next higher rating, you need $diff more point",
+    $diff == 1 ?? ".\n" !! "s.\n";
   } else {
-   say "To achieve the next higher rating would be a neat trick!";
-   say "Congratulations!!";
+   say "\nTo achieve the next higher rating would be a neat trick!\n";
+   say "Congratulations!!\n";
   }
- } else { say "You just went off my scale!!" }
+ } else { say "\nYou just went off my scale!!\n" }
  exit 0;
 }
 
@@ -448,7 +448,7 @@ sub doaction() {
   $goto = 2610;
  } elsif $verb { transitive }
  else {
-  say "What do you want to do with the $in1?";
+  say "\nWhat do you want to do with the $in1?";
   $goto = 2600;
  }
  # next bigLoop;
@@ -460,15 +460,15 @@ sub ciao() {mspeak 32; exit 0; }
 
 sub yesm(int $x, int $y, int $z --> Bool) {
  loop {
-  mspeak $x if $x != 0;
+  mspeak $x;
   my Str ($reply) = getin;
   if $reply eq 'YES' | 'Y' {
-   mspeak $y if $y != 0;
+   mspeak $y;
    return True;
   } elsif $reply eq 'NO' | 'N' {
-   mspeak $z if $z != 0;
+   mspeak $z;
    return False;
-  } else { say "Please answer the question." }
+  } else { say "\nPlease answer the question." }
  }
 }
 
@@ -573,7 +573,7 @@ sub wizard( --> Bool) {
   @wchrs[$y] += @val[$y] = ($t*26) idiv 1048576 + 1;
  }
  if yesm(18, 0, 0) {mspeak 20; return False; }
- .print for ' ', @wchrs.map(*.chr), "\n";
+ .print for "\n ", @wchrs.map(*.chr), "\n";
  @wchrs = (getin)[0].comb.map: *.ord;
  # What happens if the inputted word is less than five characters?
  ($d, $t) = datime;
@@ -598,20 +598,20 @@ sub hours() {
  return if $hend < $d | $hbegin;
  if $hbegin > $d {
   $d = $hbegin - $d;
-  say "The next holiday will be in $d day", $d == 1 ?? '' !! 's',
+  say "\nThe next holiday will be in $d day", $d == 1 ?? '' !! 's',
    ", namely $hname.";
- } else { say "Today is a holiday, namely $hname." }
+ } else { say "\nToday is a holiday, namely $hname." }
 }
 
 sub hoursx(bool @hours[24], Str $day) {
  my bool $first = True;
  my int $from = -1;
- if @hours.all == False { say ' ' x 10, "$day Open all day" }
+ if @hours.all == False { say ' ' x 10, "$day  Open all day" }
  else {
   loop {
    repeat { $from++ } while @hours[$from] && $from < 24;
    if $from >= 24 {
-    say ' ' x 10, $day, ' Closed all day' if $first;
+    say ' ' x 10, $day, '  Closed all day' if $first;
     return;
    } else {
     my int $till = $from;
@@ -693,7 +693,7 @@ sub datime( --> List of int) {
  state Temporal::DateTime $start .= new(year => 1977, month => 1, day => 1);
  # The time defaults to midnight, right?
 
- my Temporal::DateTime $now = Time::gmtime;
+ my Temporal::DateTime $now = Time::localtime;
  return ($now - $start) idiv 86400, $now.hour * 60 + $now.minute;
   # I assume the difference between two DateTime objects is the number of
   # seconds between them.
@@ -844,17 +844,17 @@ sub MAIN(Str $oldGame?) {
     continue if $dtotal == 0;
     if $dtotal == 1 { rspeak 4 }
     else {
-     say "There are $dtotal threatening little dwarves in the room with you."
+     say "\nThere are $dtotal threatening little dwarves in the room with you."
     }
     continue if $attack == 0;
     $dflag = 3 if $dflag == 2;
     my int $k;
     if $attack == 1 {rspeak 5; $k = 52; }
-    else {say "$attack of them throw knives at you!"; $k = 6; }
+    else {say "\n$attack of them throw knives at you!"; $k = 6; }
     if $stick <= 1 {
      rspeak $k + $stick;
      continue if $stick == 0;
-    } else { say "$stick of them get you!" }
+    } else { say "\n$stick of them get you!" }
     $oldloc2 = $loc;
     death;
     # If the player is reincarnated after being killed by a dwarf, they GOTO
@@ -929,7 +929,7 @@ sub MAIN(Str $oldGame?) {
       }
       @hintlc[$hint] = 0;
       next hintLoop if !yes(@hints[$hint;2], 0, 54);
-      say "I am prepared to give you a hint, but it will cost you ",
+      say "\nI am prepared to give you a hint, but it will cost you ",
        @hints[$hint;1], " points.";
       @hinted[$hint] = yes(175, @hints[$hint;3], 54);
       limit += 30 * @hints[$hint;1] if @hinted[$hint] && $limit > 30;
@@ -1054,7 +1054,7 @@ sub MAIN(Str $oldGame?) {
 	$k = ENTRANCE if 9 < $loc < 15;
 	if $k != GRATE { domove $k }
 	elsif $verb == FIND | INVENT && !$word2 { doaction }
-	else {say "I see no $in1 here."; $goto = 2012; }
+	else {say "\nI see no $in1 here."; $goto = 2012; }
        } elsif $obj == DWARF && $dflag >= 2 && @dloc[^5].any == $loc
         || $obj == liq() && here(BOTTLE) || $obj == liqloc($loc) {
         doaction
@@ -1067,7 +1067,7 @@ sub MAIN(Str $oldGame?) {
 	$goto = 2012;
        } elsif $obj == ROD && here ROD2 {$obj = ROD2; doaction; }
        elsif $verb == FIND | INVENT && !$word2 { doaction }
-       else {say "I see no $in1 here."; $goto = 2012; }
+       else {say "\nI see no $in1 here."; $goto = 2012; }
       }
      }
      when 2 {
@@ -1110,13 +1110,13 @@ sub intransitive() {
   when WALK { rspeak @actspk[$verb] }
   when DROP | SAY | WAVE | CALM | RUB | THROW | FIND | FEED | BREAK | WAKE {
 # 8000:
-   say "$in1 what?";
+   say "\n$in1 what?";
    $obj = 0;
    $goto = 2600;
   }
   when TAKE {
    if @atloc[$loc] != 1 || $dflag >= 2 && @dloc[^5].any == $loc {
-    say "$in1 what?";
+    say "\n$in1 what?";
     $obj = 0;
     $goto = 2600;
    } else {
@@ -1130,7 +1130,7 @@ sub intransitive() {
    $obj = DOOR if at DOOR;
    $obj = GRATE if at GRATE;
    if $obj != 0 && here CHAIN {
-    say "$in1 what?";
+    say "\n$in1 what?";
     $obj = 0;
     $goto = 2600;
    } else {
@@ -1144,7 +1144,7 @@ sub intransitive() {
     destroy FOOD;
     rspeak 72;
    } else {
-    say "$in1 what?";
+    say "\n$in1 what?";
     $obj = 0;
     $goto = 2600;
    }
@@ -1166,7 +1166,8 @@ sub intransitive() {
   }
   when SCORE {
    my int $score = score(True);
-   say "If you were to quit now, you would score $score out of a possible 350.";
+   say "\nIf you were to quit now, you would score $score out of a possible",
+    " 350.";
    normend if $gaveup = yes(143, 54, 54);
   }
   when FOO {
@@ -1195,7 +1196,7 @@ sub intransitive() {
    $obj = $obj * 100 + MESSAG if here MESSAG;
    $obj = OYSTER if $closed && toting OYSTER;
    if $obj > 100 || $obj == 0 || dark {
-    say "$in1 what?"; $obj = 0; $goto = 2600;
+    say "\n$in1 what?"; $obj = 0; $goto = 2600;
    } else { vread }
   }
   when SUSPEND { vsuspend("%*ENV<HOME>/.adventure") }
@@ -1330,7 +1331,7 @@ sub vtake() {
  $spk = 115 if $obj == PLANT && @prop[PLANT] <= 0;
  $spk = 169 if $obj == BEAR && @prop[BEAR] == 1;
  $spk = 170 if $obj == CHAIN && @prop[BEAR] != 0;
- if fixed $obj {rspeak $spk; return; }
+ if @fixed[$obj] {rspeak $spk; return; }
  if $obj == WATER | OIL {
   if !here(BOTTLE) || liq != $obj {
    $obj = BOTTLE;
@@ -1364,7 +1365,7 @@ sub vopen() {
   when CLAM | OYSTER {
    my $k = ($obj == OYSTER);
    $spk = 124 + $k;
-   $spk = 120 + $k if toting OBJ;
+   $spk = 120 + $k if toting $obj;
    $spk = 122 + $k if !toting TRIDENT;
    $spk = 61 if $verb == LOCK;
    if $spk == 124 {
@@ -1416,7 +1417,7 @@ sub vopen() {
 
 sub vread() {
 # 9270:
- if dark() { say "I see no $in1 here." }
+ if dark() { say "\nI see no $in1 here." }
  else {
   my int $spk = @actspk[$verb];
   $spk = 190 if $obj == MAGZIN;
@@ -1436,11 +1437,11 @@ sub vkill() {
   $obj = $obj * 100 + DRAGON if at(DRAGON) && @prop[DRAGON] == 0;
   $obj = $obj * 100 + TROLL if at TROLL;
   $obj = $obj * 100 + BEAR if here(BEAR) && @prop[BEAR] == 0;
-  if $obj > 100 {say "$in1 what?"; $obj = 0; $goto = 2600; return; }
+  if $obj > 100 {say "\n$in1 what?"; $obj = 0; $goto = 2600; return; }
   if $obj == 0 {
    $obj = BIRD if here(BIRD) && $verb != THROW;
    $obj = $obj * 100 + CLAM if here(CLAM | OYSTER);
-   if $obj > 100 {say "$in1 what?"; $obj = 0; $goto = 2600; return; }
+   if $obj > 100 {say "\n$in1 what?"; $obj = 0; $goto = 2600; return; }
   }
  }
  given $obj {
@@ -1487,12 +1488,12 @@ sub vkill() {
 sub vpour() {
 # 9130:
  $obj = liq if $obj == BOTTLE | 0;
- if $obj == 0 {say "$in1 what?"; $obj = 0; $goto = 2600; }
+ if $obj == 0 {say "\n$in1 what?"; $obj = 0; $goto = 2600; }
  elsif !toting $obj { rspeak @actspk[$verb] }
  elsif !($obj == OIL | WATER) { rspeak 78 }
  else {
   @prop[BOTTLE] = 1;
-  @place[OBJ] = 0;
+  @place[$obj] = 0;
   if at DOOR {
    @prop[DOOR] = ($obj == OIL);
    rspeak 113 + @prop[DOOR];
@@ -1511,7 +1512,7 @@ sub vpour() {
 sub vdrink() {
 # 9150:
  if $obj == 0 && liqloc($loc) != WATER && (liq != WATER || !here BOTTLE) {
-  say "$in1 what?";
+  say "\n$in1 what?";
   $obj = 0;
   $goto = 2600;
  } elsif $obj == 0 | WATER {
@@ -1546,7 +1547,7 @@ sub vfill() {
  } else {
   if !($obj == 0 | BOTTLE) { rspeak @actspk[$verb] }
   elsif $obj == 0 && !here BOTTLE {
-   say "$in1 what?";
+   say "\n$in1 what?";
    $obj = 0;
    $goto = 2600;
   } elsif liq != 0 { rspeak 105 }
@@ -1674,7 +1675,7 @@ sub vsay() {
   $word2 = undef;
   $obj = 0;
   $goto = 2630;
- } else { say "Okay, \"$tk\"." }
+ } else { say "\nOkay, \"$tk\"." }
 }
 
 
@@ -1707,7 +1708,7 @@ sub readBool(IO $in, int $qty --> List of bool) {
 
 sub vsuspend(Str $file) {
  if $demo {rspeak 201; return; }
- say "I can suspend your adventure for you so that you can resume later, but";
+ say "\nI can suspend your adventure for you so that you can resume later, but";
  say "you will have to wait at least $latency minutes before continuing.";
  return if !yes(200, 54, 54);
  ($saved, $savet) = datime;
@@ -1737,7 +1738,7 @@ sub vsuspend(Str $file) {
 
 sub vresume(Str $file) {
  if $turns != 0 {
-  say "To resume an earlier Adventure, you must abandon the current one.";
+  say "\nTo resume an earlier Adventure, you must abandon the current one.";
   # This message is taken from the 430 pt. version of Adventure (version 2.5).
   return if !yes(200, 54, 54);
  }
@@ -1827,7 +1828,7 @@ sub vresume(Str $file) {
 15	You are at one end of a vast hall stretching forward out of sight to
 15	the west.  There are openings to either side.  Nearby, a wide stone
 15	staircase leads downward.  The hall is filled with wisps of white mist
-15	swaying to and fro almost as if alive.	A cold wind blows up the
+15	swaying to and fro almost as if alive.  A cold wind blows up the
 15	staircase.  There is a passage at the top of a dome behind you.
 16	The crack is far too small for you to follow.
 17	You are on the east bank of a fissure slicing clear across the hall.
