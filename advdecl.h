@@ -2,6 +2,7 @@
 #define ADVDECL_H
 
 #include <stdbool.h>
+#include <stdint.h>
 #include "advconfig.h"
 #include "advconst.h"
 
@@ -16,9 +17,7 @@ extern char in1[MAX_INPUT_LENGTH+1], in2[MAX_INPUT_LENGTH+1];
 extern char word1[6], word2[6];
 
 #ifdef ADVMAGIC
-extern bool wkday[24];
-extern bool wkend[24];
-extern bool holid[24];
+extern int32_t wkday, wkend, holid;
 extern int hbegin, hend;
 extern char hname[21];
 extern int shortGame;
@@ -120,9 +119,9 @@ bool start(void);
 void maint(void);
 bool wizard(void);
 void hours(void);
-void hoursx(const bool* hours, const char* day);
+void hoursx(int32_t hours, const char* day);
 void newhrs(void);
-void newhrx(bool* hours, const char* day);
+int32_t newhrx(const char* day);
 void motd(bool alter);
 void poof(void);
 #endif

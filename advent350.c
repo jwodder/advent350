@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <stdint.h>
 #include <string.h>
 #include <time.h>
 #include "advconfig.h"
@@ -20,14 +21,14 @@ char in1[MAX_INPUT_LENGTH+1], in2[MAX_INPUT_LENGTH+1];
 char word1[6], word2[6];
 
 #ifdef ADVMAGIC
-/* These arrays hold the times when adventurers are allowed into Colossal Cave;
- * wkday is for weekdays, wkend for weekends, and holid for holidays (days with
- * special hours).  If element N of an array is true, then the hour N:00
- * through N:59 is considered "prime time," i.e., the cave is closed then. */
-bool wkday[24] = {[8] = true, true, true, true, true, true, true, true, true,
- true};  /* The remaining elements are initialized to false. */
-bool wkend[24]; /* all false */
-bool holid[24]; /* all false */
+/* These bitfields hold the times when adventurers are allowed into Colossal
+ * Cave; wkday is for weekdays, wkend for weekends, and holid for holidays
+ * (days with special hours).  If bit N of one of the below is on, then the
+ * hour N:00 through N:59 is considered "prime time," i.e., the cave is closed
+ * then. */
+int32_t wkday = 000777400;
+int32_t wkend = 0;
+int32_t holid = 0;
 
 int hbegin = 0, hend = -1;	/* start & end of next holiday */
 char hname[21];			/* name of next holiday */
@@ -90,9 +91,14 @@ int saved = -1, savet = 0;
 
 
 int main(int argc, char** argv) {
-#ifndef ORIG_RAND
+#ifndef ORIG_RNG
+ #ifdef RANDOM_RNG
+ srandom(time(NULL));
+ #else
  srand(time(NULL));
+ #endif
 #endif
+
 #ifdef ADVMAGIC
  poof();
 #endif
@@ -251,17 +257,17 @@ void turn(void) {
    if (dtotal == 0) return;
    if (dtotal == 1) rspeak(4);
    else
-    printf("There are %d threatening little dwarves in the room with you.\n",
+    printf("\nThere are %d threatening little dwarves in the room with you.\n",
      dtotal);
    if (attack == 0) return;
    if (dflag == 2) dflag = 3;
    int k;
    if (attack == 1) {rspeak(5); k = 52; }
-   else {printf("%d of them throw knives at you!\n", attack); k = 6; }
+   else {printf("\n%d of them throw knives at you!\n", attack); k = 6; }
    if (stick <= 1) {
     rspeak(k + stick);
     if (stick == 0) return;
-   } else printf("%d of them get you!\n", stick);
+   } else printf("\n%d of them get you!\n", stick);
    oldloc2 = loc;
    death();
   /* If the player is reincarnated after being killed by a dwarf, they GOTO
@@ -337,7 +343,7 @@ void turn(void) {
      if (hintable) {
       hintlc[hint] = 0;
       if (yes(hints[hint][2], 0, 54)) {
-       printf("I am prepared to give you a hint, but it will cost you %d"
+       printf("\nI am prepared to give you a hint, but it will cost you %d"
         " points.\n", hints[hint][1]);
        hinted[hint] = yes(175, hints[hint][3], 54);
        if (hinted[hint] && limit > 30) limit += 30 * hints[hint][1];
@@ -472,7 +478,7 @@ void turn(void) {
        if (9 < loc && loc < 15) k = ENTRANCE;
        if (k != GRATE) domove(k);
        else if ((verb == FIND || verb == INVENT) && !*word2) doaction();
-       else {printf("I see no %s here.\n", in1); togoto = 2012; }
+       else {printf("\nI see no %s here.\n", in1); togoto = 2012; }
       } else if (obj == DWARF && dflag >= 2 && dwarfHere()
        || obj == liq() && here(BOTTLE) || obj == liqloc(loc)) doaction();
       else if (obj == PLANT && at(PLANT2) && prop[PLANT2] != 0) {
@@ -484,7 +490,7 @@ void turn(void) {
        togoto = 2012;
       } else if (obj == ROD && here(ROD2)) {obj = ROD2; doaction(); }
       else if ((verb == FIND || verb == INVENT) && !*word2) doaction();
-      else {printf("I see no %s here.\n", in1); togoto = 2012; }
+      else {printf("\nI see no %s here.\n", in1); togoto = 2012; }
      }
      break;
     case 2:

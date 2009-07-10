@@ -73,7 +73,7 @@ bool yes(int x, int y, int z) {
   } else if (strcmp(reply, "NO") == 0 || strcmp(reply, "N") == 0) {
    rspeak(z);
    return false;
-  } else {printf("Please answer the question.\n"); }
+  } else printf("\nPlease answer the question.\n");
  }
 }
 
@@ -137,7 +137,7 @@ void bug(int num) {
 
  /* printf("Probable cause: erroneous info in database.\n");
   * (Not in this version) */
- printf("Error code = %d\n", num);
+ printf("Error code = %d\n\n", num);
  exit(1);
 }
 
@@ -205,7 +205,7 @@ void getin(char* w1, char* r1, char* w2, char* r2) {
 }
 
 int ran(int max) {
-#ifdef ORIG_RAND
+#ifdef ORIG_RNG
  static int r = 0;
  int d = 1;
  if (r == 0) {
@@ -215,6 +215,8 @@ int ran(int max) {
  }
  for (int i=0; i<d; i++) r = (r * 1021) % 1048576;
  return (max * r) / 1048576;
+#elif defined(RANDOM_RNG)
+ return random() % max;
 #else
  return rand() % max;
 #endif
@@ -241,7 +243,7 @@ bool yesm(int x, int y, int z) {
   } else if (strcmp(reply, "NO") == 0 || strcmp(reply, "N") == 0) {
    mspeak(z);
    return false;
-  } else {printf("Please answer the question.\n"); }
+  } else printf("\nPlease answer the question.\n");
  }
 }
 
@@ -261,8 +263,8 @@ bool start(void) {
    }
   }
  }
- bool* primet = hbegin <= d && d <= hend ? holid : d % 7 <= 1 ? wkend : wkday;
- if (primet[t/60]) {
+ int32_t primet = hbegin <= d && d <= hend ? holid : d % 7 <= 1 ? wkend : wkday;
+ if (primet & 1 << t/60) {
   /* Prime time (cave closed) */
   mspeak(3);
   hours();
@@ -323,9 +325,9 @@ void maint(void) {
   exit(1);
  }
  /* Check all of these function calls for failure! */
- fwrite(wkday, sizeof(wkday[0]), sizeof(wkday)/sizeof(wkday[0]), abra);
- fwrite(wkend, sizeof(wkend[0]), sizeof(wkend)/sizeof(wkend[0]), abra);
- fwrite(holid, sizeof(holid[0]), sizeof(holid)/sizeof(holid[0]), abra);
+ fwrite(&wkday, sizeof wkday, 1, abra);
+ fwrite(&wkend, sizeof wkend, 1, abra);
+ fwrite(&holid, sizeof holid, 1, abra);
  fwrite(&hbegin, sizeof hbegin, 1, abra);
  fwrite(&hend, sizeof hend, 1, abra);
  fwrite(hname, 1, sizeof hname, abra);
@@ -358,7 +360,7 @@ bool wizard(void) {
   word[y] += val[y] = (t*26) / 1048576 + 1;
  }
  if (yesm(18, 0, 0)) {mspeak(20); return false; }
- printf(" %s\n", word);
+ printf("\n %s\n", word);
  getin(word, NULL, NULL, NULL);
  datime(&d, &t);
  t = (t/60) * 40 + (t/10) * 10;
@@ -386,26 +388,24 @@ void hours(void) {
  if (hend < d || hend < hbegin) return;
  if (hbegin > d) {
   d = hbegin - d;
-  printf("The next holiday will be in %d day%s, namely %s.\n",
+  printf("\nThe next holiday will be in %d day%s, namely %s.\n",
    d, d == 1 ? "" : "s", hname);
- } else printf("Today is a holiday, namely %s.\n", hname);
+ } else printf("\nToday is a holiday, namely %s.\n", hname);
 }
 
-void hoursx(const bool* hours, const char* day) {
+void hoursx(int32_t hours, const char* day) {
  bool first = true;
  int from = -1;
+ if (hours == 0) {printf("%10s%s  Open all day\n", "", day); return; }
  for (;;) {
-  do {from++; } while (hours[from] && from < 24);
+  do {from++; } while ((hours & 1 << from) && from < 24);
   if (from >= 24) {
    if (first) printf("%10s%s  Closed all day\n", "", day);
    return;
   } else {
    int till = from;
-   do {till++; } while (!hours[till] && till != 24);
-   if (from == 0 && till == 24) {
-    printf("%10s%s  Open all day\n", "", day);
-    return;
-   } else if (first) printf("%10s%s%4d:00 to%3d:00\n", "", day, from, till);
+   do {till++; } while (!(hours & 1 << till) && till != 24);
+   if (first) printf("%10s%s%4d:00 to%3d:00\n", "", day, from, till);
    else printf("%20s%4d:00 to%3d:00\n", "", from, till);
    first = false;
    from = till;
@@ -415,25 +415,27 @@ void hoursx(const bool* hours, const char* day) {
 
 void newhrs(void) {
  mspeak(21);
- newhrx(wkday, "weekdays:");
- newhrx(wkend, "weekends:");
- newhrx(holid, "holidays:");
+ wkday = newhrx("weekdays:");
+ wkend = newhrx("weekends:");
+ holid = newhrx("holidays:");
  mspeak(22);
  hours();
 }
 
-void newhrx(bool* hours, const char* day) {
- for (int i=0; i<24; i++) hours[i] = false;
+int32_t newhrx(const char* day) {
+ int32_t hours = 0;
  printf("Prime time on %s\n", day);
  for (;;) {
   int from, till;
-  printf("from: ");
-  scanf("%d", &from);
-  if (from < 0 || from >= 24) return;
-  printf("till: ");
-  scanf("%d", &till);
-  if (till <= from || till > 24) return;
-  for (; from < till; from++) hours[from] = true;
+  printf("from:\n");
+  getin(word1, in1, NULL, NULL);
+  from = (int) strtol(in1, NULL, 10);
+  if (from < 0 || from >= 24) return hours;
+  printf("till:\n");
+  getin(word1, in1, NULL, NULL);
+  till = (int) strtol(in1, NULL, 10);
+  if (till <= from || till > 24) return hours;
+  for (; from < till; from++) hours |= 1 << from;
  }
 }
 
@@ -464,9 +466,9 @@ void poof(void) {
   * the default magic values in place. */
 
  /* Check all of these function calls for failure! */
- fread(wkday, sizeof(wkday[0]), sizeof(wkday)/sizeof(wkday[0]), abra);
- fread(wkend, sizeof(wkend[0]), sizeof(wkend)/sizeof(wkend[0]), abra);
- fread(holid, sizeof(holid[0]), sizeof(holid)/sizeof(holid[0]), abra);
+ fread(&wkday, sizeof wkday, 1, abra);
+ fread(&wkend, sizeof wkend, 1, abra);
+ fread(&holid, sizeof holid, 1, abra);
  fread(&hbegin, sizeof hbegin, 1, abra);
  fread(&hend, sizeof hend, 1, abra);
  fread(hname, 1, sizeof hname, abra);
@@ -479,7 +481,7 @@ void poof(void) {
 }
 #endif  /* #ifdef ADVMAGIC */
 
-#if defined(ADVMAGIC) || defined(ORIG_RAND)
+#if defined(ADVMAGIC) || defined(ORIG_RNG)
 void datime(int* d, int* t) {
 
 /* This function is supposed to set *d to the number of days since 1 Jan 1977

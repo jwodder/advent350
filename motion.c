@@ -166,20 +166,21 @@ int score(bool scoring) {
 
 void normend(void) {
  int scr = score(false);
- printf("You scored %d out of a possible 350 using %d turns.\n", scr, turns);
+ printf("\n\n\nYou scored %d out of a possible 350 using %d turns.\n",
+  scr, turns);
  int i;
  for (i=0; classes[i].score != 0; i++) if (classes[i].score >= scr) break;
  if (classes[i].score != 0) {
   speak(classes[i].rank);
   if (classes[i+1].score != 0) {
-   int diff = classes[i+1].score - scr + 1;
-   printf("To achieve the next higher rating, you need %d more point%s.\n",
+   int diff = classes[i].score - scr + 1;
+   printf("\nTo achieve the next higher rating, you need %d more point%s.\n\n",
     diff, diff == 1 ? "" : "s");
   } else {
-   puts("To achieve the next higher rating would be a neat trick!");
-   puts("Congratulations!!");
+   printf("\nTo achieve the next higher rating would be a neat trick!\n\n");
+   printf("Congratulations!!\n\n");
   }
- } else puts("You just went off my scale!!");
+ } else printf("\nYou just went off my scale!!\n\n");
  exit(0);
 }
 
@@ -191,7 +192,7 @@ void doaction(void) {
   togoto = 2610;
  } else if (verb) transitive();
  else {
-  printf("What do you want to do with the %s?\n", in1);
+  printf("\nWhat do you want to do with the %s?\n", in1);
   togoto = 2600;
  }
 }

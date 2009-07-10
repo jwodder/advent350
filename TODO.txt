@@ -7,3 +7,4 @@
   vresume(), maint(), and poof() for failure
 - Somehow deal with the historical messages about saving your "core image" when
   suspending a game or finishing maintenance mode in the magic version
+- frawd.c: Check all of the command-line arguments to make sure they're valid

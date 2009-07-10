@@ -22,14 +22,14 @@ void intransitive(void) {
 
   case DROP: case SAY: case WAVE: case CALM: case RUB:
   case THROW: case FIND: case FEED: case BREAK: case WAKE:
-   printf("%s what?\n", in1);
+   printf("\n%s what?\n", in1);
    obj = 0;
    togoto = 2600;
    break;
 
   case TAKE:
    if (!(atloc[loc] && link[atloc[loc]] == 0) || dflag >= 2 && dwarfHere()) {
-    printf("%s what?\n", in1);
+    printf("\n%s what?\n", in1);
     obj = 0;
     togoto = 2600;
    } else {
@@ -45,7 +45,7 @@ void intransitive(void) {
    if (at(DOOR)) obj = DOOR;
    if (at(GRATE)) obj = GRATE;
    if (obj != 0 && here(CHAIN)) {
-    printf("%s what?\n", in1);
+    printf("\n%s what?\n", in1);
     obj = 0;
     togoto = 2600;
    } else {
@@ -60,7 +60,7 @@ void intransitive(void) {
     destroy(FOOD);
     rspeak(72);
    } else {
-    printf("%s what?\n", in1);
+    printf("\n%s what?\n", in1);
     obj = 0;
     togoto = 2600;
    }
@@ -88,7 +88,7 @@ void intransitive(void) {
 
   case SCORE: {
    int scr = score(true);
-   printf("If you were to quit now, you would score %d out of a possible"
+   printf("\nIf you were to quit now, you would score %d out of a possible"
     " 350.\n", scr);
    if (gaveup = yes(143, 54, 54)) normend();
    break;
@@ -124,7 +124,7 @@ void intransitive(void) {
    if (here(MESSAG)) obj = obj * 100 + MESSAG;
    if (closed && toting(OYSTER)) obj = OYSTER;
    if (obj > 100 || obj == 0 || dark()) {
-    printf("%s what?\n", in1);
+    printf("\n%s what?\n", in1);
     obj = 0;
     togoto = 2600;
    } else vread();
@@ -149,7 +149,7 @@ void intransitive(void) {
    mspeak(6);
    hours();
 #else
-   puts("Colossal Cave is open all day, every day.");
+   puts("\nColossal Cave is open all day, every day.");
 #endif
    break;
 
@@ -379,7 +379,7 @@ void vopen(void) {
 }
 
 void vread(void) {
- if (dark()) printf("I see no %s here.\n", in1);
+ if (dark()) printf("\nI see no %s here.\n", in1);
  else {
   int spk = actspk[verb];
   if (obj == MAGZIN) spk = 190;
@@ -398,11 +398,16 @@ void vkill(void) {
   if (at(DRAGON) && prop[DRAGON] == 0) obj = obj * 100 + DRAGON;
   if (at(TROLL)) obj = obj * 100 + TROLL;
   if (here(BEAR) && prop[BEAR] == 0) obj = obj * 100 + BEAR;
-  if (obj > 100) {printf("%s what?\n", in1); obj = 0; togoto = 2600; return; }
+  if (obj > 100) {printf("\n%s what?\n", in1); obj = 0; togoto = 2600; return; }
   if (obj == 0) {
    if (here(BIRD) && verb != THROW) obj = BIRD;
    if (here(CLAM) || here(OYSTER)) obj = obj * 100 + CLAM;
-   if (obj > 100) {printf("%s what?\n", in1); obj = 0; togoto = 2600; return; }
+   if (obj > 100) {
+    printf("\n%s what?\n", in1);
+    obj = 0;
+    togoto = 2600;
+    return;
+   }
   }
  }
  switch (obj) {
@@ -454,7 +459,7 @@ void vkill(void) {
 
 void vpour(void) {
  if (obj == BOTTLE || obj == 0) obj = liq();
- if (obj == 0) {printf("%s what?\n", in1); obj = 0; togoto = 2600; }
+ if (obj == 0) {printf("\n%s what?\n", in1); obj = 0; togoto = 2600; }
  else if (!toting(obj)) rspeak(actspk[verb]);
  else if (obj != OIL && obj != WATER) rspeak(78);
  else {
@@ -477,7 +482,7 @@ void vpour(void) {
 
 void vdrink(void) {
  if (obj == 0 && liqloc(loc) != WATER && (liq() != WATER || !here(BOTTLE))) {
-  printf("%s what?\n", in1);
+  printf("\n%s what?\n", in1);
   obj = 0;
   togoto = 2600;
  } else if (obj == 0 || obj == WATER) {
@@ -511,7 +516,7 @@ void vfill(void) {
  } else {
   if (obj != 0 && obj != BOTTLE) rspeak(actspk[verb]);
   else if (obj == 0 && !here(BOTTLE)) {
-   printf("%s what?\n", in1);
+   printf("\n%s what?\n", in1);
    obj = 0;
    togoto = 2600;
   } else if (liq() != 0) rspeak(105);
@@ -635,25 +640,25 @@ void vsay(void) {
   *word2 = 0;
   obj = 0;
   togoto = 2630;
- } else printf("Okay, \"%s\".\n", tk);
+ } else printf("\nOkay, \"%s\".\n", tk);
 }
 
 void vsuspend(char* file) {
 #ifdef ADVMAGIC
  if (demo) {rspeak(201); return; }
  datime(&saved, &savet);
- printf("I can suspend your adventure for you so that you can resume later,"
+ printf("\nI can suspend your adventure for you so that you can resume later,"
   " but\nyou will have to wait at least %d minutes before continuing.\n",
   latency);
 #else
- puts("I can suspend your adventure for you so that you can resume later.");
+ puts("\nI can suspend your adventure for you so that you can resume later.");
 #endif
  if (!yes(200, 54, 54)) return;
  printf("\nSaving to %s ...\n", file);
 
  FILE* adv = fopen(file, "wb");
  if (adv == NULL) {
-  printf("Error: could not write to %s: ", file);
+  fprintf(stderr, "\nError: could not write to %s: ", file);
   perror(NULL);
   return;
  }
@@ -707,7 +712,7 @@ void vsuspend(char* file) {
 
 void vresume(char* file) {
  if (turns != 0) {
-  puts("To resume an earlier Adventure, you must abandon the current one.");
+  puts("\nTo resume an earlier Adventure, you must abandon the current one.");
 /* This message is taken from the 430 pt. version of Adventure (version 2.5). */
   if (!yes(200, 54, 54)) return;
  }
@@ -715,7 +720,7 @@ void vresume(char* file) {
 
  FILE* adv = fopen(file, "rb");
  if (adv == NULL) {
-  printf("Error: could not read %s: ", file);
+  fprintf(stderr, "\nError: could not read %s: ", file);
   perror(NULL);
   return;
  }

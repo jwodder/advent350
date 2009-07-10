@@ -1,5 +1,7 @@
-CC = c99
-CFLAGS = -O2
+#CC = c99
+CC = gcc
+#CFLAGS = -O2
+CFLAGS = -std=c99 -O2
 
 OBJS = advent350.o advtext.o miscdata.o motion.o travel.o util.o verbs.o vocab.o
 
