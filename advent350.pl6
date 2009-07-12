@@ -113,6 +113,10 @@ my int $dflag, $dkill = 0, *;
 my int @place[65];
 my int @fixed[65];
 my int @atloc[141;*];
+my int $saved, $savet = -1, 0;
+# Although $saved and $savet are only used in the magic version of the game,
+# they are declared in and saved & restored by both forms of the game in order
+# to make the save files compatible.
 
 
 # Functions:
@@ -524,8 +528,8 @@ sub MAIN(Str $oldGame?) {
      my int @tk = grep {
       15 <= $_ <= 300 && $_ != @odloc[$i] & @dloc[$i] && !forced($_)
        && !($i == 5 && bitset($_, 3))
-     }, map { $_ % 1000 }, grep { $_ idiv 1000 != 100 }, @travel[@dloc[$i];*;0];
-     @tk.push: @odloc[$i];
+     }, (** % 1000)(@travel[@dloc[$i];*;0].grep: { $_ idiv 1000 != 100 });
+     @tk.push: @odloc[$i] if !@tk;
      (@odloc[$i], @dloc[$i]) = @dloc[$i], @tk.pick;
      @dseen[$i] = (@dseen[$i] && $loc >= 15) || @dloc[$i] | @odloc[$i] == $loc;
      if @dseen[$i] {
@@ -1413,33 +1417,42 @@ sub vsay() {
 # & read using homemade routines.
 
 sub writeInt(IO $out, int32 $i) {
- $out.write(Buf.new($i, size => 32), 4)
+ #$out.write(Buf.new($i, size => 32), 4)
+ # As far as anyone seems to know, the binary IO routines are currently only
+ # defined for buf8's.
+ $out.write(Buf.new(:size(8), (^4).map: { $i +> 8*(3-$_) +& 0xFF }), 4)
 }
 
 sub writeBool(IO $out, bool *@bits) {
- my Int $x = 0;
- $x +|= 1 +< $_ if @bits[$_] for ^@bits;
- #for @bits.kv -> $k, $v { $x +|= 1 +< $k if $v }
- my Buf $blob .= new($x);
- $out.write($blob, $blob.bytes #< ??? > );
+ my Buf $data .= new: :size(8), (0 ..^ +@bits :by(8)).map:
+  # Would just "^@bits :by(8)" work?  Can you apply the :by adverb to '^'?
+  -> $i { [+|] (^8).map: { $i+$^j < @bits ?? @bits[$i+$^j] +< $^j !! 0 } };
+ $out.write: $data, #[ $data.elems ??? ] (@bits/8).ceiling;
 }
 
 sub readInt(IO $in --> int32) {
- !!!
+ my Buf $raw;
+ $in.read: $raw, 4;
+ [+|] (^4).map: { $raw[$^i] +< 8*(3-$^i) };
 }
 
 sub readBool(IO $in, int $qty --> List of bool) {
- !!!
+ my Buf $raw;
+ $in.read: $raw, ($qty/8).ceiling;
+ (^$qty).map: { $raw[$^i idiv 8] +& 1 +< ($^i % 8) };
 }
 
 sub vsuspend(Str $file) {
  say "\nI can suspend your adventure for you so that you can resume later.";
  return if !yes(200, 54, 54);
  say "\nSaving to $file ...";
-
- my IO $adv = open $file, :w, :bin;
- # What exactly happens if the file fails to open?
-
+ my IO $adv;
+ try {
+  $adv = open $file, :w, :bin;
+  CATCH {$*ERR.say: "\nError: could not write to $file: $!"; return; }
+ }
+ # Don't use any CATCH blocks for the below lines; if they fail, exception
+ # handling won't help you out.
  writeInt $adv, $_ for $loc, $newloc, $oldloc, $oldloc2, $limit, $turns,
   $iwest, $knifeloc, $detail, $numdie, $holding, $foobar, $tally, $tally2,
   $abbnum, $clock1, $clock2;
@@ -1453,19 +1466,26 @@ sub vsuspend(Str $file) {
   writeInt $adv, $_.elems;
   writeInt $adv, $_ for @($_);
  }
-
+ writeInt $adv, $saved;
+ writeInt $adv, $savet;
+ $adv.close;
  exit 0;
 }
 
 sub vresume(Str $file) {
- if $turns != 0 {
+ if $turns > 1 {
   say "\nTo resume an earlier Adventure, you must abandon the current one.";
   # This message is taken from the 430 pt. version of Adventure (version 2.5).
   return if !yes(200, 54, 54);
  }
  say "\nRestoring from $file ...";
-
- my IO $adv = open $file, :r, :bin;
+ my IO $adv;
+ try {
+  $adv = open $file, :r, :bin;
+  CATCH {$*ERR.say: "\nError: could not read $file: $!"; return; }
+ }
+ # Don't use any CATCH blocks for the below lines; if they fail, exception
+ # handling won't help you out.
  $loc = readInt $adv;
  $newloc = readInt $adv;
  $oldloc = readInt $adv;
@@ -1502,7 +1522,9 @@ sub vresume(Str $file) {
   my int $qty = readInt $adv;
   @atloc[$i;$_] = readInt $adv for ^$qty;
  }
-
+ $saved = readInt($adv);
+ $savet = readInt($adv);
+ $adv.close;
  domove NULL;
 }
 
@@ -3035,7 +3057,7 @@ sub vresume(Str $file) {
 131	closing time anyway, I think we'll just call it a day.
 132	The sepulchral voice intones, "The cave is now closed."  As the echoes
 132	fade, there is a blinding flash of light (and a small puff of orange
-132	smoke). . . .  As your eyes refocus, you look around and find...
+132	smoke). . . .    As your eyes refocus, you look around and find...
 133	There is a loud explosion, and a twenty-foot hole appears in the far
 133	wall, burying the dwarves in the rubble.  You march through the hole
 133	and find yourself in the main office, where a cheering band of
