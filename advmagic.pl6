@@ -181,10 +181,22 @@ sub speak(Str $s) {
 sub pspeak(int $item, int $state) { speak @itemDesc[$item;$state+1] }
 sub rspeak(int $msg) { speak @rmsg[$msg] if $msg != 0 }
 
+sub getin( --> List of Str) {
+ print "\n" if $blklin;
+ loop {
+  print "> ";
+  my Str $raw1, $raw2 = $*IN.get.words;
+  next if !$raw1.defined && $blklin;
+  my Str $word1, $word2 = ($raw1, $raw2).map:
+   { .defined ?? .substr(0, 5).uc !! undef };
+  return $word1, $raw1, $word2, $raw2;
+ }
+}
+
 sub yes(int $x, int $y, int $z --> Bool) {
  loop {
   rspeak $x;
-  my Str ($reply) = getin;  # Ignore everything after the first word.
+  my Str ($reply) = getin;
   if $reply eq 'YES' | 'Y' {
    rspeak $y;
    return True;
@@ -193,24 +205,6 @@ sub yes(int $x, int $y, int $z --> Bool) {
    return False;
   } else { say "\nPlease answer the question." }
  }
-}
-
-sub destroy(int $obj) { move $obj, 0 }
-
-sub juggle(int $obj) {
- move $obj, @place[$obj];
- move $obj+100, @fixed[$obj];
-}
-
-sub move(int $obj, int $where) {
- my int $from = $obj > 100 ?? @fixed[$obj-100] !! @place[$obj];
- carry $obj, $from if 0 < $from <= 300;
- drop $obj, $where;
-}
-
-sub put(int $obj, int $where, int $pval --> int) {
- move $obj, $where;
- return -1 - $pval;
 }
 
 sub carry(int $obj, int $where) {
@@ -231,6 +225,24 @@ sub drop(int $obj, int $where) {
   @place[$obj] = $where;
  }
  @atloc[$where].unshift: $obj if $where > 0;
+}
+
+sub move(int $obj, int $where) {
+ my int $from = $obj > 100 ?? @fixed[$obj-100] !! @place[$obj];
+ carry $obj, $from if 0 < $from <= 300;
+ drop $obj, $where;
+}
+
+sub put(int $obj, int $where, int $pval --> int) {
+ move $obj, $where;
+ return -1 - $pval;
+}
+
+sub destroy(int $obj) { move $obj, 0 }
+
+sub juggle(int $obj) {
+ move $obj, @place[$obj];
+ move $obj+100, @fixed[$obj];
 }
 
 sub bug(int $num) {
@@ -262,18 +274,6 @@ sub vocab(Str $word, int $type --> int) {
  # sections.
 }
 
-sub getin( --> List of Str) {
- print "\n" if $blklin;
- loop {
-  print "> ";
-  my Str $raw1, $raw2 = $*IN.get.words;
-  next if !$raw1.defined && $blklin;
-  my Str $word1, $word2 = ($raw1, $raw2).map:
-   { .defined ?? .substr(0, 5).uc !! undef };
-  return $word1, $raw1, $word2, $raw2;
- }
-}
-
 sub domove(int $motion) {
 # 8:
  $goto = 2;
@@ -290,13 +290,13 @@ sub domove(int $motion) {
     for @travel[$loc].keys -> $kk {
      my int $ll = @travel[$loc;$kk;0] % 1000;
      if $ll == $k {
-      dotrav @travel[$loc;$kk;1];
+      dotrav(@travel[$loc;$kk;1]);
       return;
      } elsif $ll <= 300 {
       $k2 = $kk if forced($ll) && @travel[$ll;0;0] % 1000 == $k
      }
     }
-    if $k2 != 0 { dotrav @travel[$loc;$k2;1] }
+    if $k2 != 0 { dotrav(@travel[$loc;$k2;1]) }
     else { rspeak 140 }
    }
   }
@@ -306,7 +306,7 @@ sub domove(int $motion) {
    @abb[$loc] = 0;
   }
   when CAVE { rspeak($loc < 8 ?? 57 !! 58) }
-  default {($oldloc2, $oldloc) = ($oldloc, $loc); dotrav $motion; }
+  default {($oldloc2, $oldloc) = ($oldloc, $loc); dotrav($motion); }
  }
  # next bigLoop;
 }
@@ -457,6 +457,32 @@ sub doaction() {
  # next bigLoop;
 }
 
+sub writeInt(IO $out, int32 $i) {
+ #$out.write(Buf.new($i, size => 32), 4)
+ # As far as anyone seems to know, the binary IO routines are currently only
+ # defined for buf8's.
+ $out.write(Buf.new(:size(8), (^4).map: { $i +> 8*(3-$_) +& 0xFF }), 4)
+}
+
+sub writeBool(IO $out, bool *@bits) {
+ my Buf $data .= new: :size(8), (0 ..^ +@bits :by(8)).map:
+  # Would just "^@bits :by(8)" work?  Can you apply the :by adverb to '^'?
+  -> $i { [+|] (^8).map: { $i+$^j < @bits ?? @bits[$i+$^j] +< $^j !! 0 } };
+ $out.write: $data, #[ $data.elems ??? ] (@bits/8).ceiling;
+}
+
+sub readInt(IO $in --> int32) {
+ my Buf $raw;
+ $in.read: $raw, 4;
+ [+|] (^4).map: { $raw[$^i] +< 8*(3-$^i) };
+}
+
+sub readBool(IO $in, int $qty --> List of bool) {
+ my Buf $raw;
+ $in.read: $raw, ($qty/8).ceiling;
+ (^$qty).map: { $raw[$^i idiv 8] +& 1 +< ($^i % 8) };
+}
+
 sub writeStr(IO $out, Str $str) {
  my $utf = $str.encode: 'UTF-8';
  writeInt($out, $utf.elems);
@@ -486,6 +512,18 @@ sub yesm(int $x, int $y, int $z --> Bool) {
    return False;
   } else { say "\nPlease answer the question." }
  }
+}
+
+sub datime( --> List of int) {
+ # This function is supposed to return:
+ # - the number of days since 1 Jan 1977 (220924800 in Unix epoch time)
+ # - the number of minutes past midnight
+ state Temporal::DateTime $start .= new(year => 1977, month => 1, day => 1);
+ # The time defaults to midnight, right?
+ my Temporal::DateTime $now = Time::localtime;
+ return ($now - $start) idiv 86400, $now.hour * 60 + $now.minute;
+  # I assume the difference between two DateTime objects is the number of
+  # seconds between them.
 }
 
 sub start( --> Bool) {
@@ -713,28 +751,11 @@ sub poof() {
  $abra.close;
 }
 
-sub datime( --> List of int) {
- # This function is supposed to return:
- # - the number of days since 1 Jan 1977 (220924800 in Unix epoch time)
- # - the number of minutes past midnight
-
- state Temporal::DateTime $start .= new(year => 1977, month => 1, day => 1);
- # The time defaults to midnight, right?
-
- my Temporal::DateTime $now = Time::localtime;
- return ($now - $start) idiv 86400, $now.hour * 60 + $now.minute;
-  # I assume the difference between two DateTime objects is the number of
-  # seconds between them.
-}
-
 
 sub MAIN(Str $oldGame?) {
  poof;
- if $oldGame.defined {
-  # Load a saved game
-  vresume($oldGame);
-  # Check for failure?
- } else {
+ if $oldGame.defined { vresume($oldGame) or exit 1 }
+ else {
   $demo = start;
   motd(False);
 
@@ -1714,32 +1735,6 @@ sub vsay() {
 # thus certainly won't be available in Rakudo for a while), the data is written
 # & read using homemade routines.
 
-sub writeInt(IO $out, int32 $i) {
- #$out.write(Buf.new($i, size => 32), 4)
- # As far as anyone seems to know, the binary IO routines are currently only
- # defined for buf8's.
- $out.write(Buf.new(:size(8), (^4).map: { $i +> 8*(3-$_) +& 0xFF }), 4)
-}
-
-sub writeBool(IO $out, bool *@bits) {
- my Buf $data .= new: :size(8), (0 ..^ +@bits :by(8)).map:
-  # Would just "^@bits :by(8)" work?  Can you apply the :by adverb to '^'?
-  -> $i { [+|] (^8).map: { $i+$^j < @bits ?? @bits[$i+$^j] +< $^j !! 0 } };
- $out.write: $data, #[ $data.elems ??? ] (@bits/8).ceiling;
-}
-
-sub readInt(IO $in --> int32) {
- my Buf $raw;
- $in.read: $raw, 4;
- [+|] (^4).map: { $raw[$^i] +< 8*(3-$^i) };
-}
-
-sub readBool(IO $in, int $qty --> List of bool) {
- my Buf $raw;
- $in.read: $raw, ($qty/8).ceiling;
- (^$qty).map: { $raw[$^i idiv 8] +& 1 +< ($^i % 8) };
-}
-
 sub vsuspend(Str $file) {
  if $demo {rspeak 201; return; }
  say "\nI can suspend your adventure for you so that you can resume later, but";
@@ -1773,17 +1768,17 @@ sub vsuspend(Str $file) {
  ciao;
 }
 
-sub vresume(Str $file) {
+sub vresume(Str $file --> Bool) {
  if $turns > 1 {
   say "\nTo resume an earlier Adventure, you must abandon the current one.";
   # This message is taken from the 430 pt. version of Adventure (version 2.5).
-  return if !yes(200, 54, 54);
+  return False if !yes(200, 54, 54);
  }
  say "\nRestoring from $file ...";
  my IO $adv;
  try {
   $adv = open $file, :r, :bin;
-  CATCH {$*ERR.say: "\nError: could not read $file: $!"; return; }
+  CATCH {$*ERR.say: "\nError: could not read $file: $!"; return False; }
  }
  # Don't use any CATCH blocks for the below lines; if they fail, exception
  # handling won't help you out.
@@ -1828,7 +1823,9 @@ sub vresume(Str $file) {
  $adv.close;
  start;
  domove NULL;
+ return True;
 }
+
 
 # Here be data sections
 

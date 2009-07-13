@@ -3,8 +3,6 @@
 - If the user enters "save" without a filename while playing a restored game,
   save the game to the same path that it was restored from?
 - Check everything to make sure it works!!!
-- Reorder the function definitions so that they are always declared before they
-  are used.
 - Prevent restoring a saved game while playing a demo game.
 - Somehow deal with the historical messages about saving your "core image" when
   suspending a game or finishing maintenance mode in the magic version
