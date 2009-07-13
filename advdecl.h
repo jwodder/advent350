@@ -57,7 +57,7 @@ extern const int travel[141][MAXROUTE][MAXTRAV];
 extern const struct {char word[6]; int val1, val2; } vocabulary[WORDQTY];
 extern const int actspk[32];
 extern const int cond[141];
-extern const struct {int score; char* rank; } classes[];
+extern const struct {int score; char* rank; } classes[10];
 extern const int hints[10][4];
 
 void turn(void);
@@ -108,7 +108,7 @@ void vdrop(void);
 void vfeed(void);
 void vsay(void);
 void vsuspend(char* file);
-void vresume(char* file);
+bool vresume(char* file);
 char* defaultSaveFile(void);
 
 #ifdef ADVMAGIC

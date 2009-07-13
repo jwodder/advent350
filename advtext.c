@@ -1,5 +1,6 @@
 #include <stddef.h>
 #include "advconfig.h"
+#include "advdecl.h"
 
 const char* longdesc[141] = {
  NULL,
@@ -1455,7 +1456,7 @@ const char* rmsg[] = {
  /* 132 */
  "The sepulchral voice intones, \"The cave is now closed.\"  As the echoes\n"
  "fade, there is a blinding flash of light (and a small puff of orange\n"
- "smoke). . . .  As your eyes refocus, you look around and find...\n",
+ "smoke). . . .    As your eyes refocus, you look around and find...\n",
 
  /* 133 */
  "There is a loud explosion, and a twenty-foot hole appears in the far\n"

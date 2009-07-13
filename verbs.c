@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include <string.h>
 #include "advconfig.h"
 #include "advconst.h"
@@ -149,7 +150,7 @@ void intransitive(void) {
    mspeak(6);
    hours();
 #else
-   puts("\nColossal Cave is open all day, every day.");
+   printf("\nColossal Cave is open all day, every day.\n");
 #endif
    break;
 
@@ -651,7 +652,7 @@ void vsuspend(char* file) {
   " but\nyou will have to wait at least %d minutes before continuing.\n",
   latency);
 #else
- puts("\nI can suspend your adventure for you so that you can resume later.");
+ printf("\nI can suspend your adventure for you so that you can resume later.\n");
 #endif
  if (!yes(200, 54, 54)) return;
  printf("\nSaving to %s ...\n", file);
@@ -710,11 +711,11 @@ void vsuspend(char* file) {
 #endif
 }
 
-void vresume(char* file) {
- if (turns != 0) {
-  puts("\nTo resume an earlier Adventure, you must abandon the current one.");
+bool vresume(char* file) {
+ if (turns > 1) {
+  printf("\nTo resume an earlier Adventure, you must abandon the current one.\n");
 /* This message is taken from the 430 pt. version of Adventure (version 2.5). */
-  if (!yes(200, 54, 54)) return;
+  if (!yes(200, 54, 54)) return false;
  }
  printf("\nRestoring from %s ...\n", file);
 
@@ -722,7 +723,7 @@ void vresume(char* file) {
  if (adv == NULL) {
   fprintf(stderr, "\nError: could not read %s: ", file);
   perror(NULL);
-  return;
+  return false;
  }
 
  /* Check the return values of all of these calls for failure! */
@@ -769,6 +770,7 @@ void vresume(char* file) {
  start();
 #endif
  domove(NULLMOVE);
+ return true;
 }
 
 char* defaultSaveFile(void) {

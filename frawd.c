@@ -17,15 +17,22 @@ int main(int argc, char** argv) {
    case 'm': magnm = strtol(optarg, NULL, 10); break;
    case 'H': hour = strtol(optarg, NULL, 10); break;
    case 'M': minute = strtol(optarg, NULL, 10); break;
-   default: usage(); exit(2);
+   default: usage(); return 2;
   }
  }
  char* word;
  if (optind < argc) word = argv[optind];
- else {usage(); exit(2); }
- /* Insert checking to make sure the word is valid!!! */
+ else {usage(); return 2; }
  int val[5];
- for (int i=0; i<5; i++) val[i] = toupper(word[i]) - 64;
+ for (int i=0; i<5; i++) {
+  if (word[i] == 0) {printf("That word is too short!\n"); return 2; }
+  val[i] = toupper(word[i]) - 64;
+  if (val[i] < 1 || val[i] > 26) {
+   printf("The word should contain exactly five ASCII letters.\n");
+   return 2;
+  }
+ }
+ if (word[5] != 0) {printf("That word is too long!\n"); return 2; }
  int t = hour * 100 + minute - minute % 10;
  int d = magnm;
  for (int y=0; y<5; y++) {
@@ -38,5 +45,6 @@ int main(int argc, char** argv) {
 }
 
 void usage(void) {
- fprintf(stderr, "Usage: frawd [-m magic number] [-H hour] [-M minute] word\n");
+ fprintf(stderr, "Usage: frawd [-m magic number] [-H hour] [-M minute] word\n"
+  "`word' should consist of exactly five ASCII letters.\n");
 }

@@ -103,8 +103,7 @@ int main(int argc, char** argv) {
  poof();
 #endif
  if (argc > 1) {
-  vresume(argv[1]);
-  /* Check for failure? */
+  if (!vresume(argv[1])) exit(1);
  } else {
 #ifdef ADVMAGIC
   demo = start();
@@ -206,7 +205,7 @@ void turn(void) {
       && newloc != dloc[i] && !forced(newloc) && !(i == 5 && bitset(newloc, 3))
       && travel[dloc[i]][j][0] / 1000 != 100 && ran(++kk) == 0) tk = newloc;
     }
-    if (ran(kk+1) == 0) tk = odloc[i];
+    if (kk == 0) tk = odloc[i];
     odloc[i] = dloc[i];
     dloc[i] = tk;
     dseen[i] = (dseen[i] && loc >= 15) || dloc[i] == loc || odloc[i] == loc;

@@ -321,7 +321,7 @@ void maint(void) {
 
  FILE* abra = fopen(MAGICFILE, "wb");
  if (abra == NULL) {
-  perror("Error: could not write to " MAGICFILE);
+  perror("\nError: could not write to " MAGICFILE);
   exit(1);
  }
  /* Check all of these function calls for failure! */

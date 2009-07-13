@@ -24,7 +24,7 @@ const int cond[141] = {
  8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 };
 
-const struct {int score; char* rank; } classes[] = {
+const struct {int score; char* rank; } classes[10] = {
  {35, "You are obviously a rank amateur.  Better luck next time.\n"},
  {100, "Your score qualifies you as a novice class adventurer.\n"},
  {130, "You have achieved the rating: \"Experienced Adventurer\".\n"},

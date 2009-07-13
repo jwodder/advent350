@@ -1,4 +1,5 @@
 #include "advconst.h"
+#include "advdecl.h"
 
 const int travel[141][MAXROUTE][MAXTRAV] = {
  {{-1}},
