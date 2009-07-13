@@ -278,6 +278,25 @@ bool start(void) {
  return false;
 }
 
+/* The code for saving & restoring values is written using macros in order to
+ * (a) ensure that the variables are always written & read in the same order
+ * and (b) enable error checking on all of the calls to fread() & fwrite()
+ * while keeping typing to a minimum.  Have I mentioned that I'm sorry for this
+ * code yet? */
+
+#define rwmagic() rwint(wkday); rwint(wkend); rwint(holid); rwint(hbegin); \
+ rwint(hend); rwarray(hname); rwint(shortGame); rwarray(magic); rwint(magnm); \
+ rwint(latency); rwarray(msg);
+
+#define rwint(var) if (rwfunc(&var, sizeof var, 1, abra) != 1) {rwfail; }
+
+#define rwarray(var) \
+ if (rwfunc(var, sizeof(var[0]), sizeof(var)/sizeof(var[0]), abra) \
+  != sizeof(var)/sizeof(var[0])) {rwfail; }
+
+#define rwfunc fwrite
+#define rwfail perror("\nError writing to " MAGICFILE); exit(1);
+
 void maint(void) {
  if (!wizard()) return;
  blklin = false;
@@ -318,27 +337,28 @@ void maint(void) {
  if (yesm(14, 0, 0)) motd(true);
  mspeak(15);
  blklin = true;
-
  FILE* abra = fopen(MAGICFILE, "wb");
  if (abra == NULL) {
   perror("\nError: could not write to " MAGICFILE);
   exit(1);
  }
- /* Check all of these function calls for failure! */
- fwrite(&wkday, sizeof wkday, 1, abra);
- fwrite(&wkend, sizeof wkend, 1, abra);
- fwrite(&holid, sizeof holid, 1, abra);
- fwrite(&hbegin, sizeof hbegin, 1, abra);
- fwrite(&hend, sizeof hend, 1, abra);
- fwrite(hname, 1, sizeof hname, abra);
- fwrite(&shortGame, sizeof shortGame, 1, abra);
- fwrite(magic, 1, sizeof magic, abra);
- fwrite(&magnm, sizeof magnm, 1, abra);
- fwrite(&latency, sizeof latency, 1, abra);
- fwrite(msg, 1, sizeof msg, abra);
+ rwmagic();
  fclose(abra);
-
  ciao();
+}
+
+#undef rwfunc
+#undef rwfail
+#define rwfunc fread
+#define rwfail perror("\nWarning: error reading from " MAGICFILE); return;
+
+void poof(void) {
+ FILE* abra = fopen(MAGICFILE, "rb");
+ if (abra == NULL) return;
+ /* If MAGICFILE cannot be opened, assume it does not exist and quietly leave
+  * the default magic values in place. */
+ rwmagic();
+ fclose(abra);
 }
 
 bool wizard(void) {
@@ -449,7 +469,13 @@ void motd(bool alter) {
    printf("> ");
    fgets(line, 70, stdin);
    if (*line == '\n') return;
-   if (strchr(line, '\n') == NULL) {mspeak(24); fpurge(stdin); continue; }
+   if (strchr(line, '\n') == NULL) {
+    mspeak(24);
+    /* Purge the rest of the input up to the end of the line: */
+    int ch = 0;
+    while (ch != '\n' && ch != EOF) ch = fgetc(stdin);
+    continue;
+   }
    msgLen += strlen(line);
    strncat(msg, line, 70);
   /* This doesn't exactly match the logic used in the original Fortran, but
@@ -457,27 +483,6 @@ void motd(bool alter) {
    if (msgLen + 70 >= 500) {mspeak(25); return; }
   }
  } else if (*msg) fputs(msg, stdout);
-}
-
-void poof(void) {
- FILE* abra = fopen(MAGICFILE, "rb");
- if (abra == NULL) return;
- /* If MAGICFILE cannot be opened, assume it does not exist and quietly leave
-  * the default magic values in place. */
-
- /* Check all of these function calls for failure! */
- fread(&wkday, sizeof wkday, 1, abra);
- fread(&wkend, sizeof wkend, 1, abra);
- fread(&holid, sizeof holid, 1, abra);
- fread(&hbegin, sizeof hbegin, 1, abra);
- fread(&hend, sizeof hend, 1, abra);
- fread(hname, 1, sizeof hname, abra);
- fread(&shortGame, sizeof shortGame, 1, abra);
- fread(magic, 1, sizeof magic, abra);
- fread(&magnm, sizeof magnm, 1, abra);
- fread(&latency, sizeof latency, 1, abra);
- fread(msg, 1, sizeof msg, abra);
- fclose(abra);
 }
 #endif  /* #ifdef ADVMAGIC */
 

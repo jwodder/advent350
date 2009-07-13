@@ -3,7 +3,5 @@
   should the game be saved to the same path that it was restored from?
 - Check everything to make sure it works!
 - Prevent restoring a saved game while playing a demo game.
-- Check the return values of all of the fread/fwrite calls in vsuspend(),
-  vresume(), maint(), and poof() for failure
 - Somehow deal with the historical messages about saving your "core image" when
   suspending a game or finishing maintenance mode in the magic version

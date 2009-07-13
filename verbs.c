@@ -644,6 +644,31 @@ void vsay(void) {
  } else printf("\nOkay, \"%s\".\n", tk);
 }
 
+/* The code for saving & restoring values is written using macros in order to
+ * (a) ensure that the variables are always written & read in the same order
+ * and (b) enable error checking on all of the calls to fread() & fwrite()
+ * while keeping typing to a minimum.  Have I mentioned that I'm sorry for this
+ * code yet? */
+
+#define rwgame()  rwint(loc); rwint(newloc); rwint(oldloc); rwint(oldloc2); \
+ rwint(limit); rwint(turns); rwint(iwest); rwint(knifeloc); rwint(detail); \
+ rwint(numdie); rwint(holding); rwint(foobar); rwint(tally); rwint(tally2); \
+ rwint(abbnum); rwint(clock1); rwint(clock2); rwint(wzdark); rwint(closing); \
+ rwint(lmwarn); rwint(panic); rwint(closed); rwarray(prop); rwarray(abb); \
+ rwarray(hintlc); rwarray(hinted); rwarray(dloc); rwarray(odloc); \
+ rwarray(dseen); rwint(dflag); rwint(dkill); rwarray(place); rwarray(fixed); \
+ rwarray(atloc); rwarray(link); rwint(saved); rwint(savet);
+
+#define rwint(var) if (rwfunc(&var, sizeof var, 1, adv) != 1) {rwfail; }
+
+#define rwarray(var) \
+ if (rwfunc(var, sizeof(var[0]), sizeof(var)/sizeof(var[0]), adv) \
+  != sizeof(var)/sizeof(var[0])) {rwfail; }
+
+#define rwfunc fwrite
+#define rwfail \
+ fprintf(stderr, "\nError writing to %s: ", file); perror(NULL); return;
+
 void vsuspend(char* file) {
 #ifdef ADVMAGIC
  if (demo) {rspeak(201); return; }
@@ -656,53 +681,13 @@ void vsuspend(char* file) {
 #endif
  if (!yes(200, 54, 54)) return;
  printf("\nSaving to %s ...\n", file);
-
  FILE* adv = fopen(file, "wb");
  if (adv == NULL) {
   fprintf(stderr, "\nError: could not write to %s: ", file);
   perror(NULL);
   return;
  }
-
- /* Check the return values of all of these calls for failure! */
- fwrite(&loc, sizeof loc, 1, adv);
- fwrite(&newloc, sizeof newloc, 1, adv);
- fwrite(&oldloc, sizeof oldloc, 1, adv);
- fwrite(&oldloc2, sizeof oldloc2, 1, adv);
- fwrite(&limit, sizeof limit, 1, adv);
- fwrite(&turns, sizeof turns, 1, adv);
- fwrite(&iwest, sizeof iwest, 1, adv);
- fwrite(&knifeloc, sizeof knifeloc, 1, adv);
- fwrite(&detail, sizeof detail, 1, adv);
- fwrite(&numdie, sizeof numdie, 1, adv);
- fwrite(&holding, sizeof holding, 1, adv);
- fwrite(&foobar, sizeof foobar, 1, adv);
- fwrite(&tally, sizeof tally, 1, adv);
- fwrite(&tally2, sizeof tally2, 1, adv);
- fwrite(&abbnum, sizeof abbnum, 1, adv);
- fwrite(&clock1, sizeof clock1, 1, adv);
- fwrite(&clock2, sizeof clock2, 1, adv);
- fwrite(&wzdark, sizeof wzdark, 1, adv);
- fwrite(&closing, sizeof closing, 1, adv);
- fwrite(&lmwarn, sizeof lmwarn, 1, adv);
- fwrite(&panic, sizeof panic, 1, adv);
- fwrite(&closed, sizeof closed, 1, adv);
- fwrite(prop, sizeof(prop[0]), sizeof(prop)/sizeof(prop[0]), adv);
- fwrite(abb, sizeof(abb[0]), sizeof(abb)/sizeof(abb[0]), adv);
- fwrite(hintlc, sizeof(hintlc[0]), sizeof(hintlc)/sizeof(hintlc[0]), adv);
- fwrite(hinted, sizeof(hinted[0]), sizeof(hinted)/sizeof(hinted[0]), adv);
- fwrite(dloc, sizeof(dloc[0]), sizeof(dloc)/sizeof(dloc[0]), adv);
- fwrite(odloc, sizeof(odloc[0]), sizeof(odloc)/sizeof(odloc[0]), adv);
- fwrite(dseen, sizeof(dseen[0]), sizeof(dseen)/sizeof(dseen[0]), adv);
- fwrite(&dflag, sizeof dflag, 1, adv);
- fwrite(&dkill, sizeof dkill, 1, adv);
- fwrite(place, sizeof(place[0]), sizeof(place)/sizeof(place[0]), adv);
- fwrite(fixed, sizeof(fixed[0]), sizeof(fixed)/sizeof(fixed[0]), adv);
- fwrite(atloc, sizeof(atloc[0]), sizeof(atloc)/sizeof(atloc[0]), adv);
- fwrite(link, sizeof(link[0]), sizeof(link)/sizeof(link[0]), adv);
- fwrite(&saved, sizeof saved, 1, adv);
- fwrite(&savet, sizeof savet, 1, adv);
- 
+ rwgame();
  fclose(adv);
 #ifdef ADVMAGIC
  ciao();
@@ -711,6 +696,18 @@ void vsuspend(char* file) {
 #endif
 }
 
+#undef rwfunc
+#undef rwfail
+#define rwfunc fread
+#define rwfail \
+ fprintf(stderr, "\nError reading %s: ", file); perror(NULL); exit(1);
+ /* Only restoring a game part-way can lead to Bad Things happening due to
+  * partly-read data, so it's best to just exit the program instead of letting
+  * the player continue.  This could be avoided if all of the data for the
+  * current game were temporarily backed-up somewhere and then restored if
+  * loading a saved game went wrong, but that's just too much pain for too
+  * little gain. */
+
 bool vresume(char* file) {
  if (turns > 1) {
   printf("\nTo resume an earlier Adventure, you must abandon the current one.\n");
@@ -718,53 +715,13 @@ bool vresume(char* file) {
   if (!yes(200, 54, 54)) return false;
  }
  printf("\nRestoring from %s ...\n", file);
-
  FILE* adv = fopen(file, "rb");
  if (adv == NULL) {
   fprintf(stderr, "\nError: could not read %s: ", file);
   perror(NULL);
   return false;
  }
-
- /* Check the return values of all of these calls for failure! */
- fread(&loc, sizeof loc, 1, adv);
- fread(&newloc, sizeof newloc, 1, adv);
- fread(&oldloc, sizeof oldloc, 1, adv);
- fread(&oldloc2, sizeof oldloc2, 1, adv);
- fread(&limit, sizeof limit, 1, adv);
- fread(&turns, sizeof turns, 1, adv);
- fread(&iwest, sizeof iwest, 1, adv);
- fread(&knifeloc, sizeof knifeloc, 1, adv);
- fread(&detail, sizeof detail, 1, adv);
- fread(&numdie, sizeof numdie, 1, adv);
- fread(&holding, sizeof holding, 1, adv);
- fread(&foobar, sizeof foobar, 1, adv);
- fread(&tally, sizeof tally, 1, adv);
- fread(&tally2, sizeof tally2, 1, adv);
- fread(&abbnum, sizeof abbnum, 1, adv);
- fread(&clock1, sizeof clock1, 1, adv);
- fread(&clock2, sizeof clock2, 1, adv);
- fread(&wzdark, sizeof wzdark, 1, adv);
- fread(&closing, sizeof closing, 1, adv);
- fread(&lmwarn, sizeof lmwarn, 1, adv);
- fread(&panic, sizeof panic, 1, adv);
- fread(&closed, sizeof closed, 1, adv);
- fread(prop, sizeof(prop[0]), sizeof(prop)/sizeof(prop[0]), adv);
- fread(abb, sizeof(abb[0]), sizeof(abb)/sizeof(abb[0]), adv);
- fread(hintlc, sizeof(hintlc[0]), sizeof(hintlc)/sizeof(hintlc[0]), adv);
- fread(hinted, sizeof(hinted[0]), sizeof(hinted)/sizeof(hinted[0]), adv);
- fread(dloc, sizeof(dloc[0]), sizeof(dloc)/sizeof(dloc[0]), adv);
- fread(odloc, sizeof(odloc[0]), sizeof(odloc)/sizeof(odloc[0]), adv);
- fread(dseen, sizeof(dseen[0]), sizeof(dseen)/sizeof(dseen[0]), adv);
- fread(&dflag, sizeof dflag, 1, adv);
- fread(&dkill, sizeof dkill, 1, adv);
- fread(place, sizeof(place[0]), sizeof(place)/sizeof(place[0]), adv);
- fread(fixed, sizeof(fixed[0]), sizeof(fixed)/sizeof(fixed[0]), adv);
- fread(atloc, sizeof(atloc[0]), sizeof(atloc)/sizeof(atloc[0]), adv);
- fread(link, sizeof(link[0]), sizeof(link)/sizeof(link[0]), adv);
- fread(&saved, sizeof saved, 1, adv);
- fread(&savet, sizeof savet, 1, adv);
- 
+ rwgame();
  fclose(adv);
 #ifdef ADVMAGIC
  start();

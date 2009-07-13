@@ -117,13 +117,13 @@ void mspeak(int msg);
 bool yesm(int x, int y, int z);
 bool start(void);
 void maint(void);
+void poof(void);
 bool wizard(void);
 void hours(void);
 void hoursx(int32_t hours, const char* day);
 void newhrs(void);
 int32_t newhrx(const char* day);
 void motd(bool alter);
-void poof(void);
 #endif
 
 #if defined(ADVMAGIC) || defined(ORIG_RAND)
