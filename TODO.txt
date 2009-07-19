@@ -1,7 +1,14 @@
 - Make the arrays be properly zero-based
 - If the user enters "save" without a filename while playing a restored game,
   should the game be saved to the same path that it was restored from?
-- Check everything to make sure it works!
 - Prevent restoring a saved game while playing a demo game.
-- Somehow deal with the historical messages about saving your "core image" when
-  suspending a game or finishing maintenance mode in the magic version
+- Rewrite the README file to contain instructions on configuration, building,
+  installation, and the potential security hole of the magic file
+ - Somewhere include instructions for how to pass wizard authentication (along
+   with general instructions for magic/maintenance mode?)
+ - Add a note about the save files & magic file being completely vulnerable to
+   editing
+- Add manpages for both advent350 and frawd (to be in section 6 of the manual)
+- Add a licensing (or lack thereof) notice
+- Once this port is completely finished, submit it to the Interactive Fiction
+  Archive.

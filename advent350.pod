@@ -1,0 +1,55 @@
+=pod
+
+=head1 NAME
+
+B<advent350> - the Colossal Cave Adventure, 350 point version
+
+=head1 SYNOPSIS
+
+B<advent350> [I<gamefile>]
+
+=head1 DESCRIPTION
+
+
+
+=head1 FILES
+
+=over
+
+=item F<$HOME/.adventure>
+
+Games are saved to and read from this file by default when no filename is given
+to the C<save> or C<restore> command.
+
+=item F</usr/games/lib/advmagic>
+
+This is the default path which the current "magic" settings are read from and
+written to.  It is only used if ADVMAGIC was defined at compile time.
+
+=back
+
+=head1 BUGS
+
+I suspect that there may still be some lingering typos in the code or game
+text.  Let me know if you find any.
+
+The save files and magic file are completely vulnerable to editing by malicious
+players -- but you'd have to be pretty pathetic to want to edit them
+dishonestly in the first place.
+
+Cave "prime time" can be circumvented by changing the time zone.
+
+Due to the way the command parser works, save file names may not contain
+spaces, and if the C<save>/C<restore> command is over MAX_INPUT_LENGTH (default
+80) characters long, any characters after that point are cut off.
+
+=head1 SEE ALSO
+
+
+=head1 COPYRIGHT
+
+
+=head1 HISTORY
+
+
+=cut

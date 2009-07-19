@@ -50,19 +50,19 @@ int clock1 = 30;
 int clock2 = 50;
 bool wzdark = false, closing = false, lmwarn = false, panic = false;
 bool closed = false;
-int prop[65] = {
+signed char prop[65] = {
  /* Elements 0 through 49 are implicitly set to zero. */
  [50] = -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1
 };
 int abb[141];
 int hintlc[10];
 bool hinted[10];
-int dloc[6] = {19, 27, 33, 44, 64, CHLOC};
-int odloc[6];
+unsigned char dloc[6] = {19, 27, 33, 44, 64, CHLOC};
+unsigned char odloc[6];
 bool dseen[6];
 int dflag = 0, dkill = 0;
 
-int place[65] = {
+short place[65] = {
  0, 3, 3, 8, 10, 11, 0, 14, 13, 94,
  96, 19, 17, 101, 103, 0, 106, 0, 0, 3,
  3, 0, 0, 109, 25, 23, 111, 35, 0, 97,
@@ -72,7 +72,7 @@ int place[65] = {
  101, 0, 119, 127, 130
 };
 
-int fixed[65] = {
+short fixed[65] = {
  0, 0, 0, 9, 0, 0, 0, 15, 0, -1,
  0, -1, 27, -1, 0, 0, 0, -1, 0, 0,
  0, 0, 0, -1, -1, 67, -1, 110, 0, -1,
@@ -82,8 +82,8 @@ int fixed[65] = {
  0, 0, 121, 0, -1
 };
 
-int atloc[141];
-int link[165];
+unsigned char atloc[141];
+unsigned char link[165];
 int saved = -1, savet = 0;
 /* Although `saved' and `savet' are only used when ADVMAGIC is defined, they
  * are declared in and saved & restored by both forms of the game in order to
@@ -91,12 +91,12 @@ int saved = -1, savet = 0;
 
 
 int main(int argc, char** argv) {
-#ifndef ORIG_RNG
- #ifdef RANDOM_RNG
+#ifdef ORIG_RNG
+ ran(1);
+#elif defined(RANDOM_RNG)
  srandom(time(NULL));
- #else
+#else
  srand(time(NULL));
- #endif
 #endif
 
 #ifdef ADVMAGIC
@@ -357,6 +357,7 @@ void turn(void) {
    }
    wzdark = dark();
    if (0 < knifeloc && knifeloc != loc) knifeloc = 0;
+   ran(1);  /* Kick RNG */
    getin(word1, in1, word2, in2);
 
   case 2608:

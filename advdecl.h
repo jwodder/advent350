@@ -32,18 +32,18 @@ extern int turns, iwest, knifeloc, detail;
 extern int numdie, holding, foobar;
 extern int tally, tally2, abbnum, clock1, clock2;
 extern bool wzdark, closing, lmwarn, panic, closed;
-extern int prop[65];
+extern signed char prop[65];
 extern int abb[141];
 extern int hintlc[10];
 extern bool hinted[10];
-extern int dloc[6];
-extern int odloc[6];
+extern unsigned char dloc[6];
+extern unsigned char odloc[6];
 extern bool dseen[6];
 extern int dflag, dkill;
-extern int place[65];
-extern int fixed[65];
-extern int atloc[141];
-extern int link[165];
+extern short place[65];
+extern short fixed[65];
+extern unsigned char atloc[141];
+extern unsigned char link[165];
 extern int saved, savet;
 
 extern const char* longdesc[141];
@@ -126,7 +126,7 @@ int32_t newhrx(const char* day);
 void motd(bool alter);
 #endif
 
-#if defined(ADVMAGIC) || defined(ORIG_RAND)
+#if defined(ADVMAGIC) || defined(ORIG_RNG)
 void datime(int* d, int* t);
 #endif
 
