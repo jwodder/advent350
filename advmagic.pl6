@@ -1769,6 +1769,7 @@ sub vsuspend(Str $file) {
 }
 
 sub vresume(Str $file --> Bool) {
+ if $demo {mspeak 9; return False; }
  if $turns > 1 {
   say "\nTo resume an earlier Adventure, you must abandon the current one.";
   # This message is taken from the 430 pt. version of Adventure (version 2.5).
