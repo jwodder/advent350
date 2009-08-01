@@ -709,6 +709,9 @@ void vsuspend(char* file) {
   * little gain. */
 
 bool vresume(char* file) {
+#ifdef ADVMAGIC
+ if (demo) {mspeak(9); return false; }
+#endif
  if (turns > 1) {
   printf("\nTo resume an earlier Adventure, you must abandon the current one.\n");
 /* This message is taken from the 430 pt. version of Adventure (version 2.5). */

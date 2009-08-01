@@ -380,7 +380,7 @@ bool wizard(void) {
   word[y] += val[y] = (t*26) / 1048576 + 1;
  }
  if (yesm(18, 0, 0)) {mspeak(20); return false; }
- printf("\n %s\n", word);
+ printf("\n%s\n", word);
  getin(word, NULL, NULL, NULL);
  datime(&d, &t);
  t = (t/60) * 40 + (t/10) * 10;

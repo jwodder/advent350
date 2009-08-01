@@ -2,7 +2,7 @@
 
 =head1 NAME
 
-B<advent350> - the Colossal Cave Adventure, 350 point version
+B<advent350> - I<The Colossal Cave Adventure>, 350 point version
 
 =head1 SYNOPSIS
 
@@ -10,7 +10,31 @@ B<advent350> [I<gamefile>]
 
 =head1 DESCRIPTION
 
+I<The Colossal Cave Adventure> is a classic of computer gaming and the
+progenitor of the text adventure and interactive fiction genres.  In it, you
+explore Colossal Cave, finding treasures, solving fiendish puzzles, and trying
+not to get killed by those dwarves.
 
+Game commands consist of one or two words and are (mostly) self-evident, such
+as "C<take lamp>" or "C<north>."  Only the first five letters of the first two
+words per input line are considered, and all commands are case-insensitive.
+
+This port of the original 350-point version of I<Adventure> is intended to be
+as true to the original as is sane; the biggest differences are that game data
+is no longer saved by suspending the program and saving its core image, and, of
+course, that not all of the letters are upper-case.  If so configured at
+compile time, the game will even include the "magic" features of the original
+(i.e., forced delays before restarting a saved game and "prime time" hours
+during which the game cannot be normally played) which are often omitted from
+ports, due partially to being unnecessary & annoying on modern computers.
+
+=head1 SAVING AND RESTORING
+
+Games can be saved & restored with the commands C<save> (or C<pause> or
+C<suspend>) and C<restore> (or C<load> or C<restart> or C<resume>).  These
+commands take the name of the save file as an optional argument; if it is not
+given, the game is written to or read from F<$HOME/.adventure>.  A saved game
+may also be restored directly by supplying the filename on the command line.
 
 =head1 FILES
 
@@ -31,25 +55,36 @@ written to.  It is only used if ADVMAGIC was defined at compile time.
 =head1 BUGS
 
 I suspect that there may still be some lingering typos in the code or game
-text.  Let me know if you find any.
+text somewhere.  Let me know if you find any.
 
 The save files and magic file are completely vulnerable to editing by malicious
 players -- but you'd have to be pretty pathetic to want to edit them
 dishonestly in the first place.
 
-Cave "prime time" can be circumvented by changing the time zone.
+Cave "prime time" hours and game restoration delays can be circumvented by
+changing the time zone (or just changing the system time).
 
 Due to the way the command parser works, save file names may not contain
 spaces, and if the C<save>/C<restore> command is over MAX_INPUT_LENGTH (default
 80) characters long, any characters after that point are cut off.
 
+Messages about saving your "core image" are still printed when saving your game
+(if ADVMAGIC was defined at compile time) and after changing the "magic"
+values, despite the fact that these messages are now irrelevant and misleading.
+
 =head1 SEE ALSO
 
+The original PDP-10 Fortran version of I<Adventure> can be downloaded from the
+Interactive Fiction Archive at
+L<http://www.ifarchive.org/if-archive/games/source/advent-original.tar.gz>.
 
-=head1 COPYRIGHT
-
+The source repository for this port of I<Adventure> can be found at
+L<http://github.com/jwodder/advent350>.
 
 =head1 HISTORY
+
+
+[[Mention lack of usage/licensing/copyright/whatever restrictions on this port]]
 
 
 =cut

@@ -1,7 +1,6 @@
 - Make the arrays be properly zero-based
 - If the user enters "save" without a filename while playing a restored game,
   should the game be saved to the same path that it was restored from?
-- Prevent restoring a saved game while playing a demo game.
 - Rewrite the README file to contain instructions on configuration, building,
   installation, and the potential security hole of the magic file
  - Somewhere include instructions for how to pass wizard authentication (along
@@ -12,3 +11,6 @@
 - Add a licensing (or lack thereof) notice
 - Once this port is completely finished, submit it to the Interactive Fiction
   Archive.
+- Consider adding a configuration option to enable an "old-tymey" interface in
+  which all output lines begin with a single space and there is no "> " input
+  prompt (lowercase letters will still be used, though).

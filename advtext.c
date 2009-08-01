@@ -365,11 +365,11 @@ const char* longdesc[141] = {
  "through a hole in the floor.  Passages exit to the south and west.\n",
 
  /* 96 */
- "You are in the soft room.  The walls are covered with heavy curtains,\n"
+ "You are in the Soft Room.  The walls are covered with heavy curtains,\n"
  "the floor with a thick pile carpet.  Moss covers the ceiling.\n",
 
  /* 97 */
- "This is the oriental room.  Ancient oriental cave drawings cover the\n"
+ "This is the Oriental Room.  Ancient oriental cave drawings cover the\n"
  "walls.  A gently sloping passage leads upward to the north, another\n"
  "passage leads se, and a hands and knees crawl leads west.\n",
 
@@ -475,7 +475,7 @@ const char* longdesc[141] = {
  "corner is a bundle of black rods with rusty marks on their ends.  A\n"
  "large number of velvet pillows are scattered about on the floor.  A\n"
  "vast mirror stretches off to the northeast.  At your feet is a large\n"
- "steel grate, next to which is a sign which reads, \"Treasure vault.\n"
+ "steel grate, next to which is a sign which reads, \"Treasure Vault.\n"
  "Keys in main office.\"\n",
 
  /* 117 */
