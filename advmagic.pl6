@@ -468,7 +468,7 @@ sub writeBool(IO $out, bool *@bits) {
  my Buf $data .= new: :size(8), (0 ..^ +@bits :by(8)).map:
   # Would just "^@bits :by(8)" work?  Can you apply the :by adverb to '^'?
   -> $i { [+|] (^8).map: { $i+$^j < @bits ?? @bits[$i+$^j] +< $^j !! 0 } };
- $out.write: $data, #[ $data.elems ??? ] (@bits/8).ceiling;
+ $out.write: $data, #`[ $data.elems ??? ] (@bits/8).ceiling;
 }
 
 sub readInt(IO $in --> int32) {
@@ -697,7 +697,7 @@ sub newhrs() {
  hours;
 }
 
-sub newhrx(Str $day --> bool[24] #< Right? > ) {
+sub newhrx(Str $day --> bool[24] #`< Right? > ) {
  my bool @newhrx[24] = False, *;
  say "Prime time on $day";
  loop {
