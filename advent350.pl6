@@ -4,17 +4,19 @@ use v6;
 # Initialize database (lazily):
 
 sub indexLines(Str *@lines --> List of Str) {
- gather for @lines {
-  FIRST { take undef }
-  state Str $text = '';
-  state int $i = 1;
-  my($num, $t) = .split: "\t", 2;
-  if $i == $num { $text ~= $t }
-  else {
-   take ($text ~~ /\>\$\</ ?? undef !! $text), undef xx $num - $i - 1;
-   ($text, $i) = ($t, $num);
+ gather {
+  take undef;
+  my Str $text = '';
+  my Int $i = 1;
+  for @lines {
+   my($num, $t) = .split: "\t", 2;
+   if $i == $num { $text ~= $t }
+   else {
+    take ($text ~~ /\>\$\</ ?? undef !! $text), undef xx $num - $i - 1;
+    ($text, $i) = ($t, $num);
+   }
   }
-  LAST { take $text }
+  take $text;
  }
 }
 
@@ -23,7 +25,7 @@ my Str @longDesc <== indexLines <== $=adventData01.lines(:!chomp);
 my Str @shortDesc <== indexLines <== $=adventData02.lines(:!chomp);
 
 my int @travel[*;*;*]
- <== map { .defined ?? .split("\n").map: *.split("\t") !! undef }
+ <== map { .defined ?? .split("\n")».split("\t") !! undef }
  <== indexLines <== $=adventData03.lines(:!chomp);
 
 (my Array of int %vocab).push: $=adventData04.lines.map: { .split("\t").[1,0] }
@@ -294,15 +296,14 @@ sub dotrav(int $motion) {
  my int $rdest = -1;
  for @travel[$loc] -> $kk {
   if $kk[1..*].any == 1 | $motion ff * {
-   my int $ll = $kk[0];
-   my int $rcond = $ll idiv 1000;
-   my int $robject = $rcond % 100;
+   my int $rcond = $kk[0] idiv 1000;
+   my int $robj = $rcond % 100;
    given $rcond {
-    when 0 | 100 { $rdest = $ll % 1000 }
-    when 0 ^..^ 100 { $rdest = $ll % 1000 if pct $_ }
-    when 100 ^.. 200 { $rdest = $ll % 1000 if toting $robject }
-    when 200 ^.. 300 { $rdest = $ll % 1000 if toting($robject) || at $robject }
-    default { $rdest = $ll % 1000 if @prop[$robject] != $_ idiv 100 - 3 }
+    when 0 | 100 { $rdest = $kk[0] % 1000 }
+    when 0 ^..^ 100 { $rdest = $kk[0] % 1000 if pct $_ }
+    when 100 ^.. 200 { $rdest = $kk[0] % 1000 if toting $robj }
+    when 200 ^.. 300 { $rdest = $kk[0] % 1000 if toting($robj) || at($robj) }
+    default { $rdest = $kk[0] % 1000 if @prop[$robj] != $_ idiv 100 - 3 }
    }
    last if $rdest != -1;
   }
@@ -1582,7 +1583,7 @@ sub vresume(Str $file --> Bool) {
 25	a large hole in the wall about 25 feet above you.
 26	You clamber up the plant and scurry through the hole at the top.
 27	You are on the west side of the fissure in the Hall of Mists.
-28	You are in a low n/s passage at a hole in the floor.  the hole goes
+28	You are in a low n/s passage at a hole in the floor.  The hole goes
 28	down to an e/w passage.
 29	You are in the south side chamber.
 30	You are in the west side chamber of the Hall of the Mountain King.
