@@ -1,10 +1,12 @@
 #!/usr/bin/env perl6
+# Program for calculating the second magic word needed for wizard-mode
+# authentication
 use v6;
 
-sub MAIN(Int :$magnm = 11111, Int :$hour where 0..23 = Time::localtime.hour,
- Int :$minute where 0..59 = Time::localtime.minute, Str $word where
- { $^w.chars == 5 && $^w.comb.map({ .uc.ord }).all ~~ 65..90 }) {
- my @val = $word.comb.map({ .uc.ord }) »-» 64;
+sub MAIN(Int :$magnm = 11111, Int where ^24 :$hour = localtime.hour,
+ Int where ^60 :$minute = localtime.minute, Str where { $^w.chars == 5
+ && $^w.uc.ord.all ~~ 65..90 } $word) {
+ my @val = $word.uc.ord »-» 64;
  my $t = $hour * 100 + $minute - $minute % 10;
  my $d = $magnm;
  for ^5 -> $y {

@@ -519,12 +519,12 @@ sub datime( --> List of int) {
  # This function is supposed to return:
  # - the number of days since 1 Jan 1977 (220924800 in Unix epoch time)
  # - the number of minutes past midnight
- state Temporal::DateTime $start .= new(year => 1977, month => 1, day => 1);
- # The time defaults to midnight, right?
- my Temporal::DateTime $now = Time::localtime;
+ state DateTime $start .= new(year => 1977, month => 1, day => 1);
+  # The time defaults to midnight, right?
+ my DateTime $now = localtime;
  return ($now - $start) idiv 86400, $now.hour * 60 + $now.minute;
-  # I assume the difference between two DateTime objects is the number of
-  # seconds between them.
+  # I assume the difference between two DateTime objects (when cast to a
+  # Num-like, at least) is the number of seconds between them.
 }
 
 sub start( --> Bool) {

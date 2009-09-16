@@ -1,5 +1,5 @@
-- Make the arrays be properly zero-based
-- Write a manpage using Perl 6 POD
+- Make the arrays be properly zero-based?
+- Write manpages for all of the programs using Perl 6 POD
 - If the user enters "save" without a filename while playing a restored game,
   save the game to the same path that it was restored from?
-- Check everything to make sure it works!!!
+- Check everything to make sure it works!
