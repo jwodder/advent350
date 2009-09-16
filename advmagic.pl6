@@ -4,19 +4,22 @@ use v6;
 # Initialize database (lazily):
 
 sub indexLines(Str *@lines --> List of Str) {
- gather {
-  take undef;
-  my Str $text = '';
-  my Int $i = 1;
-  for @lines {
-   my($num, $t) = .split: "\t", 2;
-   if $i == $num { $text ~= $t }
-   else {
-    take ($text ~~ /\>\$\</ ?? undef !! $text), undef xx $num - $i - 1;
-    ($text, $i) = ($t, $num);
-   }
+ gather for @lines {
+  FIRST { take undef }
+  state Str $text = '';
+  state int $i = 1;
+# According to Larry Wall[1], these C<state> variables should be associated
+# with the closure created by the C<for> loop and not with the C<indexLines>
+# function; i.e., they are reinitialized for each invocation of C<indexLines>,
+# not just the first time it's called.
+# [1] <http://www.nntp.perl.org/group/perl.perl6.users/2009/09/msg1148.html>
+  my($num, $t) = .split: "\t", 2;
+  if $i == $num { $text ~= $t }
+  else {
+   take ($text ~~ /\>\$\</ ?? undef !! $text), undef xx $num - $i - 1;
+   ($text, $i) = ($t, $num);
   }
-  take $text;
+  LAST { take $text }
  }
 }
 
