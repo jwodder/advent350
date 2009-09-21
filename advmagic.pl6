@@ -469,8 +469,7 @@ sub writeInt(IO $out, int32 $i) {
 }
 
 sub writeBool(IO $out, bool *@bits) {
- my Buf $data .= new: :size(8), (0 ..^ +@bits :by(8)).map:
-  # Would just "^@bits :by(8)" work?  Can you apply the :by adverb to '^'?
+ my Buf $data .= new: :size(8), (0 ... *+8, @bits.end).map:
   -> $i { [+|] (^8).map: { $i+$^j < @bits ?? @bits[$i+$^j] +< $^j !! 0 } };
  $out.write: $data, #`[ $data.elems ??? ] (@bits/8).ceiling;
 }
