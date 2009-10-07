@@ -7,8 +7,8 @@
    with general instructions for magic/maintenance mode?)
  - Add a note about the save files & magic file being completely vulnerable to
    editing
-- Add manpages for both advent350 and frawd (to be in section 6 of the manual)
-- Add a licensing (or lack thereof) notice
+- Add a manpage for frawd
+- Add a licensing (or lack thereof) notice?
 - Once this port is completely finished, submit it to the Interactive Fiction
   Archive.
 - Consider adding a configuration option to enable an "old-tymey" interface in
