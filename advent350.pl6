@@ -531,13 +531,13 @@ sub MAIN(Str $oldGame?) {
     }
     $loc = $newloc;
     # Dwarven logic:
-    continue if $loc == 0 || forced($loc) || bitset $newloc, 3;
+    nobreak if $loc == 0 || forced($loc) || bitset $newloc, 3;
     if $dflag == 0 {
      $dflag = 1 if $loc >= 15;
-     continue;
+     nobreak;
     }
     if $dflag == 1 {
-     continue if $loc < 15 || pct 95;
+     nobreak if $loc < 15 || pct 95;
      $dflag = 2;
      @dloc[(^5).pick] = 0 if pct 50 for 1, 2;
      for ^5 -> $i {
@@ -546,7 +546,7 @@ sub MAIN(Str $oldGame?) {
      }
      rspeak 3;
      drop AXE, $loc;
-     continue;
+     nobreak;
     }
     my int $dtotal, $attack, $stick = 0, *;
     dwarfLoop: for ^6 -> $i {  # The individual dwarven movement loop
@@ -599,25 +599,25 @@ sub MAIN(Str $oldGame?) {
       }
      }
     } # end of individual dwarf loop
-    continue if $dtotal == 0;
+    nobreak if $dtotal == 0;
     if $dtotal == 1 { rspeak 4 }
     else {
      say "\nThere are $dtotal threatening little dwarves in the room with you."
     }
-    continue if $attack == 0;
+    nobreak if $attack == 0;
     $dflag = 3 if $dflag == 2;
     my int $k;
     if $attack == 1 {rspeak 5; $k = 52; }
     else {say "\n$attack of them throw knives at you!"; $k = 6; }
     if $stick <= 1 {
      rspeak $k + $stick;
-     continue if $stick == 0;
+     nobreak if $stick == 0;
     } else { say "\n$stick of them get you!" }
     $oldloc2 = $loc;
     death;
     # If the player is reincarnated after being killed by a dwarf, they GOTO
     # label 2000 using fallthrough rather than with any special flow control.
-    continue;
+    nobreak;
    }
 
    when *..2000 {
@@ -651,10 +651,10 @@ sub MAIN(Str $oldGame?) {
       pspeak $obj, $obj == STEPS && $loc == @fixed[STEPS] ?? 1 !! @prop[$obj];
      }
     }
-    continue;
+    nobreak;
    }
 
-   when *..2012 {($verb, $obj) = 0, 0; continue; }
+   when *..2012 {($verb, $obj) = 0, 0; nobreak; }
 
    when *..2600 {
     hintLoop: for 4..9 -> $hint {
@@ -701,7 +701,7 @@ sub MAIN(Str $oldGame?) {
     $wzdark = dark;
     $knifeloc = 0 if 0 < $knifeloc != $loc;
     ($word1, $in1, $word2, $in2) = getin;
-    continue;
+    nobreak;
    }
 
    when *..2608 {
@@ -725,7 +725,7 @@ sub MAIN(Str $oldGame?) {
      rspeak 129;
      $clock1 = -1;
      $closing = True;
-     continue;  # GOTO 19999, a.k.a. 2609
+     nobreak;  # GOTO 19999, a.k.a. 2609
     }
     $clock2-- if $clock1 < 0;
     if $clock2 == 0 {
@@ -763,7 +763,7 @@ sub MAIN(Str $oldGame?) {
      $lmwarn = True;
      rspeak(@place[BATTER] == 0 ?? 183 !! @prop[BATTER] == 1 ?? 189 !! 187);
     }
-    continue;
+    nobreak;
    }
 
    when *..2609 {
@@ -780,12 +780,12 @@ sub MAIN(Str $oldGame?) {
     } elsif $word1 eq 'WATER' | 'OIL' && $word2 eq 'PLANT' | 'DOOR' {
      $word2 = 'POUR' if at vocab($word2, 1)
     }
-    continue;
+    nobreak;
    }
 
    when *..2610 {
     rspeak 17 if $word1 eq 'WEST' && ++$iwest == 10;
-    continue;
+    nobreak;
    }
 
    when *..2630 {
