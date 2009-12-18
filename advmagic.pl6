@@ -5,7 +5,7 @@ use v6;
 
 sub indexLines(Str *@lines --> List of Str) {
  gather for @lines {
-  FIRST { take undef }
+  FIRST { take Mu }
   state Str $text = '';
   state int $i = 1;
 # According to Larry Wall[1], these C<state> variables should be associated
@@ -16,7 +16,7 @@ sub indexLines(Str *@lines --> List of Str) {
   my($num, $t) = .split: "\t", 2;
   if $i == $num { $text ~= $t }
   else {
-   take ($text ~~ /\>\$\</ ?? undef !! $text), undef xx $num - $i - 1;
+   take ($text ~~ /\>\$\</ ?? Mu !! $text), Mu xx $num - $i - 1;
    ($text, $i) = ($t, $num);
   }
   LAST { take $text }
@@ -28,7 +28,7 @@ my Str @longDesc <== indexLines <== $=adventData01.lines(:!chomp);
 my Str @shortDesc <== indexLines <== $=adventData02.lines(:!chomp);
 
 my int @travel[*;*;*]
- <== map { .defined ?? .split("\n")».split("\t") !! undef }
+ <== map { .defined ?? .split("\n")».split("\t") !! Mu }
  <== indexLines <== $=adventData03.lines(:!chomp);
 
 (my Array of int %vocab).push: $=adventData04.lines.map: { .split("\t").[1,0] }
@@ -39,7 +39,7 @@ my Array of Str @itemDesc = gather for $=adventData05.lines(:!chomp) {
  state Str @accum = ();
  my($n, $msg) = .split: "\t", 2;
  if 0 < $n < 100 {
-  take @accum.map({ /\>\$\</ ?? undef !! $_ }), [] xx $n - $i - 1;
+  take @accum.map({ /\>\$\</ ?? Mu !! $_ }), [] xx $n - $i - 1;
   ($i, $j) = ($n, -1);
   @accum = $msg, ;
  } else {
@@ -47,7 +47,7 @@ my Array of Str @itemDesc = gather for $=adventData05.lines(:!chomp) {
   @accum[*-1] ~= $msg;
   $j = $n / 100;
  }
- LAST { take @accum.map: { /\>\$\</ ?? undef !! $_ } }
+ LAST { take @accum.map: { /\>\$\</ ?? Mu !! $_ } }
 }
 
 my Str @rmsg <== indexLines <== $=adventData06.lines(:!chomp);
@@ -67,7 +67,7 @@ my Pair @classes
  <== map { [=>] .split("\t") }
  <== $=adventData10.lines(:!chomp);
 
-my int @hints[*;4] <== map { .defined ?? .split("\t") !! undef }
+my int @hints[*;4] <== map { .defined ?? .split("\t") !! Mu }
  <== indexLines <== $=adventData11.lines;
 
 my Str @magicMsg <== indexLines <== $=adventData12.lines(:!chomp);
@@ -193,7 +193,7 @@ sub getin( --> List of Str) {
   my Str $raw1, $raw2 = $*IN.get.words;
   next if !$raw1.defined && $blklin;
   my Str $word1, $word2 = ($raw1, $raw2).map:
-   { .defined ?? .substr(0, 5).uc !! undef };
+   { .defined ?? .substr(0, 5).uc !! Mu };
   return $word1, $raw1, $word2, $raw2;
  }
 }
@@ -451,7 +451,7 @@ sub doaction() {
  if $word2 {
 # 2800:
   ($word1, $in1) = ($word2, $in2);
-  $word2 = $in2 = undef;
+  $word2 = $in2 = Mu;
   $goto = 2610;
  } elsif $verb { transitive }
  else {
@@ -1073,7 +1073,7 @@ sub MAIN(Str $oldGame?) {
     }
     if $word1 eq 'ENTER' && $word2 {
      ($word1, $in1) = ($word2, $in2);
-     $word2 = $in2 = undef;
+     $word2 = $in2 = Mu;
     } elsif $word1 eq 'WATER' | 'OIL' && $word2 eq 'PLANT' | 'DOOR' {
      $word2 = 'POUR' if at vocab($word2, 1)
     }
@@ -1130,7 +1130,7 @@ sub MAIN(Str $oldGame?) {
       # This assignment just indicates whether an object was supplied.
       elsif $word2 {
        ($word1, $in1) = ($word2, $in2);
-       $word2 = $in2 = undef;
+       $word2 = $in2 = Mu;
        $goto = 2610;
        next bigLoop;
       }
@@ -1725,7 +1725,7 @@ sub vsay() {
  my Str $tk = $in2 // $in1;
  $word1 = $word2 // $word1;
  if vocab($word1, -1) == 62 | 65 | 71 | 2025 {
-  $word2 = undef;
+  $word2 = Mu;
   $obj = 0;
   $goto = 2630;
  } else { say "\nOkay, \"$tk\"." }
