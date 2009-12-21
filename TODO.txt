@@ -7,10 +7,13 @@
    with general instructions for magic/maintenance mode?)
  - Add a note about the save files & magic file being completely vulnerable to
    editing
-- Add a manpage for frawd
 - Add a licensing (or lack thereof) notice?
 - Once this port is completely finished, submit it to the Interactive Fiction
   Archive.
 - Consider adding a configuration option to enable an "old-tymey" interface in
   which all output lines begin with a single space and there is no "> " input
   prompt (lowercase letters will still be used, though).
+- Store the game state (and the "magic" state) in a struct so that it can be
+  saved & restored in one fell swoop and also be easily backed up before
+  restoring in case something goes wrong
+- Improve the storage of the travel table
