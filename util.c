@@ -366,7 +366,7 @@ bool wizard(void) {
  mspeak(17);
  char word[6];
  getin(word, NULL, NULL, NULL);
- if (strcmp(word, magic) != 0) {mspeak(20); return false; }
+ if (strncmp(word, magic, 5) != 0) {mspeak(20); return false; }
  int d, t;
  datime(&d, &t);
  t = t * 2 + 1;
@@ -408,9 +408,9 @@ void hours(void) {
  if (hend < d || hend < hbegin) return;
  if (hbegin > d) {
   d = hbegin - d;
-  printf("\nThe next holiday will be in %d day%s, namely %s.\n",
+  printf("\nThe next holiday will be in %d day%s, namely %.20s.\n",
    d, d == 1 ? "" : "s", hname);
- } else printf("\nToday is a holiday, namely %s.\n", hname);
+ } else printf("\nToday is a holiday, namely %.20s.\n", hname);
 }
 
 void hoursx(int32_t hours, const char* day) {
@@ -482,7 +482,7 @@ void motd(bool alter) {
    * it's close: */
    if (msgLen + 70 >= 500) {mspeak(25); return; }
   }
- } else if (*msg) fputs(msg, stdout);
+ } else if (*msg) printf("%.499s", msg);
 }
 #endif  /* #ifdef ADVMAGIC */
 

@@ -124,7 +124,7 @@
 .\" ========================================================================
 .\"
 .IX Title "ADVENT350 6"
-.TH ADVENT350 6 "2009-10-07" "" ""
+.TH ADVENT350 6 "2009-12-21" "" ""
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
@@ -183,7 +183,7 @@ players \*(-- but you'd have to be pretty pathetic to want to edit them
 dishonestly in the first place.
 .PP
 Cave \*(L"prime time\*(R" hours and game restoration delays can be circumvented by
-changing the time zone (or just changing the system time).
+changing the user's time zone (or just changing the system time).
 .PP
 If the user enters a line \s-1MAX_INPUT_LENGTH\s0 (default 80) or more characters
 long, the extra characters will be considered a separate line.
@@ -191,9 +191,9 @@ long, the extra characters will be considered a separate line.
 File names supplied to the \f(CW\*(C`save\*(C'\fR and \f(CW\*(C`restore\*(C'\fR commands cannot contain
 spaces.
 .PP
-The original messages about saving your core image are still printed out when
-saving your game (if \s-1ADVMAGIC\s0 was defined at compile time) and after changing
-the \*(L"magic\*(R" values, despite the fact that these messages are now irrelevant and
+If \s-1ADVMAGIC\s0 was defined at compile time, the original messages about saving
+your core image are still printed out when saving a game and after changing the
+\&\*(L"magic\*(R" values, despite the fact that these messages are now irrelevant and
 misleading.
 .SH "SEE ALSO"
 .IX Header "SEE ALSO"

@@ -985,7 +985,7 @@ const char* itemDesc[65][7] = {
   "There is a golden chain locked to the wall!\n"}
 };
 
-const char* rmsg[] = {
+const char* rmsg[202] = {
  NULL,
 
  /* 1 */
@@ -1719,7 +1719,7 @@ const char* rmsg[] = {
 };
 
 #ifdef ADVMAGIC
-const char* magicMsg[] = {
+const char* magicMsg[33] = {
  NULL,
 
  /* 1 */

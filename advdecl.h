@@ -49,9 +49,9 @@ extern int saved, savet;
 extern const char* longdesc[141];
 extern const char* shortdesc[141];
 extern const char* itemDesc[65][7];
-extern const char* rmsg[];
+extern const char* rmsg[202];
 #ifdef ADVMAGIC
-extern const char* magicMsg[];
+extern const char* magicMsg[33];
 #endif
 extern const int travel[141][MAXROUTE][MAXTRAV];
 extern const struct {char word[6]; int val1, val2; } vocabulary[WORDQTY];
