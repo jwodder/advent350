@@ -1,5 +1,8 @@
 - Make the arrays be properly zero-based?
-- Write manpages for all of the programs using Perl 6 POD
+- Convert the manpages to Perl 6 POD
 - If the user enters "save" without a filename while playing a restored game,
   save the game to the same path that it was restored from?
 - Check everything to make sure it works!
+- Improve the README?
+- After writing them, import the instructions for passing wizard authentication
+  from c-adv

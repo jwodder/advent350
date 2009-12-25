@@ -1,0 +1,119 @@
+=pod
+
+=head1 NAME
+
+B<advmagic> - I<The Colossal Cave Adventure>, 350 point version, with magic
+
+=head1 SYNOPSIS
+
+B<advent350> [I<gamefile>]
+
+=head1 DESCRIPTION
+
+I<The Colossal Cave Adventure> is a classic of computer gaming and the
+progenitor of the text adventure and interactive fiction genres.  In it, you
+explore Colossal Cave, finding treasures, solving fiendish puzzles, and trying
+not to get killed by those dwarves.
+
+Game commands consist of one or two words and are (mostly) self-evident, such
+as "C<take lamp>" or "C<north>."  The commands are case-insensitive, and only
+the first five letters of the first two words on each input line are taken into
+consideration by the parser.
+
+This port of the original 350-point version of I<Adventure> is intended to be
+as true to the original as is sane; the biggest differences are that game data
+is no longer saved by suspending the program and saving its core image, and, of
+course, that not all of the letters are upper-case.  However, this version
+does include the "magic" features of the original (i.e., forced delays before
+restarting a saved game and "prime time" hours during which the game cannot be
+normally played) which are often omitted from ports, due partially to being
+unnecessary & annoying on modern systems.
+
+=head1 SAVING AND RESTORING
+
+Games can be saved & restored with the commands C<save> (or C<pause> or
+C<suspend>) and C<restore> (or C<load> or C<restart> or C<resume>).  These
+commands take the name of the save file as an optional argument; if it is not
+given, the game is written to or read from F<$HOME/.adventure>.  A saved game
+may also be restored directly on startup by supplying the filename on the
+command line.
+
+=head1 FILES
+
+=over
+
+=item F<$HOME/.adventure>
+
+Games are saved to and read from this file by default when no filename is given
+to the C<save> or C<restore> command.
+
+=item F<$HOME/.advmagic>
+
+This is the default path which the current "magic" settings are read from and
+written to.
+
+=back
+
+=head1 BUGS, RESTRICTIONS, AND CAVEATS
+
+I suspect that there may still be some lingering typos in the code or game
+text somewhere.  Let me know if you find any.
+
+The save files and magic file are completely vulnerable to editing by malicious
+players -- but you'd have to be pretty pathetic to want to edit them
+dishonestly in the first place.
+
+Cave "prime time" hours and game restoration delays can be circumvented by
+changing the user's time zone (or just changing the system time).
+
+File names supplied to the C<save> and C<restore> commands cannot contain
+spaces.
+
+The original messages about saving your core image are still printed out when
+saving a game and after changing the "magic" values, despite the fact that
+these messages are now irrelevant and misleading.
+
+=head1 SEE ALSO
+
+L<advent350(6)>, L<frawd(6)>
+
+The original PDP-10 Fortran version of I<Adventure> can be downloaded from the
+Interactive Fiction Archive at
+L<http://www.ifarchive.org/if-archive/games/source/advent-original.tar.gz>.
+
+The source repository for this port of I<Adventure> can be found at
+L<http://github.com/jwodder/advent350>.
+
+=head1 COPYRIGHT
+
+This port of I<Adventure> is in the public domain.  Feel free to do whatever
+the Tartarus you want with it.
+
+=head1 HISTORY
+
+The history of I<Adventure> is too long to be properly summarized here while
+still conveying why it is such a legendary game.  Some records of its history
+include:
+
+=over
+
+=item
+
+L<http://en.wikipedia.org/wiki/Colossal_Cave_Adventure>
+
+=item
+
+L<http://www.rickadams.org/adventure/a_history.html>
+
+=item
+
+L<http://www.digitalhumanities.org/dhq/vol/001/2/000009.html>
+
+=back
+
+This particular version was ported to Perl 6 from Willie Crowther & Don Woods's
+original 350-point version in Fortran.  The port was done in 2009 by John T.
+Wodder II <jwodder@sdf.lonestar.org> after he became dissatisfied with the
+translations available at the time.
+
+=cut

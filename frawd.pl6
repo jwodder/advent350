@@ -3,8 +3,8 @@
 # authentication
 use v6;
 
-sub MAIN(Int :$magnm = 11111, Int where ^24 :$hour = localtime.hour,
- Int where ^60 :$minute = localtime.minute, Str where { $^w.chars == 5
+sub MAIN(Int :m($magnm) = 11111, Int where ^24 :H($hour) = localtime.hour,
+ Int where ^60 :M($minute) = localtime.minute, Str where { $^w.chars == 5
  && $^w.uc.ord.all ~~ 65..90 } $word) {
  my @val = $word.uc.ord »-» 64;
  my $t = $hour * 100 + $minute - $minute % 10;
