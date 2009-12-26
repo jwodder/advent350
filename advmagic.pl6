@@ -152,7 +152,7 @@ my int $saved, $savet = -1, 0;
 # original source required it, oftentimes done just because I don't trust
 # Rakudo's typecasting), and I would like to use as many Perl 6 features as
 # possible in this program, so I defined an integer division operator:
-multi sub infix:<idiv>(Int | Num | Rat $a, Int | Num | Rat $b --> Int)
+multi sub infix:<idiv>(Numeric $a, Numeric $b --> Int)
  is equiv(&infix:<div>) is assoc('left') {
  ($a div $b).floor
 }
