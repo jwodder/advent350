@@ -141,13 +141,13 @@ int main(int argc, char** argv) {
  * picking up the axe in the middle of battle.)
  *
  * My best idea was to divide the function up at the necessary GOTO labels, put
- * them all in a "switch" block with "case" labels corresponding to the
- * original labels, and introduce a global variable (named "togoto") to switch
- * on that indicated what part of the function to start at next.  (My other
- * ideas were (a) a state machine in which each section of the loop was a
- * function that returned a number representing the next function to call and
- * (b) something involving exceptions.)  This works, but it was not what I had
- * hoped for.  If you know of  something better, let me know.
+ * them all in a "switch" block with fallthrough and with "case" labels
+ * corresponding to the original labels, and introduce a global variable (named
+ * "togoto") to switch on that indicated what part of the function to start at
+ * next.  (My other ideas were (a) a state machine in which each section of the
+ * loop was a function that returned a number representing the next function to
+ * call and (b) something involving exceptions.)  This works, but it was not
+ * what I had hoped for.  If you know of something better, let me know.
  *
  * In summary: I apologize for the code that you are about to see.
  */

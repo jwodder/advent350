@@ -75,6 +75,7 @@ vocab.c
 
 - Edit advconfig.h
 - Edit the Makefile
+- Make sure you have a mostly C99-compliant compiler
 - `make`
 - mv advent350 [frawd] .../bin
 - mv advent350.6 [frawd.6] .../man/man6

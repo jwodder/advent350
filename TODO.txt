@@ -1,10 +1,12 @@
 - Make the arrays be properly zero-based
 - If the user enters "save" without a filename while playing a restored game,
   should the game be saved to the same path that it was restored from?
-- Rewrite the README file to contain instructions on configuration, building,
-  installation, and the potential security hole of the magic file
+- Complete the instructions in the README file for configuring, building, and
+  installing the game
  - Add a note about the save files & magic file being completely vulnerable to
    editing
+ - Add a note to the README about the potential security hole of the magic
+   file?
 - Create a file named "wizard.txt" containing instructions for how to pass
   wizard authentication, along with general instructions for magic/maintenance
   mode
