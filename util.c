@@ -9,15 +9,15 @@
 #include "advdecl.h"
 
 bool toting(int item) {
- return place[item] == -1;
+ return game.place[item] == -1;
 }
 
 bool here(int item) {
- return place[item] == loc || toting(item);
+ return game.place[item] == game.loc || toting(item);
 }
 
 bool at(int item) {
- return loc == place[item] || loc == fixed[item];
+ return game.loc == game.place[item] || game.loc == game.fixed[item];
 }
 
 int liq2(int p) {
@@ -25,7 +25,7 @@ int liq2(int p) {
 }
 
 int liq(void) {
- return liq2(prop[BOTTLE] < 0 ? -1-prop[BOTTLE] : prop[BOTTLE]);
+ return liq2(game.prop[BOTTLE] < 0 ? -1-game.prop[BOTTLE] : game.prop[BOTTLE]);
 }
 
 int liqloc(int loc) {
@@ -41,7 +41,7 @@ bool forced(int loc) {
 }
 
 bool dark(void) {
- return !(cond[loc] & 1 || (prop[LAMP] && here(LAMP)));
+ return !(cond[game.loc] & 1 || (game.prop[LAMP] && here(LAMP)));
 }
 
 bool pct(int x) {
@@ -80,12 +80,12 @@ bool yes(int x, int y, int z) {
 void destroy(int obj) {move(obj, 0); }
 
 void juggle(int obj) {
- move(obj, place[obj]);
- move(obj+100, fixed[obj]);
+ move(obj, game.place[obj]);
+ move(obj+100, game.fixed[obj]);
 }
 
 void move(int obj, int where) {
- int from = obj > 100 ? fixed[obj-100] : place[obj];
+ int from = obj > 100 ? game.fixed[obj-100] : game.place[obj];
  if (0 < from && from <= 300) carry(obj, from);
  drop(obj, where);
 }
@@ -97,28 +97,28 @@ int put(int obj, int where, int pval) {
 
 void carry(int obj, int where) {
  if (obj <= 100) {
-  if (place[obj] == -1) return;
-  place[obj] = -1;
-  holding++;
+  if (game.place[obj] == -1) return;
+  game.place[obj] = -1;
+  game.holding++;
  }
- if (atloc[where] == obj) atloc[where] = link[obj];
+ if (game.atloc[where] == obj) game.atloc[where] = game.link[obj];
  else {
   int tmp;
-  for (tmp = atloc[where]; link[tmp] != obj; tmp = link[tmp]);
-  link[tmp] = link[obj];
+  for (tmp = game.atloc[where]; game.link[tmp] != obj; tmp = game.link[tmp]);
+  game.link[tmp] = game.link[obj];
  }
 }
 
 void drop(int obj, int where) {
  if (obj > 100) {
-  fixed[obj-100] = where;
+  game.fixed[obj-100] = where;
  } else {
-  if (place[obj] == -1) holding--;
-  place[obj] = where;
+  if (game.place[obj] == -1) game.holding--;
+  game.place[obj] = where;
  }
  if (where > 0) {
-  link[obj] = atloc[where];
-  atloc[where] = obj;
+  game.link[obj] = game.atloc[where];
+  game.atloc[where] = obj;
  }
 }
 
@@ -250,52 +250,34 @@ bool yesm(int x, int y, int z) {
 bool start(void) {
  int d, t;
  datime(&d, &t);
- if (saved != -1) {
-  int delay = (d - saved) * 1440 + (t - savet);
-  if (delay < latency) {
+ if (game.saved != -1) {
+  int delay = (d - game.saved) * 1440 + (t - game.savet);
+  if (delay < mage.latency) {
    printf("This adventure was suspended a mere %d minutes ago.\n", delay);
-   if (delay < latency/3) {mspeak(2); exit(0); }
+   if (delay < mage.latency/3) {mspeak(2); exit(0); }
    else {
     mspeak(8);
-    if (wizard()) {saved = -1; return false; }
+    if (wizard()) {game.saved = -1; return false; }
     mspeak(9);
     exit(0);
    }
   }
  }
- int32_t primet = hbegin <= d && d <= hend ? holid : d % 7 <= 1 ? wkend : wkday;
+ int32_t primet = mage.hbegin <= d && d <= mage.hend ? mage.holid
+  : d % 7 <= 1 ? mage.wkend : mage.wkday;
  if (primet & 1 << t/60) {
   /* Prime time (cave closed) */
   mspeak(3);
   hours();
   mspeak(4);
-  if (wizard()) {saved = -1; return false; }
-  if (saved != -1) {mspeak(9); exit(0); }
-  if (yesm(5, 7, 7)) {saved = -1; return true; }
+  if (wizard()) {game.saved = -1; return false; }
+  if (game.saved != -1) {mspeak(9); exit(0); }
+  if (yesm(5, 7, 7)) {game.saved = -1; return true; }
   exit(0);
  }
- saved = -1;
+ game.saved = -1;
  return false;
 }
-
-/* The code for saving & restoring values is written using macros in order to
- * (a) ensure that the variables are always written & read in the same order
- * and (b) enable error checking on all of the calls to fread() & fwrite()
- * while keeping typing to a minimum.  Have I mentioned that I'm sorry for this
- * code yet? */
-
-#define rwmagic() rwint(wkday); rwint(wkend); rwint(holid); rwint(hbegin); \
- rwint(hend); rwarray(hname); rwint(shortGame); rwarray(magic); rwint(magnm); \
- rwint(latency); rwarray(msg);
-
-#define rwint(var) if (rwfunc(&var, sizeof var, 1, abra) != 1) {rwfail; }
-
-#define rwarray(var) \
- if (rwfunc(var, sizeof(var[0]), sizeof(var)/sizeof(var[0]), abra) \
-  != sizeof(var)/sizeof(var[0])) {rwfail; }
-
-#define rwfunc fwrite
-#define rwfail perror("\nError writing to " MAGICFILE); exit(1);
 
 void maint(void) {
  if (!wizard()) return;
@@ -305,35 +287,35 @@ void maint(void) {
  if (yesm(26, 0, 0)) {
   mspeak(27);
   getin(word1, in1, NULL, NULL);
-  hbegin = (int) strtol(in1, NULL, 10);
+  mage.hbegin = (int) strtol(in1, NULL, 10);
   mspeak(28);
   getin(word1, in1, NULL, NULL);
-  hend = (int) strtol(in1, NULL, 10);
+  mage.hend = (int) strtol(in1, NULL, 10);
   int d, t;
   datime(&d, &t);
-  hbegin += d;
-  hend += hbegin - 1;
+  mage.hbegin += d;
+  mage.hend += mage.hbegin - 1;
   mspeak(29);
   getin(word1, in1, NULL, NULL);
-  strncpy(hname, in1, 20);
-  hname[20] = 0;
+  strncpy(mage.hname, in1, 20);
+  mage.hname[20] = 0;
  }
- printf("Length of short game (null to leave at %d):\n", shortGame);
+ printf("Length of short game (null to leave at %d):\n", mage.shortGame);
  getin(word1, in1, NULL, NULL);
  int x = (int) strtol(in1, NULL, 10);
- if (x > 0) shortGame = x;
+ if (x > 0) mage.shortGame = x;
  mspeak(12);
  getin(word1, NULL, NULL, NULL);
- if (*word1) {strncpy(magic, word1, 5); magic[5] = 0; }
+ if (*word1) {strncpy(mage.magic, word1, 5); mage.magic[5] = 0; }
  mspeak(13);
  getin(word1, in1, NULL, NULL);
  x = (int) strtol(in1, NULL, 10);
- if (x > 0) magnm = x;
- printf("Latency for restart (null to leave at %d):\n", latency);
+ if (x > 0) mage.magnm = x;
+ printf("Latency for restart (null to leave at %d):\n", mage.latency);
  getin(word1, in1, NULL, NULL);
  x = (int) strtol(in1, NULL, 10);
  if (0 < x && x < 45) mspeak(30);
- if (x > 0) latency = x < 45 ? 45 : x;
+ if (x > 0) mage.latency = x < 45 ? 45 : x;
  if (yesm(14, 0, 0)) motd(true);
  mspeak(15);
  blklin = true;
@@ -342,22 +324,24 @@ void maint(void) {
   perror("\nError: could not write to " MAGICFILE);
   exit(1);
  }
- rwmagic();
+ if (fwrite(&mage, sizeof mage, 1, abra) != 1) {
+  perror("\nError writing to " MAGICFILE);
+  exit(1);
+ }
  fclose(abra);
  ciao();
 }
-
-#undef rwfunc
-#undef rwfail
-#define rwfunc fread
-#define rwfail perror("\nWarning: error reading from " MAGICFILE); return;
 
 void poof(void) {
  FILE* abra = fopen(MAGICFILE, "rb");
  if (abra == NULL) return;
  /* If MAGICFILE cannot be opened, assume it does not exist and quietly leave
   * the default magic values in place. */
- rwmagic();
+ struct advmagic backup = mage;
+ if (fread(&mage, sizeof mage, 1, abra) != 1) {
+  perror("\nWarning: error reading from " MAGICFILE);
+  mage = backup;
+ }
  fclose(abra);
 }
 
@@ -366,7 +350,7 @@ bool wizard(void) {
  mspeak(17);
  char word[6];
  getin(word, NULL, NULL, NULL);
- if (strncmp(word, magic, 5) != 0) {mspeak(20); return false; }
+ if (strncmp(word, mage.magic, 5) != 0) {mspeak(20); return false; }
  int d, t;
  datime(&d, &t);
  t = t * 2 + 1;
@@ -384,7 +368,7 @@ bool wizard(void) {
  getin(word, NULL, NULL, NULL);
  datime(&d, &t);
  t = (t/60) * 40 + (t/10) * 10;
- d = magnm;
+ d = mage.magnm;
  for (int y=0; y<5; y++) {
   if (word[y] != (abs(val[y] - val[(y+1) % 5]) * (d % 10) + (t % 10)) % 26
    + 65) {
@@ -400,17 +384,17 @@ bool wizard(void) {
 
 void hours(void) {
  putchar('\n');
- hoursx(wkday, "Mon - Fri:");
- hoursx(wkend, "Sat - Sun:");
- hoursx(holid, "Holidays: ");
+ hoursx(mage.wkday, "Mon - Fri:");
+ hoursx(mage.wkend, "Sat - Sun:");
+ hoursx(mage.holid, "Holidays: ");
  int d, t;
  datime(&d, &t);
- if (hend < d || hend < hbegin) return;
- if (hbegin > d) {
-  d = hbegin - d;
+ if (mage.hend < d || mage.hend < mage.hbegin) return;
+ if (mage.hbegin > d) {
+  d = mage.hbegin - d;
   printf("\nThe next holiday will be in %d day%s, namely %.20s.\n",
-   d, d == 1 ? "" : "s", hname);
- } else printf("\nToday is a holiday, namely %.20s.\n", hname);
+   d, d == 1 ? "" : "s", mage.hname);
+ } else printf("\nToday is a holiday, namely %.20s.\n", mage.hname);
 }
 
 void hoursx(int32_t hours, const char* day) {
@@ -435,9 +419,9 @@ void hoursx(int32_t hours, const char* day) {
 
 void newhrs(void) {
  mspeak(21);
- wkday = newhrx("weekdays:");
- wkend = newhrx("weekends:");
- holid = newhrx("holidays:");
+ mage.wkday = newhrx("weekdays:");
+ mage.wkend = newhrx("weekends:");
+ mage.holid = newhrx("holidays:");
  mspeak(22);
  hours();
 }
@@ -461,7 +445,7 @@ int32_t newhrx(const char* day) {
 
 void motd(bool alter) {
  if (alter) {
-  memset(msg, 0, sizeof msg);
+  memset(mage.msg, 0, sizeof mage.msg);
   mspeak(23);
   size_t msgLen = 0;
   for (;;) {
@@ -477,12 +461,12 @@ void motd(bool alter) {
     continue;
    }
    msgLen += strlen(line);
-   strncat(msg, line, 70);
+   strncat(mage.msg, line, 70);
   /* This doesn't exactly match the logic used in the original Fortran, but
    * it's close: */
    if (msgLen + 70 >= 500) {mspeak(25); return; }
   }
- } else if (*msg) printf("%.499s", msg);
+ } else if (*mage.msg) printf("%.499s", mage.msg);
 }
 #endif  /* #ifdef ADVMAGIC */
 

@@ -17,35 +17,54 @@ extern char in1[MAX_INPUT_LENGTH+1], in2[MAX_INPUT_LENGTH+1];
 extern char word1[6], word2[6];
 
 #ifdef ADVMAGIC
-extern int32_t wkday, wkend, holid;
-extern int hbegin, hend;
-extern char hname[21];
-extern int shortGame;
-extern char magic[6];
-extern int magnm;
-extern int latency;
-extern char msg[500];
+/* Magic data: */
+struct advmagic {
+ int32_t wkday, wkend, holid;
+ /* These bitfields hold the times when adventurers are allowed into Colossal
+  * Cave: wkday is for weekdays, wkend for weekends, and holid for holidays
+  * (days with special hours).  If bit N of one of the above is on, then the
+  * hour N:00 through N:59 is considered "prime time," i.e., the cave is closed
+  * then. */
+ int hbegin, hend;	/* start & end of next holiday */
+ int shortGame;		/* turns allowed in a short/demo game */
+ int magnm;		/* magic number */
+ int latency;		/* minutes required to wait after saving */
+ char magic[6];		/* magic word */
+ char hname[21]		/* name of next holiday */;
+ char msg[500];		/* MOTD */
+};
+
+extern struct advmagic mage;
 #endif
 
-extern int loc, newloc, oldloc, oldloc2, limit;
-extern int turns, iwest, knifeloc, detail;
-extern int numdie, holding, foobar;
-extern int tally, tally2, abbnum, clock1, clock2;
-extern bool wzdark, closing, lmwarn, panic, closed;
-extern signed char prop[65];
-extern int abb[141];
-extern int hintlc[10];
-extern bool hinted[10];
-extern unsigned char dloc[6];
-extern unsigned char odloc[6];
-extern bool dseen[6];
-extern int dflag, dkill;
-extern short place[65];
-extern short fixed[65];
-extern unsigned char atloc[141];
-extern unsigned char link[165];
-extern int saved, savet;
+/* User's game data: */
+struct advgame {
+ int loc, newloc, oldloc, oldloc2, limit;
+ int turns, iwest, knifeloc, detail;
+ int numdie, holding, foobar;
+ int tally, tally2, abbnum, clock1, clock2;
+ bool wzdark : 1, closing : 1, lmwarn : 1, panic : 1, closed : 1;
+ signed char prop[65];
+ int abb[141];
+ int hintlc[10];
+ bool hinted[10];
+ unsigned char dloc[6];
+ unsigned char odloc[6];
+ bool dseen[6];
+ int dflag, dkill;
+ short place[65];
+ short fixed[65];
+ unsigned char atloc[141];
+ unsigned char link[165];
+ int saved, savet;
+ /* Although `saved' and `savet' are only used when ADVMAGIC is defined, they
+  * are declared in both forms of the game in order to make the save files
+  * compatible. */
+};
 
+extern struct advgame game;
+
+/* Built-in game data: */
 extern const char* longdesc[141];
 extern const char* shortdesc[141];
 extern const char* itemDesc[65][7];

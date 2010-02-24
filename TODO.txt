@@ -5,8 +5,6 @@
   installing the game
  - Add a note about the save files & magic file being completely vulnerable to
    editing
- - Add a note to the README about the potential security hole of the magic
-   file?
 - Create a file named "wizard.txt" containing instructions for how to pass
   wizard authentication, along with general instructions for magic/maintenance
   mode
@@ -16,8 +14,6 @@
 - Consider adding a configuration option to enable an "old-tymey" interface in
   which all output lines begin with a single space and there is no "> " input
   prompt (lowercase letters will still be used, though).
-- Store the game state (and the "magic" state) in a struct so that it can be
-  saved & restored in one fell swoop and also be easily backed up before
-  restoring in case something goes wrong
 - Improve the storage of the travel table
 - Deal with all of the bugs listed in the manpage
+- Add actual comments to the code for anyone else who ever looks at it

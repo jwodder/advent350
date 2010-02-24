@@ -2,12 +2,14 @@ Outline of wizard authentication:
  - You are asked whether you are a wizard.  Answer "Yes".
  - You are asked to say the magic word.  Enter its current value as stored in
    the magic file.
- - The game prints out: That is not what I thought it was.  Do you know what I
-   thought it was?
+ - The game prints out:
+
+    That is not what I thought it was.  Do you know what I thought it was?
+
  - Answer "No".
  - The game will print out a random five-letter "word".
  - Perform a number of mathematical operations on this word and enter the
-   result:
+   result:  (This is the part that frawd(6) automates.)
   - Take the current time (specifically, the time at which you expect to enter
     the result) as an hour `h' from 0 through 23 and a minute `m' from 0
     through 59.  Calculate h * 100 + m, change the last digit to a zero, and

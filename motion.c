@@ -7,42 +7,42 @@
 
 void domove(int motion) {
  togoto = 2;
- newloc = loc;
- if (travel[loc][0][0] == -1) bug(26);
+ game.newloc = game.loc;
+ if (travel[game.loc][0][0] == -1) bug(26);
  switch (motion) {
   case NULLMOVE: return;
   case BACK: {
-   int k = forced(oldloc) ? oldloc2 : oldloc;
-   oldloc2 = oldloc;
-   oldloc = loc;
-   if (k == loc) rspeak(91);
+   int k = forced(game.oldloc) ? game.oldloc2 : game.oldloc;
+   game.oldloc2 = game.oldloc;
+   game.oldloc = game.loc;
+   if (k == game.loc) rspeak(91);
    else {
     int k2 = 0;
-    for (int kk=0; travel[loc][kk][0] != -1; kk++) {
-     int ll = travel[loc][kk][0] % 1000;
+    for (int kk = 0; travel[game.loc][kk][0] != -1; kk++) {
+     int ll = travel[game.loc][kk][0] % 1000;
      if (ll == k) {
-      dotrav(travel[loc][kk][1]);
+      dotrav(travel[game.loc][kk][1]);
       return;
      } else if (ll <= 300) {
       if (forced(ll) && travel[ll][0][0] % 1000 == k) k2 = kk;
      }
     }
-    if (k2 != 0) dotrav(travel[loc][k2][1]);
+    if (k2 != 0) dotrav(travel[game.loc][k2][1]);
     else rspeak(140);
    }
    break;
   }
   case LOOK:
-   if (detail++ < 3) rspeak(15);
-   wzdark = false;
-   abb[loc] = 0;
+   if (game.detail++ < 3) rspeak(15);
+   game.wzdark = false;
+   game.abb[game.loc] = 0;
    break;
   case CAVE:
-   rspeak(loc < 8 ? 57 : 58);
+   rspeak(game.loc < 8 ? 57 : 58);
    break;
   default:
-   oldloc2 = oldloc;
-   oldloc = loc;
+   game.oldloc2 = game.oldloc;
+   game.oldloc = game.loc;
    dotrav(motion);
  }
 }
@@ -50,17 +50,17 @@ void domove(int motion) {
 void dotrav(int motion) {
  int rdest = -1;
  bool matched = false;
- for (int kk=0; travel[loc][kk][0] != -1; kk++) {
+ for (int kk=0; travel[game.loc][kk][0] != -1; kk++) {
   if (!matched) {
-   for (int i=1; travel[loc][kk][i] != -1; i++) {
-    if (travel[loc][kk][i] == 1 || travel[loc][kk][i] == motion) { 
+   for (int i=1; travel[game.loc][kk][i] != -1; i++) {
+    if (travel[game.loc][kk][i] == 1 || travel[game.loc][kk][i] == motion) { 
      matched = true;
      break;
     }
    }
   }
   if (matched) {
-   int ll = travel[loc][kk][0];
+   int ll = travel[game.loc][kk][0];
    int rcond = ll / 1000;
    int robject = rcond % 100;
    if (rcond == 0 || rcond == 100) rdest = ll % 1000;
@@ -68,7 +68,7 @@ void dotrav(int motion) {
    else if (rcond <= 200) {if (toting(robject)) rdest = ll % 1000; }
    else if (rcond <= 300) {
     if (toting(robject) || at(robject)) rdest = ll % 1000;
-   } else if (prop[robject] != rcond / 100 - 3) rdest = ll % 1000;
+   } else if (game.prop[robject] != rcond / 100 - 3) rdest = ll % 1000;
    if (rdest != -1) break;
   }
  }
@@ -85,35 +85,36 @@ void dotrav(int motion) {
    default:
     rspeak(verb == FIND || verb == INVENT ? 59 : 12);
   }
- } else if (0 <= rdest && rdest <= 300) newloc = rdest;
+ } else if (0 <= rdest && rdest <= 300) game.newloc = rdest;
  else if (rdest == 301) {
-  if (!holding || holding == 1 && toting(EMERALD)) newloc = 99 + 100 - loc;
-  else {newloc = loc; rspeak(117); }
+  if (!game.holding || game.holding == 1 && toting(EMERALD))
+   game.newloc = 99 + 100 - game.loc;
+  else {game.newloc = game.loc; rspeak(117); }
  } else if (rdest == 302) {
-  drop(EMERALD, loc);
-  newloc = (loc == 33 ? 100 : 33);
+  drop(EMERALD, game.loc);
+  game.newloc = (game.loc == 33 ? 100 : 33);
  } else if (rdest == 303) {
-  if (prop[TROLL] == 1) {
+  if (game.prop[TROLL] == 1) {
    pspeak(TROLL, 1);
-   prop[TROLL] = 0;
+   game.prop[TROLL] = 0;
    move(TROLL2, 0);
    move(TROLL2+100, 0);
    move(TROLL, 117);
    move(TROLL+100, 122);
    juggle(CHASM);
-   newloc = loc;
+   game.newloc = game.loc;
   } else {
-   newloc = (loc == 117 ? 122 : 117);
-   if (prop[TROLL] == 0) prop[TROLL] = 1;
+   game.newloc = (game.loc == 117 ? 122 : 117);
+   if (game.prop[TROLL] == 0) game.prop[TROLL] = 1;
    if (toting(BEAR)) {
     rspeak(162);
-    prop[CHASM] = 1;
-    prop[TROLL] = 2;
-    drop(BEAR, newloc);
-    fixed[BEAR] = -1;
-    prop[BEAR] = 3;
-    if (prop[SPICES] < 0) tally2++;
-    oldloc2 = newloc;
+    game.prop[CHASM] = 1;
+    game.prop[TROLL] = 2;
+    drop(BEAR, game.newloc);
+    game.fixed[BEAR] = -1;
+    game.prop[BEAR] = 3;
+    if (game.prop[SPICES] < 0) game.tally2++;
+    game.oldloc2 = game.newloc;
     death();
    }
   }
@@ -122,20 +123,20 @@ void dotrav(int motion) {
 }
 
 void death(void) {
- if (closing) {
+ if (game.closing) {
   rspeak(131);
-  numdie++;
+  game.numdie++;
   normend();
  } else {
-  bool yea = yes(81 + numdie*2, 82 + numdie*2, 54);
-  numdie++;
-  if (numdie == MAXDIE || !yea) normend();
-  place[WATER] = place[OIL] = 0;
-  if (toting(LAMP)) prop[LAMP] = 0;
+  bool yea = yes(81 + game.numdie*2, 82 + game.numdie*2, 54);
+  game.numdie++;
+  if (game.numdie == MAXDIE || !yea) normend();
+  game.place[WATER] = game.place[OIL] = 0;
+  if (toting(LAMP)) game.prop[LAMP] = 0;
   for (int i=64; i>0; i--) {
-   if (toting(i)) drop(i, i == LAMP ? 1 : oldloc2);
+   if (toting(i)) drop(i, i == LAMP ? 1 : game.oldloc2);
   }
-  loc = oldloc = 3;
+  game.loc = game.oldloc = 3;
   togoto = 2000;
  }
 }
@@ -143,15 +144,15 @@ void death(void) {
 int score(bool scoring) {
  int scr = 0;
  for (int i=50; i<65; i++) {
-  if (prop[i] >= 0) scr += 2;
-  if (place[i] == 3 && prop[i] == 0)
+  if (game.prop[i] >= 0) scr += 2;
+  if (game.place[i] == 3 && game.prop[i] == 0)
    scr += (i == CHEST ? 12 : i > CHEST ? 14 : 10);
  }
- scr += (MAXDIE - numdie) * 10;
+ scr += (MAXDIE - game.numdie) * 10;
  if (!scoring && !gaveup) scr += 4;
- if (dflag != 0) scr += 25;
- if (closing) scr += 25;
- if (closed) {
+ if (game.dflag != 0) scr += 25;
+ if (game.closing) scr += 25;
+ if (game.closed) {
   switch (bonus) {
    case 0: scr += 10; break;
    case 133: scr += 45; break;
@@ -159,16 +160,16 @@ int score(bool scoring) {
    case 135: scr += 25; break;
   }
  }
- if (place[MAGZIN] == 108) scr++;
+ if (game.place[MAGZIN] == 108) scr++;
  scr += 2;
- for (int i=1; i<10; i++) if (hinted[i]) scr -= hints[i][1];
+ for (int i=1; i<10; i++) if (game.hinted[i]) scr -= hints[i][1];
  return scr;
 }
 
 void normend(void) {
  int scr = score(false);
  printf("\n\n\nYou scored %d out of a possible 350 using %d turns.\n",
-  scr, turns);
+  scr, game.turns);
  int i;
  for (i=0; classes[i].score != 0; i++) if (classes[i].score >= scr) break;
  if (classes[i].score != 0) {
@@ -199,6 +200,6 @@ void doaction(void) {
 }
 
 bool dwarfHere(void) {
- for (int i=0; i<5; i++) if (dloc[i] == loc) return true;
+ for (int i=0; i<5; i++) if (game.dloc[i] == game.loc) return true;
  return false;
 }
