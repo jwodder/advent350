@@ -3,7 +3,7 @@
  - Add a note about the save files & magic file being completely vulnerable to
    editing
 - Create a file named "wizard.txt" containing instructions for how to pass
-  wizard authentication, along with general instructions for magic/maintenance
+  wizard authentication along with general instructions for magic/maintenance
   mode
 - Add a licensing (or lack thereof) notice
 - Once this port is completely finished, submit it to the Interactive Fiction
@@ -14,6 +14,6 @@
 - Improve the storage of the travel table
 - If the user enters "save" without a filename while playing a restored game,
   should the game be saved to the same path that it was restored from?
-- Consider adding a configuration option to enable an "old-tymey" interface in
-  which all output lines begin with a single space and there is no "> " input
-  prompt (lowercase letters will still be used, though).
+- Consider adding a compile-time configuration option to enable an "old-tymey"
+  interface in which all output lines begin with a single space and there is no
+  "> " input prompt (lowercase letters will still be used, though).

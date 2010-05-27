@@ -340,6 +340,7 @@ void poof(void) {
  struct advmagic backup = mage;
  if (fread(&mage, sizeof mage, 1, abra) != 1) {
   perror("\nWarning: error reading from " MAGICFILE);
+  fputs("Using default magic values\n", stderr);
   mage = backup;
  }
  fclose(abra);
