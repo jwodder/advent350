@@ -1,6 +1,3 @@
-- Make the arrays be properly zero-based
-- If the user enters "save" without a filename while playing a restored game,
-  should the game be saved to the same path that it was restored from?
 - Complete the instructions in the README file for configuring, building, and
   installing the game
  - Add a note about the save files & magic file being completely vulnerable to
@@ -11,9 +8,12 @@
 - Add a licensing (or lack thereof) notice
 - Once this port is completely finished, submit it to the Interactive Fiction
   Archive.
+- Add actual comments to the code for anyone else who ever looks at it
+- Deal with all of the bugs listed in the manpage
+- Make the arrays be properly zero-based
+- Improve the storage of the travel table
+- If the user enters "save" without a filename while playing a restored game,
+  should the game be saved to the same path that it was restored from?
 - Consider adding a configuration option to enable an "old-tymey" interface in
   which all output lines begin with a single space and there is no "> " input
   prompt (lowercase letters will still be used, though).
-- Improve the storage of the travel table
-- Deal with all of the bugs listed in the manpage
-- Add actual comments to the code for anyone else who ever looks at it

@@ -1,36 +1,40 @@
-Outline of wizard authentication:
- - You are asked whether you are a wizard.  Answer "Yes".
- - You are asked to say the magic word.  Enter its current value as stored in
-   the magic file.
- - The game prints out:
+WIZARD AUTHENTICATION
+You will need to know the current magic word (default value "DWARF") and the
+current magic number (default value 11111) as they are currently stored in the
+magic file (or their default values if there is no magic file).
 
-    That is not what I thought it was.  Do you know what I thought it was?
+GAME: Are you a wizard?
+ANSWER: Yes
+GAME: Prove it!  Say the magic word!
+[Enter the magic word.]
+GAME: That is not what I thought it was.  Do you know what I thought it was?
+ANSWER: No
 
- - Answer "No".
- - The game will print out a random five-letter "word".
- - Perform a number of mathematical operations on this word and enter the
-   result:  (This is the part that frawd(6) automates.)
-  - Take the current time (specifically, the time at which you expect to enter
-    the result) as an hour `h' from 0 through 23 and a minute `m' from 0
-    through 59.  Calculate h * 100 + m, change the last digit to a zero, and
-    call this number `t'.
-  - Let the "value" of a letter be a number from 1 through 26 based on its
-    position in the alphabet (i.e., A has value 1, B has value 2, C has value
-    3, etc.).
-  - For `i' from 1 through 5:
-   - Take the magnitude of the difference between the value of the i-th letter
-     in the word the game gave you and the value of the letter immediately
-     after that.  (If i=5, take the difference between the values of the last &
-     first letters of the word.)
-   - Multiply this number by the i-th digit of the magic number (as stored in
-     the magic file), counting from the *end* of the number (i.e., the
-     ones-place is the first digit, the tens-place is the second, the
-     hundredths-place is the third, etc.).
-   - Add to this the i-th digit of `t', again counting from the *end* of the
-     number.
-   - Take the remainder from dividing this number by 26.
-   - Add 1.
-   - The result is the value of the i-th letter in the word with which to
-     respond to the game.
- - The game will now recognize you as a wizard.
- - The default magic word is "DWARF", and the default magic number is 11111.
+The game will now print out a random five-letter "word."  You must perform a
+series of mathematical operations on it to produce another five-letter word to
+give in response (This is the part that frawd(6) automates).
+
+ - Take the current time (specifically, the time at which you expect to enter
+   the result) as an hour `h' from 0 through 23 and a minute `m' from 0 through
+   59.  Calculate h * 100 + m, change the last digit to a zero, and call this
+   number `t'.  For this port of Adventure, the game uses the values returned
+   by the localtime(3) function, which should correspond to your current
+   timezone settings.  Other ports may vary; consult your wizard if frustration
+   lasts longer than four hours.
+ - The "value" of a letter is here defined to be a number from 1 through 26
+   corresponding to the letter's position in the alphabet (i.e., A has value 1,
+   B has value 2, C has value 3, etc.).
+ - For `i' from 1 through 5:
+  - Take the magnitude of the difference between the value of the i-th letter
+    in the word the game gave you and the value of the letter immediately after
+    that.  (If i=5, take the difference between the values of the last & first
+    letters of the word.)
+  - Multiply this number by the i-th digit of the magic number, counting from
+    the *end* of the number (i.e., the ones-place is the first digit, the
+    tens-place is the second, the hundredths-place is the third, etc.).
+  - Add the i-th digit of `t', again counting from the *end* of the number.
+  - Divide by 26, take the remainder, and add 1 to it.
+  - The result is the value of the i-th letter of the reply.
+
+Once you enter the new word, the game will recognize you as a wizard:
+GAME: Oh dear, you really *are* a wizard!  Sorry to have bothered you . . .
