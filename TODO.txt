@@ -1,7 +1,7 @@
 - Complete the instructions in the README file for configuring, building, and
   installing the game
  - Add a note about the save files & magic file being completely vulnerable to
-   editing
+   editing (and the magic file to viewing)
 - Create a file named "wizard.txt" containing instructions for how to pass
   wizard authentication along with general instructions for magic/maintenance
   mode
@@ -17,3 +17,9 @@
 - Consider adding a compile-time configuration option to enable an "old-tymey"
   interface in which all output lines begin with a single space and there is no
   "> " input prompt (lowercase letters will still be used, though).
+- Consider adding a compile-time option for setting the euid and/or egid back
+  to its/their real values so that the binary can have its setuid/setgid flag
+  set to protect the magic file from outsiders while avoiding security problems
+  with creating save files
+- When setting the name of the next holiday, should the game use the first 20
+  characters of the whole line or just of the first word?

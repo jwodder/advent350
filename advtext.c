@@ -14,18 +14,15 @@ const char* longdesc[141] = {
  "You have walked up a hill, still in the forest.  The road slopes back\n"
  "down the other side of the hill.  There is a building in the distance.\n",
 
- /* 3 */
- "You are inside a building, a well house for a large spring.\n",
+ /* 3 */ "You are inside a building, a well house for a large spring.\n",
 
  /* 4 */
  "You are in a valley in the forest beside a stream tumbling along a\n"
  "rocky bed.\n",
 
- /* 5 */
- "You are in open forest, with a deep valley to one side.\n",
+ /* 5 */ "You are in open forest, with a deep valley to one side.\n",
 
- /* 6 */
- "You are in open forest near both a valley and a road.\n",
+ /* 6 */ "You are in open forest near both a valley and a road.\n",
 
  /* 7 */
  "At your feet all the water of the stream splashes into a 2-inch slit\n"
@@ -50,8 +47,7 @@ const char* longdesc[141] = {
  "here, but an awkward canyon leads upward and west.  A note on the wall\n"
  "says \"MAGIC WORD XYZZY\".\n",
 
- /* 12 */
- "You are in an awkward sloping east/west canyon.\n",
+ /* 12 */ "You are in an awkward sloping east/west canyon.\n",
 
  /* 13 */
  "You are in a splendid chamber thirty feet high.  The walls are frozen\n"
@@ -69,8 +65,7 @@ const char* longdesc[141] = {
  "swaying to and fro almost as if alive.  A cold wind blows up the\n"
  "staircase.  There is a passage at the top of a dome behind you.\n",
 
- /* 16 */
- "The crack is far too small for you to follow.\n",
+ /* 16 */ "The crack is far too small for you to follow.\n",
 
  /* 17 */
  "You are on the east bank of a fissure slicing clear across the hall.\n"
@@ -84,14 +79,11 @@ const char* longdesc[141] = {
  "You are in the Hall of the Mountain King, with passages off in all\n"
  "directions.\n",
 
- /* 20 */
- "You are at the bottom of the pit with a broken neck.\n",
+ /* 20 */ "You are at the bottom of the pit with a broken neck.\n",
 
- /* 21 */
- "You didn't make it.\n",
+ /* 21 */ "You didn't make it.\n",
 
- /* 22 */
- "The dome is unclimbable.\n",
+ /* 22 */ "The dome is unclimbable.\n",
 
  /* 23 */
  "You are at the west end of the Twopit Room.  There is a large hole in\n"
@@ -105,35 +97,28 @@ const char* longdesc[141] = {
  "You are at the bottom of the western pit in the Twopit Room.  There is\n"
  "a large hole in the wall about 25 feet above you.\n",
 
- /* 26 */
- "You clamber up the plant and scurry through the hole at the top.\n",
-
- /* 27 */
- "You are on the west side of the fissure in the Hall of Mists.\n",
+ /* 26 */ "You clamber up the plant and scurry through the hole at the top.\n",
+ /* 27 */ "You are on the west side of the fissure in the Hall of Mists.\n",
 
  /* 28 */
  "You are in a low n/s passage at a hole in the floor.  The hole goes\n"
  "down to an e/w passage.\n",
 
- /* 29 */
- "You are in the south side chamber.\n",
+ /* 29 */ "You are in the south side chamber.\n",
 
  /* 30 */
  "You are in the west side chamber of the Hall of the Mountain King.\n"
  "A passage continues west and up here.\n",
 
  /* 31 */ NULL,
-
- /* 32 */
- "You can't get by the snake.\n",
+ /* 32 */ "You can't get by the snake.\n",
 
  /* 33 */
  "You are in a large room, with a passage to the south, a passage to the\n"
  "west, and a wall of broken rock to the east.  There is a large \"Y2\" on\n"
  "a rock in the room's center.\n",
 
- /* 34 */
- "You are in a jumble of rock, with cracks everywhere.\n",
+ /* 34 */ "You are in a jumble of rock, with cracks everywhere.\n",
 
  /* 35 */
  "You're at a low window overlooking a huge pit, which extends up out of\n"
@@ -169,58 +154,28 @@ const char* longdesc[141] = {
  "west and another goes north.  To the south is a little passage 6 feet\n"
  "off the floor.\n",
 
- /* 42 */
- "You are in a maze of twisty little passages, all alike.\n",
-
- /* 43 */
- "You are in a maze of twisty little passages, all alike.\n",
-
- /* 44 */
- "You are in a maze of twisty little passages, all alike.\n",
-
- /* 45 */
- "You are in a maze of twisty little passages, all alike.\n",
-
- /* 46 */
- "Dead end\n",
-
- /* 47 */
- "Dead end\n",
-
- /* 48 */
- "Dead end\n",
-
- /* 49 */
- "You are in a maze of twisty little passages, all alike.\n",
-
- /* 50 */
- "You are in a maze of twisty little passages, all alike.\n",
-
- /* 51 */
- "You are in a maze of twisty little passages, all alike.\n",
-
- /* 52 */
- "You are in a maze of twisty little passages, all alike.\n",
-
- /* 53 */
- "You are in a maze of twisty little passages, all alike.\n",
-
- /* 54 */
- "Dead end\n",
-
- /* 55 */
- "You are in a maze of twisty little passages, all alike.\n",
-
- /* 56 */
- "Dead end\n",
+ /* 42 */ "You are in a maze of twisty little passages, all alike.\n",
+ /* 43 */ "You are in a maze of twisty little passages, all alike.\n",
+ /* 44 */ "You are in a maze of twisty little passages, all alike.\n",
+ /* 45 */ "You are in a maze of twisty little passages, all alike.\n",
+ /* 46 */ "Dead end\n",
+ /* 47 */ "Dead end\n",
+ /* 48 */ "Dead end\n",
+ /* 49 */ "You are in a maze of twisty little passages, all alike.\n",
+ /* 50 */ "You are in a maze of twisty little passages, all alike.\n",
+ /* 51 */ "You are in a maze of twisty little passages, all alike.\n",
+ /* 52 */ "You are in a maze of twisty little passages, all alike.\n",
+ /* 53 */ "You are in a maze of twisty little passages, all alike.\n",
+ /* 54 */ "Dead end\n",
+ /* 55 */ "You are in a maze of twisty little passages, all alike.\n",
+ /* 56 */ "Dead end\n",
 
  /* 57 */
  "You are on the brink of a thirty foot pit with a massive orange column\n"
  "down one wall.  You could climb down here but you could not get back\n"
  "up.  The maze continues at this level.\n",
 
- /* 58 */
- "Dead end\n",
+ /* 58 */ "Dead end\n",
 
  /* 59 */
  "You have crawled through a very low wide passage parallel to and north\n"
@@ -235,11 +190,8 @@ const char* longdesc[141] = {
  "You are at the west end of a very long featureless hall.  The hall\n"
  "joins up with a narrow north/south passage.\n",
 
- /* 62 */
- "You are at a crossover of a high n/s passage and a low e/w one.\n",
-
- /* 63 */
- "Dead end\n",
+ /* 62 */ "You are at a crossover of a high n/s passage and a low e/w one.\n",
+ /* 63 */ "Dead end\n",
 
  /* 64 */
  "You are at a complex junction.  A low hands and knees passage from the\n"
@@ -269,68 +221,43 @@ const char* longdesc[141] = {
  "passages go north and south, and the south one quickly bends west\n"
  "around the boulders.\n",
 
- /* 69 */
- "You are in a secret n/s canyon above a large room.\n",
-
- /* 70 */
- "You are in a secret n/s canyon above a sizable passage.\n",
+ /* 69 */ "You are in a secret n/s canyon above a large room.\n",
+ /* 70 */ "You are in a secret n/s canyon above a sizable passage.\n",
 
  /* 71 */
  "You are in a secret canyon at a junction of three canyons, bearing\n"
  "north, south, and se.  The north one is as tall as the other two\n"
  "combined.\n",
 
- /* 72 */
- "You are in a large low room.  Crawls lead north, se, and sw.\n",
-
- /* 73 */
- "Dead end crawl.\n",
+ /* 72 */ "You are in a large low room.  Crawls lead north, se, and sw.\n",
+ /* 73 */ "Dead end crawl.\n",
 
  /* 74 */
  "You are in a secret canyon which here runs e/w.  It crosses over a\n"
  "very tight canyon 15 feet below.  If you go down you may not be able\n"
  "to get back up.\n",
 
- /* 75 */
- "You are at a wide place in a very tight n/s canyon.\n",
-
- /* 76 */
- "The canyon here becomes too tight to go further south.\n",
+ /* 75 */ "You are at a wide place in a very tight n/s canyon.\n",
+ /* 76 */ "The canyon here becomes too tight to go further south.\n",
 
  /* 77 */
  "You are in a tall e/w canyon.  A low tight crawl goes 3 feet north and\n"
  "seems to open up.\n",
 
- /* 78 */
- "The canyon runs into a mass of boulders -- dead end.\n",
+ /* 78 */ "The canyon runs into a mass of boulders -- dead end.\n",
 
  /* 79 */
  "The stream flows out through a pair of 1 foot diameter sewer pipes.\n"
  "It would be advisable to use the exit.\n",
 
- /* 80 */
- "You are in a maze of twisty little passages, all alike.\n",
-
- /* 81 */
- "Dead end\n",
-
- /* 82 */
- "Dead end\n",
-
- /* 83 */
- "You are in a maze of twisty little passages, all alike.\n",
-
- /* 84 */
- "You are in a maze of twisty little passages, all alike.\n",
-
- /* 85 */
- "Dead end\n",
-
- /* 86 */
- "Dead end\n",
-
- /* 87 */
- "You are in a maze of twisty little passages, all alike.\n",
+ /* 80 */ "You are in a maze of twisty little passages, all alike.\n",
+ /* 81 */ "Dead end\n",
+ /* 82 */ "Dead end\n",
+ /* 83 */ "You are in a maze of twisty little passages, all alike.\n",
+ /* 84 */ "You are in a maze of twisty little passages, all alike.\n",
+ /* 85 */ "Dead end\n",
+ /* 86 */ "Dead end\n",
+ /* 87 */ "You are in a maze of twisty little passages, all alike.\n",
 
  /* 88 */
  "You are in a long, narrow corridor stretching out of sight to the\n"
@@ -340,8 +267,7 @@ const char* longdesc[141] = {
  /* 89 */
  "There is nothing here to climb.  Use \"up\" or \"out\" to leave the pit.\n",
 
- /* 90 */
- "You have climbed up the plant and out of the pit.\n",
+ /* 90 */ "You have climbed up the plant and out of the pit.\n",
 
  /* 91 */
  "You are at the top of a steep incline above a large room.  You could\n"
@@ -353,11 +279,8 @@ const char* longdesc[141] = {
  "lamp to show it.  Cavernous passages lead east, north, and south.  On\n"
  "the west wall is scrawled the inscription, \"FEE FIE FOE FOO\" [sic].\n",
 
- /* 93 */
- "The passage here is blocked by a recent cave-in.\n",
-
- /* 94 */
- "You are at one end of an immense north/south passage.\n",
+ /* 93 */ "The passage here is blocked by a recent cave-in.\n",
+ /* 94 */ "You are at one end of an immense north/south passage.\n",
 
  /* 95 */
  "You are in a magnificent cavern with a rushing stream, which cascades\n"
@@ -401,11 +324,8 @@ const char* longdesc[141] = {
  "shallow passage proceeds downward, and a somewhat steeper one leads\n"
  "up.  A low hands and knees passage enters from the south.\n",
 
- /* 104 */
- "You are in a long sloping corridor with ragged sharp walls.\n",
-
- /* 105 */
- "You are in a cul-de-sac about eight feet across.\n",
+ /* 104 */ "You are in a long sloping corridor with ragged sharp walls.\n",
+ /* 105 */ "You are in a cul-de-sac about eight feet across.\n",
 
  /* 106 */
  "You are in an anteroom leading to a large passage to the east.  Small\n"
@@ -413,11 +333,8 @@ const char* longdesc[141] = {
  "A sign in midair here says \"Cave under construction beyond this point.\n"
  "Proceed at own risk.  [Witt Construction Company]\"\n",
 
- /* 107 */
- "You are in a maze of twisty little passages, all different.\n",
-
- /* 108 */
- "You are at Witt's End.  Passages lead off in *ALL* directions.\n",
+ /* 107 */ "You are in a maze of twisty little passages, all different.\n",
+ /* 108 */ "You are at Witt's End.  Passages lead off in *ALL* directions.\n",
 
  /* 109 */
  "You are in a north/south canyon about 25 feet across.  The floor is\n"
@@ -442,8 +359,7 @@ const char* longdesc[141] = {
  "below.  You could climb down it, and jump from it to the floor, but\n"
  "having done so you would be unable to reach it to climb back up.\n",
 
- /* 112 */
- "You are in a little maze of twisting passages, all different.\n",
+ /* 112 */ "You are in a little maze of twisting passages, all different.\n",
 
  /* 113 */
  "You are at the edge of a large underground reservoir.  An opaque cloud\n"
@@ -452,8 +368,7 @@ const char* longdesc[141] = {
  "overhead and splashes noisily into the water somewhere within the\n"
  "mist.  The only passage goes back toward the south.\n",
 
- /* 114 */
- "Dead end\n",
+ /* 114 */ "Dead end\n",
 
  /* 115 */
  "You are at the northeast end of an immense room, even larger than the\n"
@@ -487,14 +402,9 @@ const char* longdesc[141] = {
  "You are in a long winding corridor sloping out of sight in both\n"
  "directions.\n",
 
- /* 119 */
- "You are in a secret canyon which exits to the north and east.\n",
-
- /* 120 */
- "You are in a secret canyon which exits to the north and east.\n",
-
- /* 121 */
- "You are in a secret canyon which exits to the north and east.\n",
+ /* 119 */ "You are in a secret canyon which exits to the north and east.\n",
+ /* 120 */ "You are in a secret canyon which exits to the north and east.\n",
+ /* 121 */ "You are in a secret canyon which exits to the north and east.\n",
 
  /* 122 */
  "You are on the far side of the chasm.  A ne path leads away from the\n"
@@ -554,35 +464,16 @@ const char* longdesc[141] = {
  "empty except for some dust.  Marks in the dust lead away toward the\n"
  "far end of the room.  The only exit is the way you came in.\n",
 
- /* 131 */
- "You are in a maze of twisting little passages, all different.\n",
-
- /* 132 */
- "You are in a little maze of twisty passages, all different.\n",
-
- /* 133 */
- "You are in a twisting maze of little passages, all different.\n",
-
- /* 134 */
- "You are in a twisting little maze of passages, all different.\n",
-
- /* 135 */
- "You are in a twisty little maze of passages, all different.\n",
-
- /* 136 */
- "You are in a twisty maze of little passages, all different.\n",
-
- /* 137 */
- "You are in a little twisty maze of passages, all different.\n",
-
- /* 138 */
- "You are in a maze of little twisting passages, all different.\n",
-
- /* 139 */
- "You are in a maze of little twisty passages, all different.\n",
-
- /* 140 */
- "Dead end\n"
+ /* 131 */ "You are in a maze of twisting little passages, all different.\n",
+ /* 132 */ "You are in a little maze of twisty passages, all different.\n",
+ /* 133 */ "You are in a twisting maze of little passages, all different.\n",
+ /* 134 */ "You are in a twisting little maze of passages, all different.\n",
+ /* 135 */ "You are in a twisty little maze of passages, all different.\n",
+ /* 136 */ "You are in a twisty maze of little passages, all different.\n",
+ /* 137 */ "You are in a little twisty maze of passages, all different.\n",
+ /* 138 */ "You are in a maze of little twisting passages, all different.\n",
+ /* 139 */ "You are in a maze of little twisty passages, all different.\n",
+ /* 140 */ "Dead end\n"
 };
 
 const char* shortdesc[141] = {
@@ -1002,30 +893,18 @@ const char* rmsg[202] = {
  "features of the current program were added by Don Woods (don @ su-ai).\n"
  "Contact Don if you have any questions, comments, etc.\n",
 
- /* 2 */
- "A little dwarf with a big knife blocks your way.\n",
+ /* 2 */ "A little dwarf with a big knife blocks your way.\n",
 
  /* 3 */
  "A little dwarf just walked around a corner, saw you, threw a little\n"
  "axe at you which missed, cursed, and ran away.\n",
 
- /* 4 */
- "There is a threatening little dwarf in the room with you!\n",
-
- /* 5 */
- "One sharp nasty knife is thrown at you!\n",
-
- /* 6 */
- "None of them hit you!\n",
-
- /* 7 */
- "One of them gets you!\n",
-
- /* 8 */
- "A hollow voice says \"PLUGH\".\n",
-
- /* 9 */
- "There is no way to go that direction.\n",
+ /* 4 */ "There is a threatening little dwarf in the room with you!\n",
+ /* 5 */ "One sharp nasty knife is thrown at you!\n",
+ /* 6 */ "None of them hit you!\n",
+ /* 7 */ "One of them gets you!\n",
+ /* 8 */ "A hollow voice says \"PLUGH\".\n",
+ /* 9 */ "There is no way to go that direction.\n",
 
  /* 10 */
  "I am unsure how you are facing.  Use compass points or nearby objects.\n",
@@ -1034,14 +913,9 @@ const char* rmsg[202] = {
  "I don't know in from out here.  Use compass points or name something\n"
  "in the general direction you want to go.\n",
 
- /* 12 */
- "I don't know how to apply that word here.\n",
-
- /* 13 */
- "I don't understand that!\n",
-
- /* 14 */
- "I'm game.  Would you care to explain how?\n",
+ /* 12 */ "I don't know how to apply that word here.\n",
+ /* 13 */ "I don't understand that!\n",
+ /* 14 */ "I'm game.  Would you care to explain how?\n",
 
  /* 15 */
  "Sorry, but I am not allowed to give more detail.  I will repeat the\n"
@@ -1050,113 +924,61 @@ const char* rmsg[202] = {
  /* 16 */
  "It is now pitch dark.  If you proceed you will likely fall into a pit.\n",
 
- /* 17 */
- "If you prefer, simply type w rather than west.\n",
-
- /* 18 */
- "Are you trying to catch the bird?\n",
+ /* 17 */ "If you prefer, simply type w rather than west.\n",
+ /* 18 */ "Are you trying to catch the bird?\n",
 
  /* 19 */
  "The bird is frightened right now and you cannot catch it no matter\n"
  "what you try.  Perhaps you might try later.\n",
 
- /* 20 */
- "Are you trying to somehow deal with the snake?\n",
+ /* 20 */ "Are you trying to somehow deal with the snake?\n",
 
  /* 21 */
  "You can't kill the snake, or drive it away, or avoid it, or anything\n"
  "like that.  There is a way to get by, but you don't have the necessary\n"
  "resources right now.\n",
 
- /* 22 */
- "Do you really want to quit now?\n",
-
- /* 23 */
- "You fell into a pit and broke every bone in your body!\n",
-
- /* 24 */
- "You are already carrying it!\n",
-
- /* 25 */
- "You can't be serious!\n",
+ /* 22 */ "Do you really want to quit now?\n",
+ /* 23 */ "You fell into a pit and broke every bone in your body!\n",
+ /* 24 */ "You are already carrying it!\n",
+ /* 25 */ "You can't be serious!\n",
 
  /* 26 */
  "The bird was unafraid when you entered, but as you approach it becomes\n"
  "disturbed and you cannot catch it.\n",
 
- /* 27 */
- "You can catch the bird, but you cannot carry it.\n",
-
- /* 28 */
- "There is nothing here with a lock!\n",
-
- /* 29 */
- "You aren't carrying it!\n",
+ /* 27 */ "You can catch the bird, but you cannot carry it.\n",
+ /* 28 */ "There is nothing here with a lock!\n",
+ /* 29 */ "You aren't carrying it!\n",
 
  /* 30 */
  "The little bird attacks the green snake, and in an astounding flurry\n"
  "drives the snake away.\n",
 
- /* 31 */
- "You have no keys!\n",
-
- /* 32 */
- "It has no lock.\n",
-
- /* 33 */
- "I don't know how to lock or unlock such a thing.\n",
-
- /* 34 */
- "It was already locked.\n",
-
- /* 35 */
- "The grate is now locked.\n",
-
- /* 36 */
- "The grate is now unlocked.\n",
-
- /* 37 */
- "It was already unlocked.\n",
-
- /* 38 */
- "You have no source of light.\n",
-
- /* 39 */
- "Your lamp is now on.\n",
-
- /* 40 */
- "Your lamp is now off.\n",
+ /* 31 */ "You have no keys!\n",
+ /* 32 */ "It has no lock.\n",
+ /* 33 */ "I don't know how to lock or unlock such a thing.\n",
+ /* 34 */ "It was already locked.\n",
+ /* 35 */ "The grate is now locked.\n",
+ /* 36 */ "The grate is now unlocked.\n",
+ /* 37 */ "It was already unlocked.\n",
+ /* 38 */ "You have no source of light.\n",
+ /* 39 */ "Your lamp is now on.\n",
+ /* 40 */ "Your lamp is now off.\n",
 
  /* 41 */
  "There is no way to get past the bear to unlock the chain, which is\n"
  "probably just as well.\n",
 
- /* 42 */
- "Nothing happens.\n",
-
- /* 43 */
- "Where?\n",
-
- /* 44 */
- "There is nothing here to attack.\n",
-
- /* 45 */
- "The little bird is now dead.  Its body disappears.\n",
-
- /* 46 */
- "Attacking the snake both doesn't work and is very dangerous.\n",
-
- /* 47 */
- "You killed a little dwarf.\n",
-
- /* 48 */
- "You attack a little dwarf, but he dodges out of the way.\n",
-
- /* 49 */
- "With what?  Your bare hands?\n",
-
- /* 50 */
- "Good try, but that is an old worn-out magic word.\n",
+ /* 42 */ "Nothing happens.\n",
+ /* 43 */ "Where?\n",
+ /* 44 */ "There is nothing here to attack.\n",
+ /* 45 */ "The little bird is now dead.  Its body disappears.\n",
+ /* 46 */ "Attacking the snake both doesn't work and is very dangerous.\n",
+ /* 47 */ "You killed a little dwarf.\n",
+ /* 48 */ "You attack a little dwarf, but he dodges out of the way.\n",
+ /* 49 */ "With what?  Your bare hands?\n",
+ /* 50 */ "Good try, but that is an old worn-out magic word.\n",
 
  /* 51 */
  "I know of places, actions, and things.  Most of my vocabulary\n"
@@ -1180,17 +1002,10 @@ const char* rmsg[202] = {
  "room to the north does not guarantee entering the next from the south.\n"
  "Good luck!\n",
 
- /* 52 */
- "It misses!\n",
-
- /* 53 */
- "It gets you!\n",
-
- /* 54 */
- "OK\n",
-
- /* 55 */
- "You can't unlock the keys.\n",
+ /* 52 */ "It misses!\n",
+ /* 53 */ "It gets you!\n",
+ /* 54 */ "OK\n",
+ /* 55 */ "You can't unlock the keys.\n",
 
  /* 56 */
  "You have crawled around in some little holes and wound up back in the\n"
@@ -1200,21 +1015,15 @@ const char* rmsg[202] = {
  "I don't know where the cave is, but hereabouts no stream can run on\n"
  "the surface for long.  I would try the stream.\n",
 
- /* 58 */
- "I need more detailed instructions to do that.\n",
+ /* 58 */ "I need more detailed instructions to do that.\n",
 
  /* 59 */
  "I can only tell you what you see as you move about and manipulate\n"
  "things.  I cannot tell you where remote things are.\n",
 
- /* 60 */
- "I don't know that word.\n",
-
- /* 61 */
- "What?\n",
-
- /* 62 */
- "Are you trying to get into the cave?\n",
+ /* 60 */ "I don't know that word.\n",
+ /* 61 */ "What?\n",
+ /* 62 */ "Are you trying to get into the cave?\n",
 
  /* 63 */
  "The grate is very solid and has a hardened steel lock.  You cannot\n"
@@ -1229,58 +1038,39 @@ const char* rmsg[202] = {
  "all the leaves, but travel is quite easy if you detour around the\n"
  "spruce and berry bushes.\n",
 
- /* 65 */
- "Welcome to Adventure!!  Would you like instructions?\n",
+ /* 65 */ "Welcome to Adventure!!  Would you like instructions?\n",
 
  /* 66 */
  "Digging without a shovel is quite impractical.  Even with a shovel\n"
  "progress is unlikely.\n",
 
- /* 67 */
- "Blasting requires dynamite.\n",
-
- /* 68 */
- "I'm as confused as you are.\n",
+ /* 67 */ "Blasting requires dynamite.\n",
+ /* 68 */ "I'm as confused as you are.\n",
 
  /* 69 */
  "Mist is a white vapor, usually water, seen from time to time in\n"
  "caverns.  It can be found anywhere but is frequently a sign of a deep\n"
  "pit leading down to water.\n",
 
- /* 70 */
- "Your feet are now wet.\n",
-
- /* 71 */
- "I think I just lost my appetite.\n",
-
- /* 72 */
- "Thank you, it was delicious!\n",
+ /* 70 */ "Your feet are now wet.\n",
+ /* 71 */ "I think I just lost my appetite.\n",
+ /* 72 */ "Thank you, it was delicious!\n",
 
  /* 73 */
  "You have taken a drink from the stream.  The water tastes strongly of\n"
  "minerals, but is not unpleasant.  It is extremely cold.\n",
 
- /* 74 */
- "The bottle of water is now empty.\n",
+ /* 74 */ "The bottle of water is now empty.\n",
 
  /* 75 */
  "Rubbing the electric lamp is not particularly rewarding.  Anyway,\n"
  "nothing exciting happens.\n",
 
- /* 76 */
- "Peculiar.  Nothing unexpected happens.\n",
-
- /* 77 */
- "Your bottle is empty and the ground is wet.\n",
-
- /* 78 */
- "You can't pour that.\n",
-
- /* 79 */
- "Watch it!\n",
-
- /* 80 */
- "Which way?\n",
+ /* 76 */ "Peculiar.  Nothing unexpected happens.\n",
+ /* 77 */ "Your bottle is empty and the ground is wet.\n",
+ /* 78 */ "You can't pour that.\n",
+ /* 79 */ "Watch it!\n",
+ /* 80 */ "Which way?\n",
 
  /* 81 */
  "Oh dear, you seem to have gotten yourself killed.  I might be able to\n"
@@ -1305,88 +1095,50 @@ const char* rmsg[202] = {
  "Now you've really done it!  I'm out of orange smoke!  You don't expect\n"
  "me to do a decent reincarnation without any orange smoke, do you?\n",
 
- /* 86 */
- "Okay, if you're so smart, do it yourself!  I'm leaving!\n",
-
- NULL,
-
- NULL,
-
- NULL,
-
- NULL,
+ /* 86 */ "Okay, if you're so smart, do it yourself!  I'm leaving!\n",
 
  /* Messages 81 through 90 are reserved for "obituaries." */
+ NULL, NULL, NULL, NULL,
 
- /* 91 */
- "Sorry, but I no longer seem to remember how it was you got here.\n",
+ /* 91 */ "Sorry, but I no longer seem to remember how it was you got here.\n",
 
  /* 92 */
  "You can't carry anything more.  You'll have to drop something first.\n",
 
- /* 93 */
- "You can't go through a locked steel grate!\n",
-
- /* 94 */
- "I believe what you want is right here with you.\n",
-
- /* 95 */
- "You don't fit through a two-inch slit!\n",
+ /* 93 */ "You can't go through a locked steel grate!\n",
+ /* 94 */ "I believe what you want is right here with you.\n",
+ /* 95 */ "You don't fit through a two-inch slit!\n",
 
  /* 96 */
  "I respectfully suggest you go across the bridge instead of jumping.\n",
 
- /* 97 */
- "There is no way across the fissure.\n",
-
- /* 98 */
- "You're not carrying anything.\n",
-
- /* 99 */
- "You are currently holding the following:\n",
+ /* 97 */ "There is no way across the fissure.\n",
+ /* 98 */ "You're not carrying anything.\n",
+ /* 99 */ "You are currently holding the following:\n",
 
  /* 100 */
  "It's not hungry (it's merely pinin' for the fjords).  Besides, you\n"
  "have no bird seed.\n",
 
- /* 101 */
- "The snake has now devoured your bird.\n",
-
- /* 102 */
- "There's nothing here it wants to eat (except perhaps you).\n",
+ /* 101 */ "The snake has now devoured your bird.\n",
+ /* 102 */ "There's nothing here it wants to eat (except perhaps you).\n",
 
  /* 103 */
  "You fool, dwarves eat only coal!  Now you've made him *REALLY* mad!!\n",
 
- /* 104 */
- "You have nothing in which to carry it.\n",
-
- /* 105 */
- "Your bottle is already full.\n",
-
- /* 106 */
- "There is nothing here with which to fill the bottle.\n",
-
- /* 107 */
- "Your bottle is now full of water.\n",
-
- /* 108 */
- "Your bottle is now full of oil.\n",
-
- /* 109 */
- "You can't fill that.\n",
-
- /* 110 */
- "Don't be ridiculous!\n",
-
- /* 111 */
- "The door is extremely rusty and refuses to open.\n",
+ /* 104 */ "You have nothing in which to carry it.\n",
+ /* 105 */ "Your bottle is already full.\n",
+ /* 106 */ "There is nothing here with which to fill the bottle.\n",
+ /* 107 */ "Your bottle is now full of water.\n",
+ /* 108 */ "Your bottle is now full of oil.\n",
+ /* 109 */ "You can't fill that.\n",
+ /* 110 */ "Don't be ridiculous!\n",
+ /* 111 */ "The door is extremely rusty and refuses to open.\n",
 
  /* 112 */
  "The plant indignantly shakes the oil off its leaves and asks, \"Water?\"\n",
 
- /* 113 */
- "The hinges are quite thoroughly rusted now and won't budge.\n",
+ /* 113 */ "The hinges are quite thoroughly rusted now and won't budge.\n",
 
  /* 114 */
  "The oil has freed up the hinges so that the door will now move,\n"
@@ -1395,30 +1147,21 @@ const char* rmsg[202] = {
  /* 115 */
  "The plant has exceptionally deep roots and cannot be pulled free.\n",
 
- /* 116 */
- "The dwarves' knives vanish as they strike the walls of the cave.\n",
+ /* 116 */ "The dwarves' knives vanish as they strike the walls of the cave.\n",
 
  /* 117 */
  "Something you're carrying won't fit through the tunnel with you.\n"
  "You'd best take inventory and drop something.\n",
 
- /* 118 */
- "You can't fit this five-foot clam through that little passage!\n",
-
- /* 119 */
- "You can't fit this five-foot oyster through that little passage!\n",
-
- /* 120 */
- "I advise you to put down the clam before opening it.  >STRAIN!<\n",
+ /* 118 */ "You can't fit this five-foot clam through that little passage!\n",
+ /* 119 */ "You can't fit this five-foot oyster through that little passage!\n",
+ /* 120 */ "I advise you to put down the clam before opening it.  >STRAIN!<\n",
 
  /* 121 */
  "I advise you to put down the oyster before opening it.  >WRENCH!<\n",
 
- /* 122 */
- "You don't have anything strong enough to open the clam.\n",
-
- /* 123 */
- "You don't have anything strong enough to open the oyster.\n",
+ /* 122 */ "You don't have anything strong enough to open the clam.\n",
+ /* 123 */ "You don't have anything strong enough to open the oyster.\n",
 
  /* 124 */
  "A glistening pearl falls out of the clam and rolls away.  Goodness,\n"
@@ -1433,8 +1176,7 @@ const char* rmsg[202] = {
  "You have crawled around in some little holes and found your way\n"
  "blocked by a recent cave-in.  You are now back in the main passage.\n",
 
- /* 127 */
- "There are faint rustling noises from the darkness behind you.\n",
+ /* 127 */ "There are faint rustling noises from the darkness behind you.\n",
 
  /* 128 */
  "Out from the shadows behind you pounces a bearded pirate!  \"Har, har,\"\n"
@@ -1479,20 +1221,14 @@ const char* rmsg[202] = {
  "threatening little dwarves in the room with you!  Most of them throw\n"
  "knives at you!  All of them get you!\n",
 
- /* 137 */
- "Oh, leave the poor unhappy bird alone.\n",
-
- /* 138 */
- "I daresay whatever you want is around here somewhere.\n",
+ /* 137 */ "Oh, leave the poor unhappy bird alone.\n",
+ /* 138 */ "I daresay whatever you want is around here somewhere.\n",
 
  /* 139 */
  "I don't know the word \"stop\".  Use \"quit\" if you want to give up.\n",
 
- /* 140 */
- "You can't get there from here.\n",
-
- /* 141 */
- "You are being followed by a very large, tame bear.\n",
+ /* 140 */ "You can't get there from here.\n",
+ /* 141 */ "You are being followed by a very large, tame bear.\n",
 
  /* 142 */
  "If you want to end your adventure early, say \"quit\".  To suspend your\n"
@@ -1516,46 +1252,30 @@ const char* rmsg[202] = {
  "save paper, you may specify \"brief\", which tells me never to repeat\n"
  "the full description of a place unless you explicitly ask me to.\n",
 
- /* 143 */
- "Do you indeed wish to quit now?\n",
-
- /* 144 */
- "There is nothing here with which to fill the vase.\n",
+ /* 143 */ "Do you indeed wish to quit now?\n",
+ /* 144 */ "There is nothing here with which to fill the vase.\n",
 
  /* 145 */
  "The sudden change in temperature has delicately shattered the vase.\n",
 
- /* 146 */
- "It is beyond your power to do that.\n",
-
- /* 147 */
- "I don't know how.\n",
-
- /* 148 */
- "It is too far up for you to reach.\n",
+ /* 146 */ "It is beyond your power to do that.\n",
+ /* 147 */ "I don't know how.\n",
+ /* 148 */ "It is too far up for you to reach.\n",
 
  /* 149 */
  "You killed a little dwarf.  The body vanishes in a cloud of greasy\n"
  "black smoke.\n",
 
- /* 150 */
- "The shell is very strong and is impervious to attack.\n",
-
- /* 151 */
- "What's the matter, can't you read?  Now you'd best start over.\n",
-
- /* 152 */
- "The axe bounces harmlessly off the dragon's thick scales.\n",
-
- /* 153 */
- "The dragon looks rather nasty.  You'd best not try to get by.\n",
+ /* 150 */ "The shell is very strong and is impervious to attack.\n",
+ /* 151 */ "What's the matter, can't you read?  Now you'd best start over.\n",
+ /* 152 */ "The axe bounces harmlessly off the dragon's thick scales.\n",
+ /* 153 */ "The dragon looks rather nasty.  You'd best not try to get by.\n",
 
  /* 154 */
  "The little bird attacks the green dragon, and in an astounding flurry\n"
  "gets burnt to a cinder.  The ashes blow away.\n",
 
- /* 155 */
- "On what?\n",
+ /* 155 */ "On what?\n",
 
  /* 156 */
  "Okay, from now on I'll only describe a place in full the first time\n"
@@ -1569,14 +1289,9 @@ const char* rmsg[202] = {
  "The troll deftly catches the axe, examines it carefully, and tosses it\n"
  "back, declaring, \"Good workmanship, but it's not valuable enough.\"\n",
 
- /* 159 */
- "The troll catches your treasure and scurries away out of sight.\n",
-
- /* 160 */
- "The troll refuses to let you cross.\n",
-
- /* 161 */
- "There is no longer any way across the chasm.\n",
+ /* 159 */ "The troll catches your treasure and scurries away out of sight.\n",
+ /* 160 */ "The troll refuses to let you cross.\n",
+ /* 161 */ "There is no longer any way across the chasm.\n",
 
  /* 162 */
  "Just as you reach the other side, the bridge buckles beneath the\n"
@@ -1591,70 +1306,40 @@ const char* rmsg[202] = {
  /* 164 */
  "The axe misses and lands near the bear where you can't get at it.\n",
 
- /* 165 */
- "With what?  Your bare hands?  Against *HIS* bear hands??\n",
-
- /* 166 */
- "The bear is confused; he only wants to be your friend.\n",
-
- /* 167 */
- "For crying out loud, the poor thing is already dead!\n",
+ /* 165 */ "With what?  Your bare hands?  Against *HIS* bear hands??\n",
+ /* 166 */ "The bear is confused; he only wants to be your friend.\n",
+ /* 167 */ "For crying out loud, the poor thing is already dead!\n",
 
  /* 168 */
  "The bear eagerly wolfs down your food, after which he seems to calm\n"
  "down considerably and even becomes rather friendly.\n",
 
- /* 169 */
- "The bear is still chained to the wall.\n",
-
- /* 170 */
- "The chain is still locked.\n",
-
- /* 171 */
- "The chain is now unlocked.\n",
-
- /* 172 */
- "The chain is now locked.\n",
-
- /* 173 */
- "There is nothing here to which the chain can be locked.\n",
-
- /* 174 */
- "There is nothing here to eat.\n",
-
- /* 175 */
- "Do you want the hint?\n",
-
- /* 176 */
- "Do you need help getting out of the maze?\n",
-
- /* 177 */
- "You can make the passages look less alike by dropping things.\n",
-
- /* 178 */
- "Are you trying to explore beyond the plover room?\n",
+ /* 169 */ "The bear is still chained to the wall.\n",
+ /* 170 */ "The chain is still locked.\n",
+ /* 171 */ "The chain is now unlocked.\n",
+ /* 172 */ "The chain is now locked.\n",
+ /* 173 */ "There is nothing here to which the chain can be locked.\n",
+ /* 174 */ "There is nothing here to eat.\n",
+ /* 175 */ "Do you want the hint?\n",
+ /* 176 */ "Do you need help getting out of the maze?\n",
+ /* 177 */ "You can make the passages look less alike by dropping things.\n",
+ /* 178 */ "Are you trying to explore beyond the plover room?\n",
 
  /* 179 */
  "There is a way to explore that region without having to worry about\n"
  "falling into a pit.  None of the objects available is immediately\n"
  "useful in discovering the secret.\n",
 
- /* 180 */
- "Do you need help getting out of here?\n",
-
- /* 181 */
- "Don't go west.\n",
-
- /* 182 */
- "Gluttony is not one of the troll's vices.  Avarice, however, is.\n",
+ /* 180 */ "Do you need help getting out of here?\n",
+ /* 181 */ "Don't go west.\n",
+ /* 182 */ "Gluttony is not one of the troll's vices.  Avarice, however, is.\n",
 
  /* 183 */
  "Your lamp is getting dim.  You'd best start wrapping this up, unless\n"
  "you can find some fresh batteries.  I seem to recall there's a vending\n"
  "machine in the maze.  Bring some coins with you.\n",
 
- /* 184 */
- "Your lamp has run out of power.\n",
+ /* 184 */ "Your lamp has run out of power.\n",
 
  /* 185 */
  "There's not much point in wandering around out here, and you can't\n"
@@ -1678,8 +1363,7 @@ const char* rmsg[202] = {
  "Your lamp is getting dim, and you're out of spare batteries.  You'd\n"
  "best start wrapping this up.\n",
 
- /* 190 */
- "I'm afraid the magazine is written in dwarvish.\n",
+ /* 190 */ "I'm afraid the magazine is written in dwarvish.\n",
 
  /* 191 */
  "\"This is not the maze where the pirate leaves his treasure chest.\"\n",
@@ -1692,31 +1376,22 @@ const char* rmsg[202] = {
  "It says, \"There is something strange about this place, such that one\n"
  "of the words I've always known now has a new effect.\"\n",
 
- /* 194 */
- "It says the same thing it did before.\n",
-
- /* 195 */
- "I'm afraid I don't understand.\n",
-
- /* 196 */
- "\"Congratulations on bringing light into the dark-room!\"\n",
+ /* 194 */ "It says the same thing it did before.\n",
+ /* 195 */ "I'm afraid I don't understand.\n",
+ /* 196 */ "\"Congratulations on bringing light into the dark-room!\"\n",
 
  /* 197 */
  "You strike the mirror a resounding blow, whereupon it shatters into a\n"
  "myriad of tiny fragments.\n",
 
- /* 198 */
- "You have taken the vase and hurled it delicately to the ground.\n",
+ /* 198 */ "You have taken the vase and hurled it delicately to the ground.\n",
 
  /* 199 */
  "You prod the nearest dwarf, who wakes up grumpily, takes one look at\n"
  "you, curses, and grabs for his axe.\n",
 
- /* 200 */
- "Is this acceptable?\n",
-
- /* 201 */
- "There's no point in suspending a demonstration game.\n"
+ /* 200 */ "Is this acceptable?\n",
+ /* 201 */ "There's no point in suspending a demonstration game.\n"
 };
 
 #ifdef ADVMAGIC

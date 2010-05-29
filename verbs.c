@@ -693,8 +693,8 @@ bool vresume(char* file) {
   fprintf(stderr, "\nError reading %s: ", file);
   perror(NULL);
   fclose(adv);
-  if (game.turns > 1) printf("\nSticking with current game\n");
   game = backup;
+  if (game.turns > 1) printf("\nSticking with current game\n");
   return false;
  }
  fclose(adv);

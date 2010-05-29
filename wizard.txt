@@ -3,6 +3,12 @@ Adventure, 350 pt. version, at <http://github.com/jwodder/advent350>.]
 
 
 WIZARD AUTHENTICATION
+Wizard authentication is used to restart a game that was saved within the delay
+period (but more than a third of the delay ago), start a game while the cave is
+closed, and access maintenance mode.  Note that if you use your wizardly powers
+to do one of the first two, you will still need to authenticate as a wizard
+again if you then try to access maintenance mode.
+
 You will need to know the current magic word (default "DWARF") and the current
 magic number (default 11111) according to the magic file (or their default
 values if there is no magic file).
@@ -41,14 +47,10 @@ give in response (This is the part that frawd(6) automates).
   - Divide by 26, take the remainder, and add 1 to it.
   - The result is the value of the i-th letter of the reply.
 
-Once you enter the new word, the game will recognize you as a wizard:
+Once you enter the new word, the game will finally recognize you as a wizard:
 GAME: Oh dear, you really *are* a wizard!  Sorry to have bothered you . . .
 
 ---------------------------------------
-
-Wizard authentication is used to restart a game that was saved within the delay
-period (but more than a third of the delay ago), start a game while the cave is
-closed, and access maintenance mode.
 
 MAINTENANCE MODE
 Maintenance mode (a.k.a. "magic mode" or "wizard mode") is invoked by entering
@@ -56,13 +58,39 @@ Maintenance mode (a.k.a. "magic mode" or "wizard mode") is invoked by entering
 game's offer of instructions; if you try to access it at any later point, the
 command won't be recognized.
 
-[[wizard authentication]]
+The first part of maintenance mode is passing wizard authentication (see
+above); if you fail, the game will go back to the normal command-interpreter
+mode and act like it doesn't recognize the words "MAGIC MODE".
+
+If you are indeed a wizard:
+
 GAME: Do you wish to see the hours?
 [If you say "yes", the current cave hours will be shown.]
 GAME: Do you wish to change the hours?
-[If you say "yes",
- ...
-]
+If you say "yes":
+
+    GAME: New hours specified by defining "prime time".  Give only the hour
+	  (e.g. 14, not 14:00 or 2pm).  Enter a negative number after last pair.
+
+    The game will then prompt you to specify the "prime time" hours (the times
+    that the cave is closed) for weekdays, weekends, and holidays, in that
+    order.  For each type of day, it will print "Prime time on
+    [weekdays|weekends|holidays]:" and then alternate prompting between "from:"
+    and "till:", to which you must respond with a positive integer from 0
+    through 23 (24 for "till") giving the start and (excluded) end of prime
+    time.  A day type may have more than one expanse of prime time assigned to
+    it, and overlapping prime time ranges are merged together.  If you enter a
+    number less than 0 (note that this port treats non-numbers as 0) or greater
+    than 23 (24 for "till", indicating that prime time should last to the end
+    of the day), or if you enter a "till" time that is less than or equal to
+    the "from" time, the game will stop reading times for the current type of
+    day and move on to the next type.
+
+    Once all of the cave hours have been specified, the game will print "New
+    hours for Colossal Cave:" and display the new hours.
+
+
+
 GAME: Do you wish to (re)schedule the next holiday?
 [By default, there is no upcoming holiday.]
 If you say "yes":
@@ -74,8 +102,8 @@ If you say "yes":
     [Enter the number of days that the holiday should last for, inclusive.
      Entering "0" causes there to be no upcoming holiday.]
     GAME: To be called what (up to 20 characters)?
-    [Enter a line of text.  The first twenty characters will be used as the
-     name of the upcoming holiday.]
+    [Enter a line of text.  The first twenty characters of the first word will
+     be used as the name of the upcoming holiday.]
 GAME: Length of short game (null to leave at %d):
 ["%d" is replaced by the current maximum length of a short game (default 30);
  if a player spends this many turns in a demo, the game will automatically end.
@@ -96,9 +124,17 @@ GAME: Latency for restart (null to leave at %d):
  less than 45, the game will print "Too small!  Assuming minimum value (45
  minutes)." and set the delay to 45.]
 GAME: Do you wish to change the message of the day?
-[If you say "yes",
- ...
-]
+
+If you say "yes", the game will print "Limit lines to 70 chars.  End with null
+line."  You will then get to enter one or more lines of text to serve as the
+new message of the day, which, when not empty (as it is by default), is
+displayed whenever a new game is started.  If you enter a line 70 or more
+characters in length (counting the newline), the game will print "Line too
+long, retype:" and discard the long line.  If you enter 430 or more characters
+in total, the game will print "Not enough room for another line.  Ending
+message here." and stop reading input.  Otherwise, reading stops when you enter
+a blank line.
+
 GAME: Okay.  You can save this version now.
 GAME: Be sure to save your core-image...
 [The program will then terminate.  On the original PDP-10, the user would then
