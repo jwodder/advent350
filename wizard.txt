@@ -23,8 +23,7 @@ ANSWER: No
 
 The game will now print out a random five-letter "word."  You must perform a
 series of mathematical operations on it to produce another five-letter word to
-give in response (This is the part that frawd(6) automates).
-
+give in response (This is the part that frawd(6) automates):
  - Take the current time (specifically, the time at which you expect to enter
    the result) as an hour `h' from 0 through 23 and a minute `m' from 0 through
    59.  Calculate h * 100 + m, change the last digit to a zero, and call this
@@ -65,7 +64,8 @@ mode and act like it doesn't recognize the words "MAGIC MODE".
 If you are indeed a wizard:
 
 GAME: Do you wish to see the hours?
-[If you say "yes", the current cave hours will be shown.]
+If you say "yes", the current cave hours will be shown.
+
 GAME: Do you wish to change the hours?
 If you say "yes":
 
@@ -76,24 +76,25 @@ If you say "yes":
     that the cave is closed) for weekdays, weekends, and holidays, in that
     order.  For each type of day, it will print "Prime time on
     [weekdays|weekends|holidays]:" and then alternate prompting between "from:"
-    and "till:", to which you must respond with a positive integer from 0
-    through 23 (24 for "till") giving the start and (excluded) end of prime
-    time.  A day type may have more than one expanse of prime time assigned to
-    it, and overlapping prime time ranges are merged together.  If you enter a
-    number less than 0 (note that this port treats non-numbers as 0) or greater
-    than 23 (24 for "till", indicating that prime time should last to the end
-    of the day), or if you enter a "till" time that is less than or equal to
-    the "from" time, the game will stop reading times for the current type of
-    day and move on to the next type.
+    and "till:", to each of which you must respond with a positive integer from
+    0 through 23 (24 for "till"), giving pairs of start and (excluded) end
+    times for prime time.  A day type may have more than one expanse of prime
+    time assigned to it, and overlapping prime time ranges are merged together.
+    If you enter a number less than 0 (note that this port treats non-numbers
+    as 0) or greater than 23 (24 for "till", indicating that prime time should
+    last through the end of the day), or if you enter a "till" time that is
+    less than or equal to the corresponding "from" time, the game will stop
+    reading times for the current type of day and move on to the next type.
 
     Once all of the cave hours have been specified, the game will print "New
     hours for Colossal Cave:" and display the new hours.
 
-
-
 GAME: Do you wish to (re)schedule the next holiday?
-[By default, there is no upcoming holiday.]
-If you say "yes":
+
+The game keeps track of no more than one holiday at a time, so responding "yes"
+will cause the current holiday to be replaced.  (By default, there is no
+upcoming holiday.) If you say "yes":
+
     GAME: To begin how many days from today?
     [Enter a decimal integer.  This number will be added to the current date to
      get the day on which the holiday begins, so, for example, entering "1"
@@ -104,27 +105,31 @@ If you say "yes":
     GAME: To be called what (up to 20 characters)?
     [Enter a line of text.  The first twenty characters of the first word will
      be used as the name of the upcoming holiday.]
-GAME: Length of short game (null to leave at %d):
-["%d" is replaced by the current maximum length of a short game (default 30);
- if a player spends this many turns in a demo, the game will automatically end.
- Enter a positive integer to change the limit to, or enter a blank line or a
- number less than 1 to leave it unchanged.]
-GAME: New magic word (null to leave unchanged):
-[Enter a word.  The first five non-whitespace characters (or fewer, if you
- enter a short word) will become the new magic word.  If you enter an empty
- line, the magic word will remain unchanged.]
-GAME: New magic number (null to leave unchanged):
-[Enter an integer to change the magic number to.  If you enter a blank line or
- a value less than one, the magic number will be unchanged.]
-GAME: Latency for restart (null to leave at %d):
-["%d" is replaced by the current minimum number of minutes that a player must
- wait after saving before ey can resume eir game (default 90).  Enter a
- positive integer to change the delay to, or enter a blank line or a number
- less than 1 to leave it unchanged.  However, if you enter a positive integer
- less than 45, the game will print "Too small!  Assuming minimum value (45
- minutes)." and set the delay to 45.]
-GAME: Do you wish to change the message of the day?
 
+GAME: Length of short game (null to leave at %d):
+"%d" is replaced by the current maximum length of a short game (default 30); if
+a player spends this many turns in a demo, the game will automatically end.
+Enter a positive integer to change the limit to, or enter a blank line or a
+number less than 1 to leave it unchanged.
+
+GAME: New magic word (null to leave unchanged):
+Enter a word.  The first five non-whitespace characters (or fewer, if you enter
+a short word) will become the new magic word.  If you enter an empty line, the
+magic word will remain unchanged.
+
+GAME: New magic number (null to leave unchanged):
+Enter an integer to change the magic number to.  If you enter a blank line or a
+value less than one, the magic number will be unchanged.]
+
+GAME: Latency for restart (null to leave at %d):
+"%d" is replaced by the current minimum number of minutes that a player must
+wait after saving before ey can resume eir game (default 90).  Enter a positive
+integer to change the delay to, or enter a blank line or a number less than 1
+to leave it unchanged.  However, if you enter a positive integer less than 45,
+the game will print "Too small!  Assuming minimum value (45 minutes)." and set
+the delay to 45.
+
+GAME: Do you wish to change the message of the day?
 If you say "yes", the game will print "Limit lines to 70 chars.  End with null
 line."  You will then get to enter one or more lines of text to serve as the
 new message of the day, which, when not empty (as it is by default), is
@@ -137,9 +142,9 @@ a blank line.
 
 GAME: Okay.  You can save this version now.
 GAME: Be sure to save your core-image...
-[The program will then terminate.  On the original PDP-10, the user would then
- have to save the program's "core image," which contained the modified magic
- settings.  On some systems, the core image would disappear when the program
- exited, so the game would instead print "Break out of this and save your
- core-image." as the last message and then prompt for input, with the user then
- having to suspend the program appropriately.]
+The program will then terminate.  On the original PDP-10, the user would then
+have to save the program's "core image," which contained the modified magic
+settings.  On some systems, the core image would disappear when the program
+exited, so the game would instead print "Break out of this and save your
+core-image." as the last message and then prompt for input, with the user then
+having to suspend the program appropriately.

@@ -9,7 +9,6 @@
 #include "advdecl.h"
 
 /* Definitions of global variables: */
-
 int togoto = 2;
 bool blklin = true, gaveup = false;
 #ifdef ADVMAGIC
@@ -59,6 +58,7 @@ struct advgame game = {
  }
 };
 
+void turn(void);
 
 int main(int argc, char** argv) {
 #ifdef ORIG_RNG
@@ -68,11 +68,10 @@ int main(int argc, char** argv) {
 #else
  srand(time(NULL));
 #endif
-
 #ifdef ADVMAGIC
  poof();
 #endif
- if (argc > 1) {if (!vresume(argv[1])) exit(1); }
+ if (argc > 1) {if (!vresume(argv[1])) exit(EXIT_FAILURE); }
  else {
 #ifdef ADVMAGIC
   demo = start();
@@ -96,33 +95,30 @@ int main(int argc, char** argv) {
 /* A note on the flow control used in this program:
  *
  * Although the large function below (cleverly named "turn") contains the logic
- * for a single turn, not all of it is evaluated every turn; for example, after
- * most non-movement verbs, control passes to the original Fortran's label 2012
- * rather than to label 2 (the start of the function).  In the original
- * Fortran, this was all handled by a twisty little maze of GOTO statements,
- * all different, but since GOTOs are heavily frowned upon nowadays, and
- * because this port of Adventure is intended to be an exercise in modern
- * programming techniques rather than in ancient ones, I had to come up with a
- * better way.
+ * for a single turn, not all of it needs to be evaluated every turn.  For
+ * example, after most non-movement verbs, control passes to the original
+ * Fortran's label 2012 rather than to label 2 (the start of the function).  In
+ * the original Fortran, this was all handled by a twisty little maze of GOTO
+ * statements, all different, but since GOTOs are heavily frowned upon
+ * nowadays, I had to come up with something better.
  *
  * (Side note: In the BDS C port of Adventure, all of the turn code is
  * evaluated every turn, and you are very likely to get killed by a dwarf when
  * picking up the axe in the middle of battle.)
  *
  * My best idea was to divide the function up at the necessary GOTO labels, put
- * them all in a "switch" block with fallthrough and with "case" labels
- * corresponding to the original labels, and introduce a global variable (named
- * "togoto") to switch on that indicated what part of the function to start at
- * next.  (My other ideas were (a) a state machine in which each section of the
- * loop was a function that returned a number representing the next function to
- * call and (b) something involving exceptions.)  This works, but it was not
- * what I had hoped for.  If you know of something better, let me know.
+ * them all in a "switch" block with fallthrough and with "case" labels equal
+ * to the original labels, and introduce a global variable (cleverly named
+ * "togoto") to switch on that indicated what part of turn() to start at next.
+ * This works, but it is still quite bizarre.  If you know of something better,
+ * let me know.
  *
  * In summary: I apologize for the code that you are about to see.
  */
 
  for (;;) turn();
- return 1;  /* This should never be reached (hence the error value). */
+ return EXIT_FAILURE;
+  /* This "return" should never be reached (hence the error value). */
 }
 
 void turn(void) {

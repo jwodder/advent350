@@ -53,7 +53,7 @@ void dotrav(int motion) {
  for (int kk=0; travel[game.loc][kk][0] != -1; kk++) {
   if (!matched) {
    for (int i=1; travel[game.loc][kk][i] != -1; i++) {
-    if (travel[game.loc][kk][i] == 1 || travel[game.loc][kk][i] == motion) { 
+    if (travel[game.loc][kk][i] == 1 || travel[game.loc][kk][i] == motion) {
      matched = true;
      break;
     }
@@ -168,8 +168,8 @@ int score(bool scoring) {
 
 void normend(void) {
  int scr = score(false);
- printf("\n\n\nYou scored %d out of a possible 350 using %d turns.\n",
-  scr, game.turns);
+ printf("\n\n\nYou scored %d out of a possible 350 using %d turn%s.\n",
+  scr, game.turns, game.turns == 1 ? "" : "s");
  int i;
  for (i=0; classes[i].score != 0; i++) if (classes[i].score >= scr) break;
  if (classes[i].score != 0) {

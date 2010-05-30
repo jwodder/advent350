@@ -79,7 +79,7 @@ extern const int cond[141];
 extern const struct {int score; char* rank; } classes[10];
 extern const int hints[10][4];
 
-void turn(void);
+/* Functions defined in util.c: */
 bool toting(int item);
 bool here(int item);
 bool at(int item);
@@ -104,6 +104,25 @@ void bug(int num);
 int vocab(const char* word, int type);
 void getin(char* w1, char* r1, char* w2, char* r2);
 int ran(int max);
+#ifdef ADVMAGIC
+void ciao(void);
+void mspeak(int msg);
+bool yesm(int x, int y, int z);
+bool start(void);
+void maint(void);
+void poof(void);
+bool wizard(void);
+void hours(void);
+void hoursx(int32_t hours, const char* day);
+void newhrs(void);
+int32_t newhrx(const char* day);
+void motd(bool alter);
+#endif
+#if defined(ADVMAGIC) || defined(ORIG_RNG)
+void datime(int* d, int* t);
+#endif
+
+/* Functions defined in motion.c: */
 void domove(int motion);
 void dotrav(int motion);
 void death(void);
@@ -111,6 +130,8 @@ int score(bool scoring);
 void normend(void);
 void doaction(void);
 bool dwarfHere(void);
+
+/* Functions defined in verbs.c: */
 void intransitive(void);
 void transitive(void);
 void vtake(void);
@@ -129,24 +150,5 @@ void vsay(void);
 void vsuspend(char* file);
 bool vresume(char* file);
 char* defaultSaveFile(void);
-
-#ifdef ADVMAGIC
-void ciao(void);
-void mspeak(int msg);
-bool yesm(int x, int y, int z);
-bool start(void);
-void maint(void);
-void poof(void);
-bool wizard(void);
-void hours(void);
-void hoursx(int32_t hours, const char* day);
-void newhrs(void);
-int32_t newhrx(const char* day);
-void motd(bool alter);
-#endif
-
-#if defined(ADVMAGIC) || defined(ORIG_RNG)
-void datime(int* d, int* t);
-#endif
 
 #endif

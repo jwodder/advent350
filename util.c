@@ -124,7 +124,6 @@ void drop(int obj, int where) {
 
 void bug(int num) {
  printf("Fatal error, see source code for interpretation.\n");
-
 /* Given the above message, I suppose I should list the possible bug numbers in
  * the source somewhere, and right here is as good a place as any:
  * 5 - Required vocabulary word not found
@@ -134,11 +133,9 @@ void bug(int num) {
  * 24 - Transitive action verb not defined
  * 26 - Location has no travel entries
  */
-
- /* printf("Probable cause: erroneous info in database.\n");
-  * (Not in this version) */
+ printf("Probable cause: erroneous info in database.\n");
  printf("Error code = %d\n\n", num);
- exit(1);
+ exit(EXIT_FAILURE);
 }
 
 int vocab(const char* word, int type) {
@@ -160,47 +157,46 @@ int vocab(const char* word, int type) {
 
 void getin(char* w1, char* r1, char* w2, char* r2) {
  static char line[MAX_INPUT_LENGTH+1];
+ char* start1;
  if (blklin) putchar('\n');
  for (;;) {
   printf("> ");
   fgets(line, MAX_INPUT_LENGTH+1, stdin);
-  char* start1 = line;
+  start1 = line;
   while (isspace(*start1) && *start1 != 0) start1++;
   if (*start1 == 0) {
-   if (blklin) continue;
-   else {
+   if (!blklin) {
     *w1 = 0;
     if (r1 != NULL) *r1 = 0;
     if (w2 != NULL) *w2 = 0;
     if (r2 != NULL) *r2 = 0;
     return;
    }
-  }
-  char* end1 = start1;
-  while (!isspace(*end1) && *end1 != 0) end1++;
-  int i;
-  for (i=0; i<5 && start1 + i < end1; i++) w1[i] = toupper(start1[i]);
-  w1[i] = 0;
-  if (r1 != NULL) {
-   strncpy(r1, start1, end1 - start1);
-   r1[end1-start1] = 0;
-  }
-  if (w2 != NULL) {
-   char* start2 = end1;
-   while (isspace(*start2) && *start2 != 0) start2++;
-   if (*start2 == 0) {*w2 = 0; if (r2 != NULL) *r2 = 0; }
-   else {
-    char* end2 = start2;
-    while (!isspace(*end2) && *end2 != 0) end2++;
-    for (i=0; i<5 && start2 + i < end2; i++) w2[i] = toupper(start2[i]);
-    w2[i] = 0;
-    if (r2 != NULL) {
-     strncpy(r2, start2, end2 - start2);
-     r2[end2-start2] = 0;
-    }
+  } else break;
+ }
+ char* end1 = start1;
+ while (!isspace(*end1) && *end1 != 0) end1++;
+ int i;
+ for (i=0; i<5 && start1 + i < end1; i++) w1[i] = toupper(start1[i]);
+ w1[i] = 0;
+ if (r1 != NULL) {
+  strncpy(r1, start1, end1 - start1);
+  r1[end1-start1] = 0;
+ }
+ if (w2 != NULL) {
+  char* start2 = end1;
+  while (isspace(*start2) && *start2 != 0) start2++;
+  if (*start2 == 0) {*w2 = 0; if (r2 != NULL) *r2 = 0; }
+  else {
+   char* end2 = start2;
+   while (!isspace(*end2) && *end2 != 0) end2++;
+   for (i=0; i<5 && start2 + i < end2; i++) w2[i] = toupper(start2[i]);
+   w2[i] = 0;
+   if (r2 != NULL) {
+    strncpy(r2, start2, end2 - start2);
+    r2[end2-start2] = 0;
    }
   }
-  return;
  }
 }
 
@@ -322,11 +318,11 @@ void maint(void) {
  FILE* abra = fopen(MAGICFILE, "wb");
  if (abra == NULL) {
   perror("\nError: could not write to " MAGICFILE);
-  exit(1);
+  exit(EXIT_FAILURE);
  }
  if (fwrite(&mage, sizeof mage, 1, abra) != 1) {
   perror("\nError writing to " MAGICFILE);
-  exit(1);
+  exit(EXIT_FAILURE);
  }
  fclose(abra);
  ciao();
@@ -472,16 +468,10 @@ void motd(bool alter) {
 #endif  /* #ifdef ADVMAGIC */
 
 #if defined(ADVMAGIC) || defined(ORIG_RNG)
+/* datime(d, t) is supposed to set *d to the number of days since 1 Jan 1977
+ * and *t to the number of minutes since midnight according to the user's
+ * timezone. */
 void datime(int* d, int* t) {
-
-/* This function is supposed to set *d to the number of days since 1 Jan 1977
- * and *t to the number of minutes since midnight.  Implementing this by
- * performing basic arithmetic on the return value of time() (assuming POSIX
- * compliance) doesn't work, as Unix time is measured according to UTC, so in
- * any other timezone the cave's hours won't match the local time.  Thus, the
- * time needs to be adjusted for the current timezone, and standard C provides
- * only one way to do this. */
-
  time_t now = time(NULL);
  struct tm* nower = localtime(&now);  /* nower - like now, but more so */
  int year = nower->tm_year - 77;

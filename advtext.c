@@ -496,7 +496,7 @@ const char* shortdesc[141] = {
  NULL,
  /* 17 */ "You're on east bank of fissure.\n",
  /* 18 */ "You're in nugget of gold room.\n",
- /* 19 */ "You're in Hall of Mt King\n",
+ /* 19 */ "You're in Hall of Mt King.\n",
  NULL,
  NULL,
  NULL,
@@ -616,7 +616,7 @@ const char* itemDesc[65][7] = {
  /* 1 */
  {"Set of keys\n",
   "There are some keys on the ground here.\n"},
- 
+
  /* 2 */
  {"Brass lantern\n",
   "There is a shiny brass lamp nearby.\n",
@@ -687,7 +687,7 @@ const char* itemDesc[65][7] = {
  /* 16 */
  {"\"Spelunker Today\"\n",
   "There are a few recent issues of \"Spelunker Today\" magazine here.\n"},
- 
+
  {NULL},
  {NULL},
 
