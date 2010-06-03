@@ -2,9 +2,6 @@
   installing the game
  - Add a note about the save files & magic file being completely vulnerable to
    editing (and the magic file to viewing)
-- Create a file named "wizard.txt" containing instructions for how to pass
-  wizard authentication along with general instructions for magic/maintenance
-  mode
 - Add a licensing (or lack thereof) notice
 - Once this port is completely finished, submit it to the Interactive Fiction
   Archive.
@@ -15,11 +12,12 @@
 - If the user enters "save" without a filename while playing a restored game,
   should the game be saved to the same path that it was restored from?
 - Consider adding a compile-time configuration option to enable an "old-tymey"
-  interface in which all output lines begin with a single space and there is no
-  "> " input prompt (lowercase letters will still be used, though).
+  interface in which all output lines (including the MOTD!) begin with a single
+  space and there is no "> " input prompt (lowercase letters will still be
+  used, though).
 - Consider adding a compile-time option for setting the euid and/or egid back
   to its/their real values so that the binary can have its setuid/setgid flag
   set to protect the magic file from outsiders while avoiding security problems
   with creating save files
-- When setting the name of the next holiday, should the game use the first 20
-  characters of the whole line or just of the first word?
+- When setting the name of the next holiday, the game should use the first 20
+  characters of the whole line, not just of the first word

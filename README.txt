@@ -69,6 +69,7 @@ travel.c
 util.c
 verbs.c
 vocab.c
+wizard.txt
 
 
 3. COMPILATION & INSTALLATION
