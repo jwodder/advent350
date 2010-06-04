@@ -77,6 +77,7 @@ Once you enter the new word, the game will recognize you as a wizard:
 				MAINTENANCE MODE
 Maintenance mode (a.k.a. "magic mode" or "wizard mode") in Adventure is used to
 modify several game configuration values, namely:
+
  - the hours that the cave is open (i.e., when non-demo, non-wizard games can
    be played)
  - the time & name of the next holiday

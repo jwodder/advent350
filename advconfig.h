@@ -20,7 +20,8 @@
 /* basename of the default save file in the user's home directory */
 
 #define MAX_INPUT_LENGTH  80
-/* maximum length of input lines */
+/* maximum length of input lines (counting the newline); longer lines will have
+ * their trailing characters discarded */
 
 #define ORIG_RNG
 /* If ORIG_RNG is defined, the random number generation algorithm implemented

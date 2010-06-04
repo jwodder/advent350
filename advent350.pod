@@ -66,11 +66,8 @@ to edit them dishonestly in the first place.
 Cave "prime time" hours and game restoration delays can be circumvented by
 changing the user's time zone (or just changing the system time).
 
-If the user enters a line MAX_INPUT_LENGTH (default 80) or more characters
-long, the extra characters will be considered a separate line.
-
 File names supplied to the C<save> and C<restore> commands cannot contain
-spaces.
+spaces or cause the line to reach MAX_INPUT_LENGTH characters (default 80).
 
 If ADVMAGIC was defined at compile time, the original messages about saving
 your core image are still printed out when saving a game and after changing the

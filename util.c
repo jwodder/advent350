@@ -155,49 +155,82 @@ int vocab(const char* word, int type) {
   : vocabulary[i].val2) % 1000 : vocabulary[i].val1;
 }
 
+/* getin(word1, full1, word2, full2) reads a line of text from standard input
+ * (maximum length MAX_INPUT_LENGTH characters; if the "line" is nothing but
+ * spaces without a terminating newline, another "line" will be read in) and
+ * stores the first word (non-whitespace substring) in full1 and the second
+ * word (or an empty string if there is none) in full2, both of which must be
+ * MAX_INPUT_LENGTH+1 or more characters in size.  The first five letters of
+ * each word, converted to uppercase, are stored in word1 and word2, which must
+ * each be 6 or more characters in size.  getin() will not attempt to store
+ * anything in a NULL argument.  If the user enters a blank line (or a line of
+ * spaces) while `blklin' is true, getin() will continue prompting for input; a
+ * blank line while `blklin' is false will cause all of getin's arguments to be
+ * set to the empty string.  getin() will always read up through a terminating
+ * newline, but anything beyond the MAX_INPUT_LENGTH mark will be discarded.
+ */
+
 void getin(char* w1, char* r1, char* w2, char* r2) {
  static char line[MAX_INPUT_LENGTH+1];
- char* start1;
+ char* start;
  if (blklin) putchar('\n');
+ printf("> ");
  for (;;) {
-  printf("> ");
   fgets(line, MAX_INPUT_LENGTH+1, stdin);
-  start1 = line;
-  while (isspace(*start1) && *start1 != 0) start1++;
-  if (*start1 == 0) {
-   if (!blklin) {
+  start = line;
+  while (isspace(*start) && *start != '\n') start++;
+  if (*start == '\n') {
+   if (blklin) printf("> ");  /* and then loop back around */
+   else {
     *w1 = 0;
     if (r1 != NULL) *r1 = 0;
     if (w2 != NULL) *w2 = 0;
     if (r2 != NULL) *r2 = 0;
     return;
    }
-  } else break;
+  } else if (*start != 0) break;
  }
- char* end1 = start1;
- while (!isspace(*end1) && *end1 != 0) end1++;
- int i;
- for (i=0; i<5 && start1 + i < end1; i++) w1[i] = toupper(start1[i]);
- w1[i] = 0;
+ char* end = start;
+ while (!isspace(*end) && *end != 0) end++;
+ if (w1 != NULL) {
+  int i;
+  for (i=0; i<5 && start+i < end; i++) w1[i] = toupper(start[i]);
+  w1[i] = 0;
+ }
  if (r1 != NULL) {
-  strncpy(r1, start1, end1 - start1);
-  r1[end1-start1] = 0;
+  int fullLen = end-start < MAX_INPUT_LENGTH ? end-start : MAX_INPUT_LENGTH;
+   /* I don't know how ``end - start'' could be larger than MAX_INPUT_LENGTH,
+    * but you can never be too careful. */
+  strncpy(r1, start, fullLen);
+  r1[fullLen] = 0;
  }
- if (w2 != NULL) {
-  char* start2 = end1;
-  while (isspace(*start2) && *start2 != 0) start2++;
-  if (*start2 == 0) {*w2 = 0; if (r2 != NULL) *r2 = 0; }
-  else {
-   char* end2 = start2;
-   while (!isspace(*end2) && *end2 != 0) end2++;
-   for (i=0; i<5 && start2 + i < end2; i++) w2[i] = toupper(start2[i]);
-   w2[i] = 0;
+ if (w2 != NULL || r2 != NULL) {
+  start = end;
+  while (isspace(*start) && *start != '\n') start++;
+  if (*start == 0 || *start == '\n') {
+   if (w2 != NULL) *w2 = 0;
+   if (r2 != NULL) *r2 = 0;
+  } else {
+   end = start;
+   while (!isspace(*end) && *end != 0) end++;
+   if (w2 != NULL) {
+    int i;
+    for (i=0; i<5 && start+i < end; i++) w2[i] = toupper(start[i]);
+    w2[i] = 0;
+   }
    if (r2 != NULL) {
-    strncpy(r2, start2, end2 - start2);
-    r2[end2-start2] = 0;
+    int fullLen = end-start < MAX_INPUT_LENGTH ? end-start : MAX_INPUT_LENGTH;
+    strncpy(r2, start, fullLen);
+    r2[fullLen] = 0;
    }
   }
  }
+ if (strchr(end, '\n') == NULL) ftoeol();
+}
+
+void ftoeol(void) {
+ int ch = 0;
+ while (ch != '\n' && ch != EOF) ch = getchar();
 }
 
 int ran(int max) {
@@ -450,13 +483,7 @@ void motd(bool alter) {
    printf("> ");
    fgets(line, 70, stdin);
    if (*line == '\n') return;
-   if (strchr(line, '\n') == NULL) {
-    mspeak(24);
-    /* Purge the rest of the input up to the end of the line: */
-    int ch = 0;
-    while (ch != '\n' && ch != EOF) ch = fgetc(stdin);
-    continue;
-   }
+   if (strchr(line, '\n') == NULL) {mspeak(24); ftoeol(); continue; }
    msgLen += strlen(line);
    strncat(mage.msg, line, 70);
   /* This doesn't exactly match the logic used in the original Fortran, but

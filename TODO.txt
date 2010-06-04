@@ -21,3 +21,5 @@
   with creating save files
 - When setting the name of the next holiday, the game should use the first 20
   characters of the whole line, not just of the first word
+- Make getin() check for read errors & EOF
+ - Should ftoeol() check for errors?
