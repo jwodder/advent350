@@ -124,7 +124,7 @@
 .\" ========================================================================
 .\"
 .IX Title "ADVENT350 6"
-.TH ADVENT350 6 "2010-05-28" "" ""
+.TH ADVENT350 6 "2010-06-06" "" ""
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
@@ -178,18 +178,15 @@ written to.  It is only used if \s-1ADVMAGIC\s0 was defined at compile time.
 I suspect that there may still be some lingering typos in the code or game
 text somewhere.  Let me know if you find any.
 .PP
-The save files and magic file are completely vulnerable to editing (and
-reading) by malicious players \*(-- but you'd have to be pretty pathetic to want
-to edit them dishonestly in the first place.
+The save files and magic file are completely vulnerable to reading & writing by
+malicious players \*(-- but you'd have to be pretty pathetic to want to edit them
+dishonestly in the first place.
 .PP
-Cave \*(L"prime time\*(R" hours and game restoration delays can be circumvented by
-changing the user's time zone (or just changing the system time).
-.PP
-If the user enters a line \s-1MAX_INPUT_LENGTH\s0 (default 80) or more characters
-long, the extra characters will be considered a separate line.
+Users can circumvent cave \*(L"prime time\*(R" hours and game restoration delays by
+changing their time zone settings (or just by changing the system time).
 .PP
 File names supplied to the \f(CW\*(C`save\*(C'\fR and \f(CW\*(C`restore\*(C'\fR commands cannot contain
-spaces.
+spaces or cause the line to reach \s-1MAX_INPUT_LENGTH\s0 characters (default 80).
 .PP
 If \s-1ADVMAGIC\s0 was defined at compile time, the original messages about saving
 your core image are still printed out when saving a game and after changing the

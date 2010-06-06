@@ -97,10 +97,14 @@ The first part of maintenance mode requires you to pass wizard authentication
 act like it doesn't recognize the words "MAGIC MODE".
 
 If you are indeed a wizard, maintenance mode will then proceed as follows:
+(Note that, for reasons I have yet to fathom, the game's messages will no
+longer be preceded by blank lines, except for the final "Be sure to save your
+core-image...".)
 
     GAME: Do you wish to see the hours?
 
-If you say "yes", the current cave hours will be shown.
+If you say "yes", the current cave hours will be shown.  By default,
+non-wizards may play at any time other than between 8 AM and 6 PM on weekdays.
 
     GAME: Do you wish to change the hours?
 

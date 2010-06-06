@@ -59,12 +59,12 @@ written to.  It is only used if ADVMAGIC was defined at compile time.
 I suspect that there may still be some lingering typos in the code or game
 text somewhere.  Let me know if you find any.
 
-The save files and magic file are completely vulnerable to editing (and
-reading) by malicious players -- but you'd have to be pretty pathetic to want
-to edit them dishonestly in the first place.
+The save files and magic file are completely vulnerable to reading & writing by
+malicious players -- but you'd have to be pretty pathetic to want to edit them
+dishonestly in the first place.
 
-Cave "prime time" hours and game restoration delays can be circumvented by
-changing the user's time zone (or just changing the system time).
+Users can circumvent cave "prime time" hours and game restoration delays by
+changing their time zone settings (or just by changing the system time).
 
 File names supplied to the C<save> and C<restore> commands cannot contain
 spaces or cause the line to reach MAX_INPUT_LENGTH characters (default 80).

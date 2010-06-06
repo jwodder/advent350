@@ -5,10 +5,8 @@
 - Add a licensing (or lack thereof) notice
 - Once this port is completely finished, submit it to the Interactive Fiction
   Archive.
-- Add actual comments to the code for anyone else who ever looks at it
-- Deal with all of the bugs listed in the manpage
-- Make the arrays be properly zero-based
-- Improve the storage of the travel table
+- Permit file names passed to the "save" and "restore" commands to contain
+  spaces
 - If the user enters "save" without a filename while playing a restored game,
   should the game be saved to the same path that it was restored from?
 - Consider adding a compile-time configuration option to enable an "old-tymey"
@@ -19,7 +17,7 @@
   to its/their real values so that the binary can have its setuid/setgid flag
   set to protect the magic file from outsiders while avoiding security problems
   with creating save files
-- When setting the name of the next holiday, the game should use the first 20
-  characters of the whole line, not just of the first word
-- Make getin() check for read errors & EOF
- - Should ftoeol() check for errors?
+- Add actual comments to the code for anyone else who ever looks at it
+- Make all of the input functions check for read errors and EOF
+- Make the arrays be properly zero-based
+- Improve the storage of the travel table

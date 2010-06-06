@@ -325,9 +325,11 @@ void maint(void) {
   mage.hbegin += d;
   mage.hend += mage.hbegin - 1;
   mspeak(29);
-  getin(word1, in1, NULL, NULL);
-  strncpy(mage.hname, in1, 20);
-  mage.hname[20] = 0;
+  fputs("> ", stdout);
+  fgets(mage.hname, 21, stdin);
+  char* eol = strchr(mage.hname, '\n');
+  if (eol == NULL) ftoeol();
+  else *eol = 0;
  }
  printf("Length of short game (null to leave at %d):\n", mage.shortGame);
  getin(word1, in1, NULL, NULL);
