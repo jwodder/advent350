@@ -230,7 +230,6 @@ sub juggle(int $obj) {
 
 sub bug(int $num) {
  say "Fatal error, see source code for interpretation.";
-
 # Given the above message, I suppose I should list the possible bug numbers in
 # the source somewhere, and right here is as good a place as any:
 # 5 - Required vocabulary word not found
@@ -239,8 +238,7 @@ sub bug(int $num) {
 # 23 - Intransitive action verb not defined
 # 24 - Transitive action verb not defined
 # 26 - Location has no travel entries
-
- #say "Probable cause: erroneous info in database.";  # Not in this version
+ say "Probable cause: erroneous info in database.";
  say "Error code = $num\n";
  exit -1;
 }
@@ -474,13 +472,13 @@ sub MAIN(Str $oldGame?) {
    @place[$obj] = $p;
    @fixed[$obj] = $f // 0;
   }
-  for @fixed.keys({ @fixed[$_] > 0 }).reverse -> $k {
+  for @fixed.keys: { @fixed[$_] > 0 }.reverse -> $k {
    drop $k + 100, @fixed[$k];
    drop $k, @place[$k];
   }
   drop $_, @place[$_]
-   for @fixed.keys({ @place[$_] != 0 && @fixed[$_] <= 0 }).reverse;
-
+   for @fixed.keys: { @place[$_] != 0 && @fixed[$_] <= 0 }.reverse;
+   # Yes, the above is valid.  Search for "bare closure" in S12.
   $newloc = 1;
   $limit = (@hinted[3] = yes(65, 1, 0)) ?? 1000 !! 330;
  }
@@ -1463,7 +1461,7 @@ sub vsuspend(Str $file) {
  writeBool $adv, @dseen;
  writeInt $adv, $_ for $dflag, $dkill, @place, @fixed;
  for @atloc {
-  writeInt $adv, $_.elems;
+  writeInt $adv, .elems;
   writeInt $adv, $_ for @($_);
  }
  writeInt $adv, $saved;
@@ -1852,7 +1850,7 @@ sub vresume(Str $file --> Bool) {
 15	You're in Hall of Mists.
 17	You're on east bank of fissure.
 18	You're in nugget of gold room.
-19	You're in Hall of Mt King
+19	You're in Hall of Mt King.
 23	You're at west end of Twopit Room.
 24	You're in east pit.
 25	You're in west pit.
@@ -3002,7 +3000,7 @@ sub vresume(Str $file --> Bool) {
 85	Now you've really done it!  I'm out of orange smoke!  You don't expect
 85	me to do a decent reincarnation without any orange smoke, do you?
 86	Okay, if you're so smart, do it yourself!  I'm leaving!
-90	>>> messages 81 thru 90 are reserved for "obituaries". <<<
+90	>>> Messages 81 through 90 are reserved for "obituaries." <<<
 91	Sorry, but I no longer seem to remember how it was you got here.
 92	You can't carry anything more.  You'll have to drop something first.
 93	You can't go through a locked steel grate!
@@ -3175,7 +3173,7 @@ sub vresume(Str $file --> Bool) {
 195	I'm afraid I don't understand.
 196	"Congratulations on bringing light into the dark-room!"
 197	You strike the mirror a resounding blow, whereupon it shatters into a
-197	myriad tiny fragments.
+197	myriad of tiny fragments.
 198	You have taken the vase and hurled it delicately to the ground.
 199	You prod the nearest dwarf, who wakes up grumpily, takes one look at
 199	you, curses, and grabs for his axe.
