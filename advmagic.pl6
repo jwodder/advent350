@@ -148,33 +148,15 @@ my int $saved, $savet = -1, 0;
 
 # Functions:
 
-# I got sick of constantly flooring quotients (sometimes done because the
-# original source required it, oftentimes done just because I don't trust
-# Rakudo's typecasting), and I would like to use as many Perl 6 features as
-# possible in this program, so I defined an integer division operator:
-multi sub infix:<idiv>(Numeric $a, Numeric $b --> Int)
- is equiv(&infix:<div>) is assoc('left') {
- ($a div $b).floor
-}
-
 sub toting(int $item --> Bool) { @place[$item] == -1 }
-
 sub here(int $item --> Bool) { @place[$item] == $loc || toting $item }
-
 sub at(int $item --> Bool) { $loc == @place[$item] | @fixed[$item] }
-
 sub liq2(int $p --> int) { (WATER, 0, OIL)[$p] }
-
 sub liq( --> int) { liq2(@prop[BOTTLE] max -1-@prop[BOTTLE]) }
-
 sub liqloc(int $loc --> int) { liq2(@cond[$loc] +& 4 ?? @cond[$loc] +& 2 !! 1) }
-
 sub bitset(int $loc, int $n --> Bool) { @cond[$loc] +& 1 +< $n }
-
 sub forced(int $loc --> Bool) { @travel[$loc;0;1] == 1 }
-
 sub dark( --> Bool) { !(@cond[$loc] +& 1 || (@prop[LAMP] && here(LAMP))) }
-
 sub pct(int $x --> Bool) { (^100).pick < $x }
 
 sub speak(Str $s) {
@@ -267,7 +249,7 @@ sub bug(int $num) {
 
 sub vocab(Str $word, int $type --> int) {
  my int @matches = %vocab{$word};
- if $type >= 0 { @matches.=grep: { $_ idiv 1000 == $type } }
+ if $type >= 0 { @matches.=grep(* div 1000 == $type) }
  if !@matches {
   if $type >= 0 { bug 5 }
   return -1;
@@ -319,14 +301,14 @@ sub dotrav(int $motion) {
  my int $rdest = -1;
  for @travel[$loc] -> $kk {
   if $kk[1..*].any == 1 | $motion ff * {
-   my int $rcond = $kk[0] idiv 1000;
+   my int $rcond = $kk[0] div 1000;
    my int $robj = $rcond % 100;
    given $rcond {
     when 0 | 100 { $rdest = $kk[0] % 1000 }
     when 0 ^..^ 100 { $rdest = $kk[0] % 1000 if pct $_ }
     when 100 ^.. 200 { $rdest = $kk[0] % 1000 if toting $robj }
     when 200 ^.. 300 { $rdest = $kk[0] % 1000 if toting($robj) || at($robj) }
-    default { $rdest = $kk[0] % 1000 if @prop[$robj] != $_ idiv 100 - 3 }
+    default { $rdest = $kk[0] % 1000 if @prop[$robj] != $_ div 100 - 3 }
    }
    last if $rdest != -1;
   }
@@ -377,7 +359,7 @@ sub dotrav(int $motion) {
     }
    }
   }
-  when 500 ^.. * { rspeak $rdest-500 }
+  when 500 ^..* { rspeak $rdest-500 }
   default { bug 20 }
  }
 }
@@ -403,7 +385,7 @@ sub death() {
 
 sub score(Bool $scoring --> int) {
  my int $score = 0;
- for 50..64 -> $i {
+ for 50...64 -> $i {
   $score += 2 if @prop[$i] >= 0;
   $score += $i == CHEST ?? 12 !! $i > CHEST ?? 14 !! 10
    if @place[$i] == 3 && @prop[$i] == 0;
@@ -422,7 +404,7 @@ sub score(Bool $scoring --> int) {
  }
  $score++ if @place[MAGZIN] == 108;
  $score += 2;
- $score -= @hints[$_;1] if @hinted[$_] for 1..9;
+ $score -= @hints[$_;1] if @hinted[$_] for 1...9;
  return $score;
 }
 
@@ -467,7 +449,7 @@ sub writeInt(IO $out, int32 $i) {
 }
 
 sub writeBool(IO $out, bool *@bits) {
- my Buf $data .= new: :size(8), (0 ... *+8, @bits.end).map:
+ my Buf $data .= new: :size(8), (0, *+8 ... @bits.end).map:
   -> $i { [+|] (^8).map: { $i+$^j < @bits ?? @bits[$i+$^j] +< $^j !! 0 } };
  $out.write: $data, #`[ $data.elems ??? ] (@bits/8).ceiling;
 }
@@ -481,7 +463,7 @@ sub readInt(IO $in --> int32) {
 sub readBool(IO $in, int $qty --> List of bool) {
  my Buf $raw;
  $in.read: $raw, ($qty/8).ceiling;
- (^$qty).map: { $raw[$^i idiv 8] +& 1 +< ($^i % 8) };
+ (^$qty).map: { $raw[$^i div 8] +& 1 +< ($^i % 8) };
 }
 
 sub writeStr(IO $out, Str $str) {
@@ -522,7 +504,7 @@ sub datime( --> List of int) {
  state DateTime $start .= new(year => 1977, month => 1, day => 1);
   # The time defaults to midnight, right?
  my DateTime $now = localtime;
- return ($now - $start) idiv 86400, $now.hour * 60 + $now.minute;
+ return ($now - $start) div 86400, $now.hour * 60 + $now.minute;
   # I assume the difference between two DateTime objects (when cast to a
   # Num-like, at least) is the number of seconds between them.
 }
@@ -542,8 +524,8 @@ sub start( --> Bool) {
    }
   }
  }
- if ($hbegin <= $d <= $hend ?? @holid !! $d % 7 <= 1 ?? @wkend !! @wkday)\
-  [$t idiv 60] {
+ if ($d ~~ $hbegin..$hend ?? @holid !! $d % 7 <= 1 ?? @wkend !! @wkday)\
+  [$t div 60] {
   # Prime time (cave closed)
   mspeak 3;
   hours;
@@ -628,9 +610,9 @@ sub wizard( --> Bool) {
  my int @val[5];
  for ^5 -> $y {
   my $x = 79 + $d % 5;
-  $d idiv= 5;
+  $d div= 5;
   $t = ($t * 1027) % 1048576 for ^$x;
-  @wchrs[$y] += @val[$y] = ($t*26) idiv 1048576 + 1;
+  @wchrs[$y] += @val[$y] = ($t*26) div 1048576 + 1;
  }
  if yesm(18, 0, 0) {mspeak 20; return False; }
  # .print for "\n", @wchrs».chr, "\n";
@@ -638,13 +620,13 @@ sub wizard( --> Bool) {
  @wchrs = (getin)[0].ord;
  # What happens if the inputted word is less than five characters?
  ($d, $t) = datime;
- $t = ($t idiv 60) * 40 + ($t idiv 10) * 10;
+ $t = ($t div 60) * 40 + ($t div 10) * 10;
  $d = $magnm;
  for ^5 -> $y {
   @wchrs[$y] -= ((@val[$y] - @val[($y+1) % 5]).abs * ($d % 10) + ($t % 10))
    % 26 + 1;
-  $t idiv= 10;
-  $d idiv= 10;
+  $t div= 10;
+  $d div= 10;
  }
  if @wchrs.all == 64 {mspeak 19; return True; }
  else {mspeak 20; return False; }
@@ -709,7 +691,7 @@ sub newhrx(Str $day --> bool[24] #`< Right? > ) {
   print "till: ";
   my int $till = $*IN.get.words.[0] - 1;
   return @newhrx if $till !~~ $from..^24;
-  @newhrx[$from..$till] = True, *;
+  @newhrx[$from...$till] = True, *;
  }
 }
 
@@ -844,9 +826,9 @@ sub MAIN(Str $oldGame?) {
     dwarfLoop: for ^6 -> $i {  # The individual dwarven movement loop
      next if @dloc[$i] == 0;
      my int @tk = grep {
-      15 <= $_ <= 300 && $_ != @odloc[$i] & @dloc[$i] && !forced($_)
+      $_ ~~ 15..300 && $_ != @odloc[$i] & @dloc[$i] && !forced($_)
        && !($i == 5 && bitset($_, 3))
-     }, (** % 1000)(@travel[@dloc[$i];*;0].grep: { $_ idiv 1000 != 100 });
+     }, @travel[@dloc[$i];*;0].grep(* div 1000 != 100) »%» 1000;
      @tk.push: @odloc[$i] if !@tk;
      (@odloc[$i], @dloc[$i]) = @dloc[$i], @tk.pick;
      @dseen[$i] = (@dseen[$i] && $loc >= 15) || @dloc[$i] | @odloc[$i] == $loc;
@@ -856,13 +838,13 @@ sub MAIN(Str $oldGame?) {
        # Pirate logic:
        next if $loc == CHLOC || @prop[CHEST] >= 0;
        my Bool $k = False;
-       for 50..64 -> $j {
+       for 50...64 -> $j {
 	next if $j == PYRAM && $loc == 100 | 101;
 	if toting $j {
 	 rspeak 128;
 	 move CHEST, CHLOC if @place[MESSAG] == 0;
 	 move MESSAG, CHLOC2;
-	 for 50..64 -> $j {
+	 for 50...64 -> $j {
 	  next if $j == PYRAM && $loc == 100 | 101;
 	  carry $j, $loc if at($j) && @fixed[$j] == 0;
 	  drop $j, CHLOC if toting $j;
@@ -949,7 +931,7 @@ sub MAIN(Str $oldGame?) {
    when *..2012 {($verb, $obj) = 0, 0; proceed; }
 
    when *..2600 {
-    hintLoop: for 4..9 -> $hint {
+    hintLoop: for 4...9 -> $hint {
      next if @hinted[$hint];
      @hintlc[$hint] = -1 if !bitset $loc, $hint;
      @hintlc[$hint]++;
@@ -987,7 +969,7 @@ sub MAIN(Str $oldGame?) {
     }
     if $closed {
      pspeak OYSTER, 1 if @prop[OYSTER] < 0 && toting OYSTER;
-     @prop[$_] = -1 - @prop[$_] for grep { toting($_) && @prop[$_] < 0 }, 1..64;
+     @prop[$_] = -1-@prop[$_] for grep { toting($_) && @prop[$_] < 0 }, 1...64;
     }
 # 2605:
     $wzdark = dark;
@@ -1031,8 +1013,8 @@ sub MAIN(Str $oldGame?) {
       for SNAKE, BIRD, CAGE, ROD2, PILLOW;
      @prop[MIRROR] = put MIRROR, 115, 0;
      @fixed[MIRROR] = 116;
-     destroy $_ for grep { toting $_ }, 1..64;
-     # Could this be written as ".destroy for (1..64).grep: *.toting" ?
+     destroy $_ for grep { toting $_ }, 1...64;
+     # Could this be written as ".destroy for (1...64).grep: *.toting" ?
      rspeak 132;
      $closed = True;
      $goto = 2;
@@ -1090,7 +1072,7 @@ sub MAIN(Str $oldGame?) {
      next bigLoop;
     }
     my int $k = $i % 1000;
-    given $i idiv 1000 {
+    given $i div 1000 {
      when 0 { domove $k }
      when 1 {
 # 5000:
@@ -1530,7 +1512,7 @@ sub vkill() {
    }
   }
   when TROLL { rspeak 157 }
-  when BEAR { rspeak(165 + (@prop[BEAR]+1) idiv 2) }
+  when BEAR { rspeak(165 + (@prop[BEAR]+1) div 2) }
   default { rspeak @actspk[$verb] }
  }
 }
@@ -1552,7 +1534,7 @@ sub vpour() {
    else {
     pspeak PLANT, @prop[PLANT] + 1;
     @prop[PLANT] = (@prop[PLANT] + 2) % 6;
-    @prop[PLANT2] = @prop[PLANT] idiv 2;
+    @prop[PLANT2] = @prop[PLANT] div 2;
     domove NULL;
    }
   } else { rspeak 77 }
