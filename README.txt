@@ -26,21 +26,21 @@ difficult and/or time-consuming, and I eventually gave up and decided simply to
 translate the original PDP-10 Fortran[2] directly into something that worked.
 Some time later, here we are.
 
-I have tried to make this translation be as true to the original as possible
-(in end behavior, not internal logic, at least).  The biggest change is that
-there is now a "> " prompt for input, and, of course, the letters aren't all
-uppercase.  Games are saved to ordinary files (~/.adventure by default, though
-you can supply a different filename to the "save" command) and can be resumed
-later either with the "resume" (or "restore" or "restart" or "load") command
-during play or by specifying the name of the save file on the command line.
-Additionally, as the time-sharing mechanics (delays before restarting a saved
-game, only allowing games during specific hours, and being able to bypass or
-reconfigure this behavior through maintenance/wizard mode) are unnecessary and
-likely to get in the way on modern computers, they can be omitted (or included)
-by not defining (or defining) ADVMAGIC in advconfig.h before compiling.  If you
-opt to use these features (or even if you don't), a program named 'frawd' is
-included for passing one of the steps in wizard authentication; for passing the
-other steps, see wizard.txt.
+I have tried to make this translation be as true to the original as reasonably
+possible (in end behavior, not internal logic, at least).  The biggest change
+is that there is now a "> " prompt for input, and, of course, the letters
+aren't all uppercase.  Games are saved to ordinary files (~/.adventure by
+default, though you can supply a different filename to the "save" command) and
+can be resumed later either with the "resume" (or "restore" or "restart" or
+"load") command during play or by specifying the name of the save file on the
+command line.  Additionally, as the time-sharing mechanics (delays before
+restarting a saved game, only allowing games during specific hours, and being
+able to bypass or reconfigure this behavior through maintenance/wizard mode)
+are unnecessary and likely to get in the way on modern computers, they can be
+omitted (or included) by not defining (or defining) ADVMAGIC in advconfig.h
+before compiling.  If you opt to use these features (or even if you don't), a
+program named 'frawd' is included for passing one of the steps in wizard
+authentication; for passing the other steps, see wizard.txt.
 
 Anyway, enjoy!
 
@@ -74,10 +74,10 @@ wizard.txt
 
 3. COMPILATION & INSTALLATION
 
-- Edit advconfig.h
-- Edit the Makefile
+- Edit advconfig.h as you want
+- Edit the Makefile as you need
 - Make sure you have a mostly C99-compliant compiler
 - `make`
-- mv advent350 [frawd] .../bin
-- mv advent350.6 [frawd.6] .../man/man6
+- mv advent350 [frawd] $WHEREVER/bin
+- mv advent350.6 [frawd.6] $WHEREVER/man/man6
 - Play!

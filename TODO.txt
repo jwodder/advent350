@@ -19,5 +19,5 @@
   with creating save files
 - Add actual comments to the code for anyone else who ever looks at it
 - Make all of the input functions check for read errors and EOF
-- Make the arrays be properly zero-based
+- Make the arrays be properly zero-based?
 - Improve the storage of the travel table
