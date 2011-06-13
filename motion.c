@@ -188,8 +188,8 @@ void normend(void) {
 
 void doaction(void) {
  if (*word2) {
-  strcpy(word1, word2);
-  strcpy(in1, in2);
+  strncpy(word1, word2, 5);
+  strncpy(in1, in2, MAX_INPUT_LENGTH);
   *word2 = *in2 = 0;
   togoto = 2610;
  } else if (verb) transitive();

@@ -1185,7 +1185,7 @@ const char* rmsg[202] = {
  "the gloom.\n",
 
  /* 129 */
- "A sepulchral voice reverberating through the cave, says, \"Cave closing\n"
+ "A sepulchral voice reverberating through the cave says, \"Cave closing\n"
  "soon.  All adventurers exit immediately through main office.\"\n",
 
  /* 130 */

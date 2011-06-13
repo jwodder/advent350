@@ -632,7 +632,7 @@ void vfeed(void) {
 
 void vsay(void) {
  char* tk = *in2 ? in2 : in1;
- if (*word2) strcpy(word1, word2);
+ if (*word2) strncpy(word1, word2, 5);
  int i = vocab(word1, -1);
  if (i == 62 || i == 65 || i == 71 || i == 2025) {
   *word2 = 0;

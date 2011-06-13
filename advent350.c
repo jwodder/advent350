@@ -11,15 +11,14 @@
 /* Definitions of global variables: */
 int togoto = 2;
 bool blklin = true, gaveup = false;
-#ifdef ADVMAGIC
-bool demo = false;
-#endif
 int bonus = 0;
 int verb, obj;
 char in1[MAX_INPUT_LENGTH+1], in2[MAX_INPUT_LENGTH+1];
 char word1[6], word2[6];
 
 #ifdef ADVMAGIC
+bool demo = false;
+
 struct advmagic mage = {
  .wkday = 000777400, .wkend = 0, .holid = 0,
  .hbegin = 0, .hend = -1, .shortGame = 30, .magnm = 11111, .latency = 90,
@@ -68,9 +67,11 @@ int main(int argc, char** argv) {
 #else
  srand(time(NULL));
 #endif
+
 #ifdef ADVMAGIC
  poof();
 #endif
+
  if (argc > 1) {if (!vresume(argv[1])) exit(EXIT_FAILURE); }
  else {
 #ifdef ADVMAGIC
@@ -424,12 +425,12 @@ void turn(void) {
     return;
    }
    if (strcmp(word1, "ENTER") == 0 && *word2) {
-    strcpy(word1, word2);
-    strcpy(in1, in2);
+    strncpy(word1, word2, 5);
+    strncpy(in1, in2, MAX_INPUT_LENGTH);
     *word2 = *in2 = 0;
    } else if ((strcmp(word1, "WATER") == 0 || strcmp(word1, "OIL") == 0)
     && (strcmp(word2, "PLANT") == 0 || strcmp(word2, "DOOR") == 0)) {
-    if (at(vocab(word2, 1))) strcpy(word2, "POUR");
+    if (at(vocab(word2, 1))) strncpy(word2, "POUR", 5);
    }
 
   case 2610:
@@ -476,8 +477,8 @@ void turn(void) {
      if (verb == SAY || verb == SUSPEND || verb == RESUME) obj = *word2;
      /* This assignment just indicates whether an object was supplied. */
      else if (*word2) {
-      strcpy(word1, word2);
-      strcpy(in1, in2);
+      strncpy(word1, word2, 5);
+      strncpy(in1, in2, MAX_INPUT_LENGTH);
       *word2 = *in2 = 0;
       togoto = 2610;
       return;
