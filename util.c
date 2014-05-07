@@ -505,7 +505,7 @@ void datime(int* d, int* t) {
  struct tm* nower = localtime(&now);  /* nower - like now, but more so */
  int year = nower->tm_year - 77;
  *d = year*365 + nower->tm_yday + year/4 - (nower->tm_year-1)/100
-  + (nower->tm_year+299)/400;
+	       + (nower->tm_year+299)/400;
  *t = nower->tm_hour * 60 + nower->tm_min;
 }
 #endif
