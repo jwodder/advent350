@@ -165,7 +165,7 @@ void turn(void) {
    int dtotal = 0, attack = 0, stick = 0;
    for (int i=0; i<6; i++) {  /* The individual dwarven movement loop */
     if (game.dloc[i] == 0) continue;
-    int kk=0, tk;
+    int kk=0, tk=0;
     for (int j=0; j<MAXROUTE; j++) {
      if (travel[game.dloc[i]][j][0] == -1) break;
      int newloc = travel[game.dloc[i]][j][0] % 1000;
@@ -358,7 +358,10 @@ void turn(void) {
    if (game.tally == 0 && 15 <= game.loc && game.loc != 33) game.clock1--;
    if (game.clock1 == 0) {
     game.prop[GRATE] = game.prop[FISSUR] = 0;
-    for (int i=0; i<6; i++) game.dseen[i] = game.dloc[i] = 0;
+    for (int i=0; i<6; i++) {
+     game.dloc[i] = 0;
+     game.dseen[i] = false;
+    }
     move(TROLL, 0);
     move(TROLL+100, 0);
     move(TROLL2, 117);  /* There are no trolls in _Troll 2_. */
@@ -458,9 +461,11 @@ void turn(void) {
        if (k != GRATE) domove(k);
        else if ((verb == FIND || verb == INVENT) && !*word2) doaction();
        else {printf("\nI see no %s here.\n", in1); togoto = 2012; }
-      } else if (obj == DWARF && game.dflag >= 2 && dwarfHere()
-       || obj == liq() && here(BOTTLE) || obj == liqloc(game.loc)) doaction();
-      else if (obj == PLANT && at(PLANT2) && game.prop[PLANT2] != 0) {
+      } else if ((obj == DWARF && game.dflag >= 2 && dwarfHere())
+		 || (obj == liq() && here(BOTTLE))
+		 || obj == liqloc(game.loc)) {
+       doaction();
+      } else if (obj == PLANT && at(PLANT2) && game.prop[PLANT2] != 0) {
        obj = PLANT2;
        doaction();
       } else if (obj == KNIFE && game.knifeloc == game.loc) {

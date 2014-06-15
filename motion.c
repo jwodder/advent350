@@ -87,9 +87,9 @@ void dotrav(int motion) {
   }
  } else if (0 <= rdest && rdest <= 300) game.newloc = rdest;
  else if (rdest == 301) {
-  if (!game.holding || game.holding == 1 && toting(EMERALD))
+  if (!game.holding || (game.holding == 1 && toting(EMERALD))) {
    game.newloc = 99 + 100 - game.loc;
-  else {game.newloc = game.loc; rspeak(117); }
+  } else {game.newloc = game.loc; rspeak(117); }
  } else if (rdest == 302) {
   drop(EMERALD, game.loc);
   game.newloc = (game.loc == 33 ? 100 : 33);

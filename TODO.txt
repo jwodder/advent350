@@ -1,3 +1,4 @@
+- Add actual comments to the code for anyone else who ever looks at it
 - Complete the instructions in the README file for configuring, building, and
   installing the game
  - Add a note about the save files & magic file being completely vulnerable to
@@ -17,7 +18,6 @@
   to its/their real values so that the binary can have its setuid/setgid flag
   set to protect the magic file from outsiders while avoiding security problems
   with creating save files
-- Add actual comments to the code for anyone else who ever looks at it
 - Make all of the input functions check for read errors and EOF
 - Make the arrays be properly zero-based?
 - Improve the storage of the travel table

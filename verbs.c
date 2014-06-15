@@ -30,7 +30,7 @@ void intransitive(void) {
 
   case TAKE:
    if (!(game.atloc[game.loc] && game.link[game.atloc[game.loc]] == 0)
-    || game.dflag >= 2 && dwarfHere()) {
+       || (game.dflag >= 2 && dwarfHere())) {
     printf("\n%s what?\n", in1);
     obj = 0;
     togoto = 2600;
@@ -70,7 +70,7 @@ void intransitive(void) {
 
   case QUIT:
    /* Yes, this is supposed to be an assignment: */
-   if (gaveup = yes(22, 54, 54)) normend();
+   if ((gaveup = yes(22, 54, 54))) normend();
    break;
 
   case INVENT: {
@@ -91,8 +91,9 @@ void intransitive(void) {
   case SCORE: {
    int scr = score(true);
    printf("\nIf you were to quit now, you would score %d out of a possible"
-    " 350.\n", scr);
-   if (gaveup = yes(143, 54, 54)) normend();
+	  " 350.\n", scr);
+   /* Yes, this is supposed to be an assignment: */
+   if ((gaveup = yes(143, 54, 54))) normend();
    break;
   }
 
@@ -102,7 +103,7 @@ void intransitive(void) {
     game.foobar = k;
     if (k != 4) {rspeak(54); return; }
     game.foobar = 0;
-    if (game.place[EGGS] == 92 || toting(EGGS) && game.loc == 92) rspeak(42);
+    if (game.place[EGGS] == 92 || (toting(EGGS) && game.loc == 92)) rspeak(42);
     else {
      if (game.place[EGGS] == 0 && game.place[TROLL] == 0
       && game.prop[TROLL] == 0) game.prop[TROLL] = 1;
