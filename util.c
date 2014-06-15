@@ -176,7 +176,7 @@ void getin(char* w1, char* r1, char* w2, char* r2) {
  if (blklin) putchar('\n');
  printf("> ");
  for (;;) {
-  fgets(line, MAX_INPUT_LENGTH+1, stdin);
+  if (fgets(line, MAX_INPUT_LENGTH+1, stdin) == NULL) readError();
   start = line;
   while (isspace(*start) && *start != '\n') start++;
   if (*start == '\n') {
@@ -231,6 +231,12 @@ void getin(char* w1, char* r1, char* w2, char* r2) {
 void ftoeol(void) {
  int ch = 0;
  while (ch != '\n' && ch != EOF) ch = getchar();
+}
+
+void readError(void) {
+ if (ferror(stdin)) perror("\nError reading stdin: ");
+ else fprintf(stderr, "\nEnd of Adventure\n");
+ exit(EXIT_FAILURE);
 }
 
 int ran(int max) {
@@ -326,7 +332,7 @@ void maint(void) {
   mage.hend += mage.hbegin - 1;
   mspeak(29);
   fputs("> ", stdout);
-  fgets(mage.hname, 21, stdin);
+  if (fgets(mage.hname, 21, stdin) == NULL) readError();
   char* eol = strchr(mage.hname, '\n');
   if (eol == NULL) ftoeol();
   else *eol = 0;
@@ -483,7 +489,7 @@ void motd(bool alter) {
   for (;;) {
    char line[71];
    printf("> ");
-   fgets(line, 70, stdin);
+   if (fgets(line, 70, stdin) == NULL) readError();
    if (*line == '\n') return;
    if (strchr(line, '\n') == NULL) {mspeak(24); ftoeol(); continue; }
    msgLen += strlen(line);
