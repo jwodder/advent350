@@ -165,7 +165,7 @@ void turn(void) {
    int dtotal = 0, attack = 0, stick = 0;
    for (int i=0; i<6; i++) {  /* The individual dwarven movement loop */
     if (game.dloc[i] == 0) continue;
-    int kk=0, tk=0;
+    int kk=0, tk = game.odloc[i];
     for (int j=0; j<MAXROUTE; j++) {
      if (travel[game.dloc[i]][j][0] == -1) break;
      int newloc = travel[game.dloc[i]][j][0] % 1000;
@@ -174,7 +174,6 @@ void turn(void) {
       && bitset(newloc, 3)) && travel[game.dloc[i]][j][0] / 1000 != 100
       && ran(++kk) == 0) tk = newloc;
     }
-    if (kk == 0) tk = game.odloc[i];
     game.odloc[i] = game.dloc[i];
     game.dloc[i] = tk;
     game.dseen[i] = (game.dseen[i] && game.loc >= 15)
