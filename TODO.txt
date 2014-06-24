@@ -5,5 +5,4 @@
 - Check everything to make sure it works!
 - Improve the README
 - Import the instructions for passing wizard authentication from c-adv
-- When done, delete original/ (It'll still be accessible via the "fortran" tag)
 - Rewrite indexLines using List's "classify" method
