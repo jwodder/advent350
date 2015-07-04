@@ -561,7 +561,7 @@ sub MAIN(Str $oldGame?) {
 	}
 	$k = True if here $j;
        }
-       if $tally == $tally2 + 1 && !$k && @place[CHEST] == 0 && here(LAMP) 
+       if $tally == $tally2 + 1 && !$k && @place[CHEST] == 0 && here(LAMP)
 	&& @prop[LAMP] == 1 {
 	rspeak 186;
 	move CHEST, CHLOC;

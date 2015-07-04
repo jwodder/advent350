@@ -652,13 +652,13 @@ sub hoursx(bool @hours[24], Str $day) {
  if @hours.all == False { say ' ' x 10, "$day  Open all day" }
  else {
   loop {
-   repeat { $from++ } while @hours[$from] && $from < 24;
+   repeat { $from++ } while $from < 24 && @hours[$from];
    if $from >= 24 {
     say ' ' x 10, $day, '  Closed all day' if $first;
     return;
    } else {
     my int $till = $from;
-    repeat { $till++ } until @hours[$till] || $till == 24;
+    repeat { $till++ } until $till == 24 || @hours[$till];
     if $first {
      print ' ' x 10, $day;
      printf "%4d:00 to%3d:00\n", $from, $till;
@@ -855,7 +855,7 @@ sub MAIN(Str $oldGame?) {
 	}
 	$k = True if here $j;
        }
-       if $tally == $tally2 + 1 && !$k && @place[CHEST] == 0 && here(LAMP) 
+       if $tally == $tally2 + 1 && !$k && @place[CHEST] == 0 && here(LAMP)
 	&& @prop[LAMP] == 1 {
 	rspeak 186;
 	move CHEST, CHLOC;

@@ -23,8 +23,8 @@ void domove(int motion) {
      if (ll == k) {
       dotrav(travel[game.loc][kk][1]);
       return;
-     } else if (ll <= 300) {
-      if (forced(ll) && travel[ll][0][0] % 1000 == k) k2 = kk;
+     } else if (ll <= 300 && forced(ll) && travel[ll][0][0] % 1000 == k) {
+      k2 = kk;
      }
     }
     if (k2 != 0) dotrav(travel[game.loc][k2][1]);
