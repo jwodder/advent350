@@ -1,21 +1,4 @@
 #!/usr/bin/python
-
-# TODO:
-# - Use constants for `cond` values (and eliminate `bitset`?)
-# - Get rid of as many global variables as possible
-#  - Make `blklin` into a keyword argument of the functions that use it
-# - Try to completely rewrite the system for keeping track of object locations
-#  - Add a constant for -1 (the location of your inventory)?
-# - Combine `yes()` and `yesm()` (with `yesx()`?)
-# - Make all the magic functions into methods of Magic?
-# - Remove fields that are always the same when saved (gaveup, foobar,
-#   closing?, closed, ???) from `Game` (or just from its pickling method?)
-# - Make all strings Unicode
-# - Replace `map` with an `lmap` function?
-# - If the user enters "save" without a filename while playing a restored game,
-#   save the game to the same path that it was restored from?
-# - Make the arrays be properly zero-based?
-
 from   __future__  import print_function
 from   collections import defaultdict, namedtuple
 from   datetime    import datetime
