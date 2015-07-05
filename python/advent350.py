@@ -18,9 +18,6 @@ savefile = os.path.expanduser('~/.adventure')
 if sys.version_info[0] >= 3:
     raw_input = input
     xrange = range
-    def map(f, *iters):
-        import builtins
-        return list(builtins.map(f, *iters))
 
 if ORIG_RNG:
     ran_r = 0
@@ -86,7 +83,7 @@ def indexLines(lines, qty):
     return data
 
 def intTSV(line):
-    return map(int, line.split('\t'))
+    return list(map(int, line.split('\t')))
 
 def nonemap(f, xs):
     return [f(x) if x is not None else None for x in xs]
@@ -141,7 +138,8 @@ class Adventure(object):
                         for index, sect in itertools.groupby(advdat, bysection)}
         self.longDesc = indexLines(sections[1], Limits.LOCATIONS)
         self.shortDesc = indexLines(sections[2], Limits.LOCATIONS)
-        self.travel = nonemap(lambda s: map(Travel.fromEntry, s.splitlines()),
+        self.travel = nonemap(lambda s: list(map(Travel.fromEntry,
+                                                 s.splitlines())),
                               indexLines(sections[3], Limits.LOCATIONS))
         self.vocabulary = defaultdict(list)
         for entry in sections[4]:
@@ -177,7 +175,7 @@ class Adventure(object):
         for cs in map(intTSV, sections[9]):
             for loc in cs[1:]:
                 self.cond[loc] |= 1 << cs[0]
-        self.classes = map(lambda s: s.strip().split('\t'), sections[10])
+        self.classes = list(map(lambda s: s.strip().split('\t'), sections[10]))
         self.hints = nonemap(lambda s: Hint(*intTSV(s)),
                              indexLines(sections[11], Limits.HINTS))
         self.magic = indexLines(sections[12], Limits.MTEXT)
@@ -706,7 +704,7 @@ def wizard():  ### MAGIC
         mspeak(20)
         return False
     print('\n' + ''.join(map(chr, wchrs)))
-    wchrs = map(ord, getin()[0])
+    wchrs = list(map(ord, getin()[0]))
     # What happens if the inputted word is less than five characters?
     (d,t) = datime()
     t = (t // 60) * 40 + (t // 10) * 10
