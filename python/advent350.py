@@ -7,7 +7,6 @@ import itertools
 import os.path
 import pickle
 import sys
-import time
 import traceback
 
 # Configuration:
@@ -599,7 +598,7 @@ def datime():  ### MAGIC
     # - the number of days since 1 Jan 1977 (220924800 in Unix epoch time)
     # - the number of minutes past midnight
     ### TODO: Double-check this
-    delta = datetime.fromtimestamp(time.time()) - datetime(1977, 1, 1)
+    delta = datetime.today() - datetime(1977, 1, 1)
     return (delta.days, delta.seconds // 60)
 
 def start():  ### MAGIC

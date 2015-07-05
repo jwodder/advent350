@@ -13,7 +13,6 @@
 - If the user enters "save" without a filename while playing a restored game,
   save the game to the same path that it was restored from?
 - Make the arrays be properly zero-based?
-- Translate frawd.c to Python
 - Add command-line options & arguments for specifying the location of the data
   file, the location of the magic file, the default save file path, whether to
   use magic, and whether to use the original RNG
