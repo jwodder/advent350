@@ -381,6 +381,14 @@ def getin():
         words = nonemap(lambda s: s[:5].upper(), raw)
         return (words[0], raw[0], words[1], raw[1])
 
+def getInt(prompt='> '):
+    while True:
+        raw = raw_input(prompt)
+        try:
+            return int(raw)
+        except ValueError:
+            pass
+
 def yes(x, y, z):
     while True:
         rspeak(x)
@@ -635,7 +643,6 @@ def start():  ### MAGIC
     return False
 
 def maint():  ### MAGIC
-    ### TODO: Add error handling for `int` conversions
     global blklin
     if not wizard():
         return
@@ -646,16 +653,16 @@ def maint():  ### MAGIC
         newhrs()
     if yesm(26, 0, 0):
         mspeak(27)
-        magic.hbegin = int(raw_input('> '))
+        magic.hbegin = getInt()
         mspeak(28)
-        magic.hend = int(raw_input('> '))
+        magic.hend = getInt()
         (d,t) = datime()
         magic.hbegin += d
         magic.hend += magic.hbegin - 1
         mspeak(29)
         magic.hname = raw_input('> ')[:20]
     print('Length of short game (null to leave at %d):' % (magic.short,))
-    x = int(raw_input('> '))
+    x = getInt()
     if x > 0:
         magic.short = x
     mspeak(12)
@@ -663,11 +670,11 @@ def maint():  ### MAGIC
     if word is not None:
         magic.magic = word
     mspeak(13)
-    x = int(raw_input('> '))
+    x = getInt()
     if x > 0:
         magic.magnm = x
     print('Latency for restart (null to leave at %d):' % (magic.latency,))
-    x = int(raw_input('> '))
+    x = getInt()
     if 0 < x < 45:
         mspeak(30)
     if x > 0:
@@ -679,7 +686,6 @@ def maint():  ### MAGIC
     with open(magicfile, 'w') as fp:
         pickle.dump(fp, magic)
     ciao()
-
 
 def wizard():  ### MAGIC
     if not yesm(16, 0, 7):
@@ -772,16 +778,10 @@ def newhrx(day):  ### MAGIC
     horae = [False] * 24
     print('Prime time on', day)
     while True:
-        try:
-            from = int(raw_input('from: '))
-        except ValueError:
-            return horae
+        from = getInt('from: ')
         if not (0 <= from < 24):
             return horae
-        try:
-            till = int(raw_input('till: '))
-        except ValueError:
-            return horae
+        till = getInt('till: ')
         if not (from <= till-1 < 24):
             return horae
         horae[from:till] = [True] * (till - from)
