@@ -390,14 +390,17 @@ def getInt(prompt='> '):
             pass
 
 def yes(x, y, z):
+    return yesx(x, y, z, rspeak)
+
+def yesx(x, y, z, spk):
     while True:
-        rspeak(x)
+        spk(x)
         reply = getin()[0]
         if reply in ('YES', 'Y'):
-            rspeak(y)
+            spk(y)
             return True
         elif reply in ('NO', 'N'):
-            rspeak(z)
+            spk(z)
             return False
         else:
             print('\nPlease answer the question.')
@@ -587,17 +590,7 @@ def ciao():  ### MAGIC
     sys.exit()
 
 def yesm(x, y, z):  ### MAGIC
-    while True:
-        mspeak(x)
-        reply = getin()[0]
-        if reply in ('YES', 'Y'):
-            mspeak(y)
-            return True
-        elif reply in ('NO', 'N'):
-            mspeak(z)
-            return False
-        else:
-            print('\nPlease answer the question.')
+    return yesx(x, y, z, mspeak)
 
 def datime():  ### MAGIC
     # This function is supposed to return:

@@ -3,7 +3,6 @@
  - Make `blklin` into a keyword argument of the functions that use it
 - Try to completely rewrite the system for keeping track of object locations
  - Add a constant for -1 (the location of your inventory)?
-- Combine `yes()` and `yesm()` (with `yesx()`?)
 - Make all the magic functions into methods of Magic?
 - Remove fields that are always the same when saved (gaveup, foobar, closing?,
   closed, ???) from `Game` (or just from its pickling method?)
