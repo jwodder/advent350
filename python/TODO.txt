@@ -1,3 +1,4 @@
+- Test everything!
 - Use constants for `cond` values (and eliminate `bitset`?)
 - Get rid of as many global variables as possible
  - Make `blklin` into a keyword argument of the functions that use it
@@ -11,6 +12,11 @@
 - If the user enters "save" without a filename while playing a restored game,
   save the game to the same path that it was restored from?
 - Make the arrays be properly zero-based?
-- Add command-line options & arguments for specifying the location of the data
-  file, the location of the magic file, the default save file path, whether to
-  use magic, and whether to use the original RNG
+- Add command-line options for specifying the default save file path, whether
+  to use magic, and whether to use the original RNG
+- Change the `Limits` values to the actual quantities rather than the upper
+  limits imposed by the original Fortran?
+- Add docstrings
+- Add error handling for when restoring a saved game fails
+- When a magic file is specified on the command line, `maint` should save to it
+  instead of the default path

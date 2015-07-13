@@ -1,5 +1,6 @@
 #!/usr/bin/python
 from   __future__  import print_function
+import argparse
 from   collections import defaultdict, namedtuple
 from   datetime    import datetime
 from   errno       import ENOENT
@@ -104,9 +105,8 @@ def liq2(self, p):
 def pct(x):
     return ran(100) < x
 
-def load(filename, ofType):
-    with open(filename, 'rb') as fp:
-        obj = pickle.load(fp)
+def load(fp, ofType):
+    obj = pickle.load(fp)
     if not isinstance(obj, ofType):
         raise TypeError('Expected %s object in file; got %s object'
                         % (ofType.__name__, obj.__class__.__name__))
@@ -132,10 +132,9 @@ class Travel(namedtuple('Travel', 'dest verbs verb1 uncond chance nodwarf'
 Hint = namedtuple('Hint', 'turns points question hint')
 
 class Adventure(object):
-    def __init__(self, datafile='advent.dat'):
-        with open(datafile) as advdat:
-            sections = {index: list(sect)[1:-1]
-                        for index, sect in itertools.groupby(advdat, bysection)}
+    def __init__(self, advdat)
+        sections = {index: list(sect)[1:-1]
+                    for index, sect in itertools.groupby(advdat, bysection)}
         self.longDesc = indexLines(sections[1], Limits.LOCATIONS)
         self.shortDesc = indexLines(sections[2], Limits.LOCATIONS)
         self.travel = nonemap(lambda s: list(map(Travel.fromEntry,
@@ -594,7 +593,7 @@ def yesm(x, y, z):  ### MAGIC
 
 def datime():  ### MAGIC
     # This function is supposed to return:
-    # - the number of days since 1 Jan 1977 (220924800 in Unix epoch time)
+    # - the number of days since 1 Jan 1977
     # - the number of minutes past midnight
     ### TODO: Double-check this
     delta = datetime.today() - datetime(1977, 1, 1)
@@ -797,10 +796,11 @@ def motd(alter):  ### MAGIC
     elif magic.msg:
         print(magic.msg, end='')
 
-def poof():  ### MAGIC
+def poof(mfile=None):  ### MAGIC
     global magic
     try:
-        magic = load(magicfile, Magic)
+        with (mfile or open(magicfile, 'rb')) as fp:
+            magic = load(fp, Magic)
     except IOError as e:
         if e.errno == ENOENT:
             magic = Magic()
@@ -808,19 +808,25 @@ def poof():  ### MAGIC
             raise
 
 def main():
-    # optional command-line argument: oldGame
     global cave, game, demo
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-D', '--data-file', type=argparse.FileType('r'))
+    ###parser.add_argument('-m', '--magic', action='store_true')
+    parser.add_argument('-M', '--magic-file', type=argparse.FileType('rb'))
+    ###parser.add_argument('-R', '--orig-rng', action='store_true')
+    parser.add_argument('savedgame', type=argparse.FileType('rb'))
+    args = parser.parse_args()
     goto = label2
     if ORIG_RNG:
         ran(1)
-    cave = Adventure()  ### TODO: Insert argument here
+    with (args.data_file or open('advent.dat')) as advdat:
+        cave = Adventure(advdat)
     game = Game()
     if MAGIC:
-        poof()
-    if len(sys.argv) > 1:
-        goto = vresume(sys.argv[1])
-        if not goto:
-            sys.exit(1)
+        poof(args.magic_file)
+    if args.savedgame is not None:
+        with args.savedgame:
+            goto = resume(args.savedgame.name, args.savedgame)
     else:
         if MAGIC:
             demo = start()
@@ -1979,7 +1985,6 @@ def vsuspend(filename):
         sys.exit()
 
 def vresume(filename):
-    global game
     if MAGIC and demo:
         mspeak(9)
         return None
@@ -1990,9 +1995,14 @@ def vresume(filename):
         # This message is taken from the 430 pt. version of Adventure (v.2.5).
         if not yes(200, 54, 54):
            return None
+    with open(filename, 'rb') as fp:
+        return resume(filename, fp)
+
+def resume(fname, fp):
+    global game
     print()
-    print('Restoring from', filename, '...')
-    game = load(filename, Game)
+    print('Restoring from', fname, '...')
+    game = load(fp, Game)
     if MAGIC:
         start()
     return lambda: domove(Movement.NULL)
