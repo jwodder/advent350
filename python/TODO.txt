@@ -1,5 +1,4 @@
 - Test everything!
-- Use constants for `cond` values (and eliminate `bitset`?)
 - Get rid of as many global variables as possible
  - Make `blklin` into a keyword argument of the functions that use it
 - Try to completely rewrite the system for keeping track of object locations
@@ -11,7 +10,6 @@
  - Make all strings Unicode
 - If the user enters "save" without a filename while playing a restored game,
   save the game to the same path that it was restored from?
-- Make the arrays be properly zero-based?
 - Add command-line options for specifying the default save file path, whether
   to use magic, and whether to use the original RNG
 - Change the `Limits` values to the actual quantities rather than the upper

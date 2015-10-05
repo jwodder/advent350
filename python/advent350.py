@@ -75,6 +75,8 @@ Action = mkenum('Action', (1, 'TAKE DROP SAY OPEN NOTHING LOCK ON OFF WAVE CALM'
                               ' INVENT FEED FILL BLAST SCORE FOO BRIEF READ'
                               ' BREAK WAKE SUSPEND HOURS RESUME'))
 
+Cond = mkenum('Cond', (0, 'LIGHT OIL LIQUID NO_PIRATE'))
+
 def indexLines(lines, qty):
     data = [None] * (qty+1)
     for i, block in itertools.groupby(lines, lambda s: int(s.split('\t')[0])):
@@ -180,7 +182,8 @@ class Adventure(object):
         self.magic = indexLines(sections[12], Limits.MTEXT)
 
     def liqloc(self, loc):
-        return liq2(self.cond[loc] & 2 if self.cond[loc] & 4 else 1)
+        return liq2(self.bitset(loc, Cond.OIL) if self.bitset(loc, Cond.LIQUID)
+                                               else 1)
 
     def bitset(self, loc, n):
         return self.cond[loc] & (1 << n)
@@ -263,7 +266,7 @@ class Game(object):
         return liq2(max(self.prop[Item.BOTTLE], -1-self.prop[Item.BOTTLE]))
 
     def dark(self):
-        return not (game.cond[self.loc] & 1 or 
+        return not (cave.bitset(self.loc, Cond.LIGHT) or
                     (self.prop[Item.LAMP] and self.here(Item.LAMP)))
 
     def carry(self, obj, where):
@@ -846,14 +849,15 @@ def label2():
         game.panic = True
     if game.newloc != game.loc and \
             not cave.forced(game.loc) and \
-            not cave.bitset(game.loc, 3) and \
+            not cave.bitset(game.loc, Cond.NO_PIRATE) and \
             any(game.odloc[i] == game.newloc and game.dseen[i]
                 for i in xrange(5)):
         game.newloc = game.loc
         rspeak(2)
     game.loc = game.newloc
     # Dwarven logic:
-    if game.loc == 0 or cave.forced(game.loc) or cave.bitset(game.newloc, 3):
+    if game.loc == 0 or cave.forced(game.loc) or \
+            cave.bitset(game.newloc, Cond.NO_PIRATE):
         return label2000
     if game.dflag == 0:
         if game.loc >= 15:
@@ -887,7 +891,7 @@ def label2():
                if 15 <= newloc <= 300 and \
                        newloc not in (game.odloc[i], game.dloc[i]) and \
                        not cave.forced(newloc) and \
-                       not (i == 5 and cave.bitset(newloc, 3)):
+                       not (i == 5 and cave.bitset(newloc, Cond.NO_PIRATE)):
                    kk += 1
                    if ran(kk) == 0:
                        tk = newloc
@@ -1807,7 +1811,7 @@ def vfill():
     elif cave.liqloc(game.loc) == 0:
         rspeak(106)
     else:
-        game.prop[Item.BOTTLE] = cave.cond[game.loc] & 2
+        game.prop[Item.BOTTLE] = cave.bitset(game.loc, Cond.OIL)
         if game.toting(Item.BOTTLE):
             game.place[game.liq()] = -1
         rspeak(108 if game.liq() == Item.OIL else 107)
