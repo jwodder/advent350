@@ -1,6 +1,5 @@
 - Test everything!
 - Get rid of as many global variables as possible
- - Make `blklin` into a keyword argument of the functions that use it
 - Try to completely rewrite the system for keeping track of object locations
  - Add a constant for -1 (the location of your inventory)?
 - Make all the magic functions into methods of Magic?

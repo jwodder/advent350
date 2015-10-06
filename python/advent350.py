@@ -349,7 +349,6 @@ class Magic(object):
         self.msg = ''  # MOTD, initially null
 
 
-blklin = True
 demo = False
 bonus = 0
 verb = None
@@ -360,20 +359,20 @@ cave = None
 game = None
 magic = None
 
-def speak(s):
+def speak(s, blklin=True):
     if s:
         if blklin:
             print()
         print(s, end='')
 
-def pspeak(item, state):
-    speak(cave.itemDesc[item][state+1])
+def pspeak(item, state, blklin=True):
+    speak(cave.itemDesc[item][state+1], blklin=blklin)
 
 def rspeak(msg):
     if msg != 0:
         speak(cave.rmsg[msg])
 
-def getin():
+def getin(blklin=True):
     if blklin:
         print()
     while True:
@@ -394,15 +393,15 @@ def getInt(prompt='> '):
 def yes(x, y, z):
     return yesx(x, y, z, rspeak)
 
-def yesx(x, y, z, spk):
+def yesx(x, y, z, spk, blklin=True):
     while True:
-        spk(x)
-        reply = getin()[0]
+        spk(x, blklin=blklin)
+        reply = getin(blklin=blklin)[0]
         if reply in ('YES', 'Y'):
-            spk(y)
+            spk(y, blklin=blklin)
             return True
         elif reply in ('NO', 'N'):
-            spk(z)
+            spk(z, blklin=blklin)
             return False
         else:
             print('\nPlease answer the question.')
@@ -583,16 +582,16 @@ def doaction():
         print('\nWhat do you want to do with the ' + in1 + '?')
         return label2600
 
-def mspeak(msg):  ### MAGIC
+def mspeak(msg, blklin=True):  ### MAGIC
     if msg != 0:
-        speak(cave.magic[msg])
+        speak(cave.magic[msg], blklin=blklin)
 
 def ciao():  ### MAGIC
     mspeak(32)
     sys.exit()
 
-def yesm(x, y, z):  ### MAGIC
-    return yesx(x, y, z, mspeak)
+def yesm(x, y, z, blklin=True):  ### MAGIC
+    return yesx(x, y, z, mspeak, blklin=blklin)
 
 def datime():  ### MAGIC
     # This function is supposed to return:
@@ -638,46 +637,43 @@ def start():  ### MAGIC
     return False
 
 def maint():  ### MAGIC
-    global blklin
     if not wizard():
         return
-    blklin = False
-    if yesm(10, 0, 0):
+    if yesm(10, 0, 0, blklin=False):
         hours()
-    if yesm(11, 0, 0):
+    if yesm(11, 0, 0, blklin=False):
         newhrs()
-    if yesm(26, 0, 0):
-        mspeak(27)
+    if yesm(26, 0, 0, blklin=False):
+        mspeak(27, blklin=False)
         magic.hbegin = getInt()
-        mspeak(28)
+        mspeak(28, blklin=False)
         magic.hend = getInt()
         (d,t) = datime()
         magic.hbegin += d
         magic.hend += magic.hbegin - 1
-        mspeak(29)
+        mspeak(29, blklin=False)
         magic.hname = raw_input('> ')[:20]
     print('Length of short game (null to leave at %d):' % (magic.short,))
     x = getInt()
     if x > 0:
         magic.short = x
-    mspeak(12)
+    mspeak(12, blklin=False)
     word = getin()[0]
     if word is not None:
         magic.magic = word
-    mspeak(13)
+    mspeak(13, blklin=False)
     x = getInt()
     if x > 0:
         magic.magnm = x
     print('Latency for restart (null to leave at %d):' % (magic.latency,))
     x = getInt()
     if 0 < x < 45:
-        mspeak(30)
+        mspeak(30, blklin=False)
     if x > 0:
         magic.latency = max(45, x)
     if yesm(14, 0, 0):
         motd(True)
-    mspeak(15)
-    blklin = True
+    mspeak(15, blklin=False)
     with open(magicfile, 'w') as fp:
         pickle.dump(fp, magic)
     ciao()
@@ -1368,16 +1364,13 @@ def vquit():
         normend()
 
 def vinvent():
-    global blklin
     spk = 98
     for i in xrange(65):
         if i == Item.BEAR or not game.toting(i):
             continue
         if spk == 98:
             rspeak(99)
-        blklin = False
-        pspeak(i, -1)
-        blklin = True
+        pspeak(i, -1, blklin=False)
         spk = 0
     if game.toting(Item.BEAR):
         spk = 141
