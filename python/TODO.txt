@@ -9,8 +9,8 @@
  - Make all strings Unicode
 - If the user enters "save" without a filename while playing a restored game,
   save the game to the same path that it was restored from?
-- Add command-line options for specifying the default save file path, whether
-  to use magic, and whether to use the original RNG
+- Add command-line options for specifying the default save file path and
+  whether to use magic
 - Change the `Limits` values to the actual quantities rather than the upper
   limits imposed by the original Fortran?
 - Add docstrings

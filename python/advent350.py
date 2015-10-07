@@ -12,7 +12,6 @@ import traceback
 
 # Configuration:
 MAGIC = True
-ORIG_RNG = True
 magicfile = os.path.expanduser('~/.advmagic')
 savefile = os.path.expanduser('~/.adventure')
 
@@ -20,21 +19,16 @@ if sys.version_info[0] >= 3:
     raw_input = input
     xrange = range
 
-if ORIG_RNG:
-    ran_r = 0
-    def ran(n):
-        global ran_r
-        d = 1
-        if ran_r == 0:
-            (d, ran_r) = datime()
-            ran_r = 18 * ran_r + 5
-            d = 1000 + d % 1000
-        for _ in xrange(d):
-            ran_r = (ran_r * 1021) % 1048576
-            return (n * ran_r) // 1048576
-else:
-    import random
-    ran = random.randrange
+def ran(n):
+    d = 1
+    if ran.r == 0:
+        (d, ran.r) = datime()
+        ran.r = 18 * ran.r + 5
+        d = 1000 + d % 1000
+    for _ in xrange(d):
+        ran.r = (ran.r * 1021) % 1048576
+        return (n * ran.r) // 1048576
+ran.r = 0
 
 MAXDIE = 3
 CHLOC = 114
@@ -807,17 +801,20 @@ def poof(mfile=None):  ### MAGIC
             raise
 
 def main():
-    global cave, game, demo
+    global cave, game, demo, ran
     parser = argparse.ArgumentParser()
     parser.add_argument('-D', '--data-file', type=argparse.FileType('r'))
     ###parser.add_argument('-m', '--magic', action='store_true')
     parser.add_argument('-M', '--magic-file', type=argparse.FileType('rb'))
-    ###parser.add_argument('-R', '--orig-rng', action='store_true')
+    parser.add_argument('-R', '--orig-rng', action='store_true')
     parser.add_argument('savedgame', type=argparse.FileType('rb'))
     args = parser.parse_args()
     goto = label2
-    if ORIG_RNG:
+    if args.orig_rng:
         ran(1)
+    else:
+        from random import randrange
+        ran = randrange
     with (args.data_file or open('advent.dat')) as advdat:
         cave = Adventure(advdat)
     game = Game()
