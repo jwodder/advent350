@@ -789,16 +789,18 @@ def motd(alter):  ### MAGIC
     elif magic.msg:
         print(magic.msg, end='')
 
-def poof(mfile=None):  ### MAGIC
+def poof(mfile):  ### MAGIC
     global magic
-    try:
-        with (mfile or open(magicfile, 'rb')) as fp:
-            magic = load(fp, Magic)
-    except IOError as e:
-        if e.errno == ENOENT:
-            magic = Magic()
-        else:
-            raise
+    if mfile is None:
+        try:
+            mfile = open(magicfile, 'rb')
+        except IOError as e:
+            if e.errno == ENOENT:
+                magic = Magic()
+            else:
+                raise
+    with mfile:
+        magic = load(mfile, Magic)
 
 def main():
     global cave, game, demo, ran
