@@ -1,0 +1,206 @@
+# A Guide to Wizard Authentication and Maintenance Mode in _The Colossal Cave Adventure_ (350 pt. version)
+
+This guide was written for the Perl 6 and C ports of Adventure located at
+&lt;http://github.com/jwodder/advent350&gt;, and it should hopefully hold true
+for the original PDP-10 Fortran version as well as any other faithful
+reproductions of the game.
+
+
+## Wizard Authentication
+
+Certain actions in Adventure may only be performed by "wizards," users who pass
+a basic (yet obscure) test of knowledge & skill.  The game will ask you to
+verify yourself as a wizard if you attempt to do any of the following:
+
+<ol type="a">
+<li>Restart a saved game before the mandatory delay period has elapsed (but
+    after at least a third of the delay has gone by)</li>
+<li>Start or restart a game while the cave is closed</li>
+<li>Reconfigure certain game settings in maintenance mode (see below)</li>
+</ol>
+
+Proving yourself a wizard for task (a) will automatically give you permission
+to perform task (b) if necessary.  However, if you use your wizardly powers to
+do either (a) or (b), you will still need to verify yourself as a wizard again
+if you then try to access maintenance mode.
+
+In order to pass wizard authentication, you will need to know the current magic
+word ("DWARF" by default) and the current magic number (11111 by default) as
+they are currently stored in the game's magic file or equivalent (or their
+default values if there is no magic file).
+
+Verifying yourself as a wizard begins automatically on trying to do one of the
+above, and it proceeds as follows:
+
+    Are you a wizard?
+
+Answer "yes".  If you answer "no", the game will reply, "`Very well.`" and you
+will not be recognized as a wizard.  If you fail the wizard authentication at
+any point after this, the game will say, "`Foo, you are nothing but a
+charlatan!`"
+
+    Prove it!  Say the magic word!
+
+Enter the magic word.  Only the first five letters are inspected; the port for
+which this guide was written is case-insensitive.
+
+    That is not what I thought it was.  Do you know what I thought it was?
+
+Respond "no".  The game will then print out a random five-letter "word."  You
+must perform a series of mathematical operations on it to produce another
+five-letter word to give in response (This is the part that the `frawd(6)`
+utility included with this port automates):
+
+- Take the current time (specifically, the time at which you expect to finish
+  entering the result) as an hour `h` from 0 through 23 and a minute `m` from
+  0 through 59.  Calculate `h * 100 + m`, change the last digit to a zero, and
+  call this number `t`.  In this port of Adventure, the game uses the time
+  values returned by the `localtime(3)` function, which should be based on the
+  user's timezone settings.  Other ports may vary; consult your wizard if
+  frustration lasts longer than four hours.
+- For the following step, the "value" of a letter is a number from 1 through
+  26 corresponding to that letter's position in the alphabet (A has value 1, B
+  has value 2, C has value 3, etc.).
+- For `i` from 1 through 5:
+    - Take the absolute value of the difference between the value of the `i`-th
+      letter in the word the game gave you and the value of the letter
+      immediately after that.  (If `i=5`, take the difference between the
+      values of the last & first letters of the word.)
+    - Multiply this number by the `i`-th digit of the magic number, counting
+      from the *end* of the number (i.e., the ones-place is the first digit,
+      the tens-place is the second, the hundredths-place is the third, etc.).
+    - Add the `i`-th digit of `t`, again counting from the *end* of the number.
+    - Divide by 26, take the remainder, and add 1 to it.
+    - The result is the value of the `i`-th letter of the reply.
+
+Once you enter the new word, the game will recognize you as a wizard:
+
+    Oh dear, you really *are* a wizard!  Sorry to have bothered you . . .
+
+
+## Maintenance Mode
+
+Maintenance mode (a.k.a. "magic mode" or "wizard mode") in Adventure is used to
+modify several game configuration values, namely:
+
+- the hours that the cave is open (i.e., when non-demo, non-wizard games can be
+  played)
+- the time & name of the next holiday
+- the maximum number of turns allowed in a demo game
+- the magic word
+- the magic number
+- the minimum amount of time one must wait before restoring a saved game
+- the message of the day
+
+Maintenance mode is invoked by entering "`MAGIC MODE`" as the first command in a
+new game immediately after accepting or rejecting the offer of instructions.
+If you try to access maintenance mode at any later point in the game, the
+command won't be recognized.
+
+The first part of maintenance mode requires you to pass wizard authentication
+(see above); if you fail, the game will go back to the normal command mode and
+act like it doesn't recognize the words "`MAGIC MODE`".
+
+If you are indeed a wizard, maintenance mode will then proceed as follows:
+(Note that, for reasons I have yet to fathom, the game's messages will no
+longer be preceded by blank lines, except for the final "`Be sure to save your
+core-image...`".)
+
+    Do you wish to see the hours?
+
+If you say "yes", the current cave hours will be shown.  By default,
+non-wizards may play at any time other than between 8 AM and 6 PM on weekdays.
+
+    Do you wish to change the hours?
+
+If you say "yes":
+
+>     New hours specified by defining "prime time".  Give only the hour
+>     (e.g. 14, not 14:00 or 2pm).  Enter a negative number after last pair.
+>
+> The game will then prompt you to specify the "prime time" hours (the times
+> that the cave is closed) for weekdays, weekends, and holidays, in that order.
+> For each type of day, it will print "`Prime time on [weekdays
+> |weekends|holidays]:`" and then alternate prompting between "`from:`" and
+> "`till:`", to each of which you must respond with a positive integer from 0
+> through 23 (24 for "till"), giving the start and (excluded) end times for
+> zero or more segments of prime time per day type.  A day type may have more
+> than one expanse of prime time assigned to it, and overlapping prime time
+> ranges are merged together.  If you enter a number less than 0 (note that
+> this port treats non-numbers as 0) or greater than 23 (24 for "till",
+> indicating that prime time should last through the end of the day), or if you
+> enter a "till" time that is less than or equal to its corresponding "from"
+> time, the game will stop reading times for the current type of day and move
+> on to the next type.  Once all of the cave hours have been specified, the
+> game will print "`New hours for Colossal Cave:`" and display the new hours.
+
+    Do you wish to (re)schedule the next holiday?
+
+The game keeps track of no more than one holiday at a time, so responding "yes"
+will cause the current holiday to be replaced.  (By default, there is no
+upcoming holiday.)  If you say "yes":
+
+>     To begin how many days from today?
+>
+> Enter a decimal integer.  This number will be added to the current date to
+> get the day on which the holiday begins, so, for example, entering "1"
+> indicates that the holiday starts tomorrow.
+>
+>     To last how many days (zero if no holiday)?
+>
+> Enter the number of days that the holiday should last for, inclusive.
+> Entering "0" causes there to be no upcoming holiday.
+>
+>     To be called what (up to 20 characters)?
+>
+> Enter a line of text.  The first twenty characters will be used as the name
+> of the upcoming holiday.
+
+    Length of short game (null to leave at %d):
+
+"`%d`" is replaced by the current maximum length of a short game (default 30);
+if a player spends this many turns in a demo, the game will automatically end.
+Enter a positive integer to change the limit to, or enter a blank line or a
+number less than 1 to leave it unchanged.
+
+    New magic word (null to leave unchanged):
+
+Enter a word.  The first five non-whitespace characters (or fewer, if you enter
+a short word) will become the new magic word.  If you enter an empty line, the
+magic word will remain unchanged.
+
+    New magic number (null to leave unchanged):
+
+Enter an integer to change the magic number to.  If you enter a blank line or a
+value less than one, the magic number will be unchanged.
+
+    Latency for restart (null to leave at %d):
+
+"`%d`" is replaced by the current minimum number of minutes that a player must
+wait after saving before ey can resume eir game (default 90; the number is
+divided by three for wizards).  Enter a positive integer to which to change the
+delay, or enter a blank line or a number less than 1 to leave it unchanged.
+However, if you enter a positive integer less than 45, the game will print
+"`Too small!  Assuming minimum value (45 minutes).`" and set the delay to 45.
+
+    Do you wish to change the message of the day?
+
+If you say "yes", the game will print "`Limit lines to 70 chars.  End with null
+line.`"  You will then get to enter one or more lines of text to serve as the
+new message of the day, which, when not empty (as it is by default), is
+displayed whenever a new game is started.  If you enter a line 70 or more
+characters in length (counting the newline), the game will print "`Line too
+long, retype:`" and discard the long line.  If you enter 430 or more characters
+in total, the game will print "`Not enough room for another line.  Ending
+message here.`" and stop reading input.  Otherwise, reading stops when you
+enter a blank line.
+
+    Okay.  You can save this version now.
+    Be sure to save your core-image...
+
+The program will then terminate.  For the original code on the PDP-10, the user
+would have to save the program's "core image," which contained the modified
+magic settings.  On some systems, the core image would disappear when the
+program exited, so the game would instead be configured to print "`Break out of
+this and save your core-image.`" as the last message and then prompt for input,
+leaving the the user to end the program appropriately.
