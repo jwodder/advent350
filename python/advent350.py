@@ -805,11 +805,12 @@ def poof(mfile):  ### MAGIC
 def main():
     global cave, game, demo, ran
     parser = argparse.ArgumentParser()
-    parser.add_argument('-D', '--data-file', type=argparse.FileType('r'))
+    parser.add_argument('-D', '--data-file', type=argparse.FileType('r'),
+                        default='advent.dat')
     ###parser.add_argument('-m', '--magic', action='store_true')
     parser.add_argument('-M', '--magic-file', type=argparse.FileType('rb'))
     parser.add_argument('-R', '--orig-rng', action='store_true')
-    parser.add_argument('savedgame', type=argparse.FileType('rb'))
+    parser.add_argument('savedgame', type=argparse.FileType('rb'), nargs='?')
     args = parser.parse_args()
     goto = label2
     if args.orig_rng:
@@ -817,8 +818,8 @@ def main():
     else:
         from random import randrange
         ran = randrange
-    with (args.data_file or open('advent.dat')) as advdat:
-        cave = Adventure(advdat)
+    with args.data_file:
+        cave = Adventure(args.data_file)
     game = Game()
     if MAGIC:
         poof(args.magic_file)
