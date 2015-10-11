@@ -11,8 +11,7 @@ import sys
 import traceback
 
 # Configuration:
-MAGIC = True
-magicfile = os.path.expanduser('~/.advmagic')
+DEFAULT_MAGICFILE = os.path.expanduser('~/.advmagic')
 savefile = os.path.expanduser('~/.adventure')
 
 if sys.version_info[0] >= 3:
@@ -104,8 +103,8 @@ def pct(x):
 def load(fp, ofType):
     obj = pickle.load(fp)
     if not isinstance(obj, ofType):
-        raise TypeError('Expected %s object in file; got %s object'
-                        % (ofType.__name__, obj.__class__.__name__))
+        raise TypeError('Expected %s object in %r; got %s instead'
+                        % (ofType.__name__, fp.name, obj.__class__.__name__))
 
 class Travel(namedtuple('Travel', 'dest verbs verb1 uncond chance nodwarf'
                                   ' carry here obj notprop forced')):
@@ -324,6 +323,9 @@ class Game(object):
 
 
 class Magic(object):
+    on = True
+    magicfile = DEFAULT_MAGICFILE
+
     def __init__(self):
         # These arrays hold the times when adventurers are allowed into
         # Colossal Cave; `self.wkday` is for weekdays, `self.wkend` for
@@ -333,14 +335,237 @@ class Magic(object):
         self.wkday = [False] * 8 + [True] * 10 + [False] * 6
         self.wkend = [False] * 24
         self.holid = [False] * 24
-        self.hbegin = 0  # start of next holiday
-        self.hend = -1  # end of next holiday
-        self.short = 30  # turns allowed in a short/demonstration game
-        self.magnm = 11111  # magic number
-        self.latency = 90  # time required to wait after saving
+        self.hbegin = 0       # start of next holiday
+        self.hend = -1        # end of next holiday
+        self.short = 30       # turns allowed in a short/demonstration game
+        self.magnm = 11111    # magic number
+        self.latency = 90     # time required to wait after saving
         self.magic = 'DWARF'  # magic word
-        self.hname = ''  # name of next holiday
-        self.msg = ''  # MOTD, initially null
+        self.hname = ''       # name of next holiday
+        self.msg = ''         # MOTD, initially null
+
+    def mspeak(self, msg, blklin=True):
+        if msg != 0:
+            speak(cave.magic[msg], blklin=blklin)
+
+    def yesm(self, x, y, z, blklin=True):
+        return yesx(x, y, z, self.mspeak, blklin=blklin)
+
+    def datime(self):
+        """
+        Returns a tuple of the number of days since 1977 Jan 1 and the number
+        of minutes past midnight
+        """
+        ### TODO: Double-check this
+        delta = datetime.today() - datetime(1977, 1, 1)
+        return (delta.days, delta.seconds // 60)
+
+    def start(self):
+        (d,t) = self.datime()
+        if game.saved != -1:
+            delay = (d - game.saved) * 1440 + (t - game.savet)
+            if delay < self.latency:
+                print('This adventure was suspended a mere', delay,
+                      'minutes ago.')
+                if delay < self.latency // 3:
+                    self.mspeak(2)
+                else:
+                    self.mspeak(8)
+                    if self.wizard():
+                        game.saved = -1
+                        return False
+                    self.mspeak(9)
+                sys.exit()
+        if (self.holid if self.hbegin <= d <= self.hend
+                       else self.wkend if d % 7 <= 1
+                       else self.wkday)[t // 60]:
+            # Prime time (cave closed)
+            self.mspeak(3)
+            self.hours()
+            self.mspeak(4)
+            if self.wizard():
+                game.saved = -1
+                return False
+            if game.saved != -1:
+                self.mspeak(9)
+                sys.exit()
+            if self.yesm(5, 7, 7):
+                game.saved = -1
+                return True
+            sys.exit()
+        game.saved = -1
+        return False
+
+    def maint(self):
+        if not self.wizard():
+            return
+        if self.yesm(10, 0, 0, blklin=False):
+            self.hours()
+        if self.yesm(11, 0, 0, blklin=False):
+            self.newhrs()
+        if self.yesm(26, 0, 0, blklin=False):
+            self.mspeak(27, blklin=False)
+            self.hbegin = getInt()
+            self.mspeak(28, blklin=False)
+            self.hend = getInt()
+            (d,t) = self.datime()
+            self.hbegin += d
+            self.hend += self.hbegin - 1
+            self.mspeak(29, blklin=False)
+            self.hname = raw_input('> ')[:20]
+        print('Length of short game (null to leave at %d):' % (self.short,))
+        x = getInt()
+        if x > 0:
+            self.short = x
+        self.mspeak(12, blklin=False)
+        word = getin()[0]
+        if word is not None:
+            self.magic = word
+        self.mspeak(13, blklin=False)
+        x = getInt()
+        if x > 0:
+            self.magnm = x
+        print('Latency for restart (null to leave at %d):' % (self.latency,))
+        x = getInt()
+        if 0 < x < 45:
+            self.mspeak(30, blklin=False)
+        if x > 0:
+            self.latency = max(45, x)
+        if self.yesm(14, 0, 0):
+            self.motd(True)
+        self.mspeak(15, blklin=False)
+        with open(self.magicfile, 'w') as fp:
+            pickle.dump(fp, magic)
+        self.ciao()
+
+    def wizard(self):
+        if not self.yesm(16, 0, 7):
+            return False
+        self.mspeak(17)
+        word = getin()[0]
+        if word != self.magic:
+            self.mspeak(20)
+            return False
+        (d,t) = self.datime()
+        t = t*2 + 1
+        wchrs = [64] * 5
+        val = []
+        for y in xrange(5):
+            x = 79 + d % 5
+            d //= 5
+            for _ in xrange(x):
+                t = (t * 1027) % 1048576
+            val.append((t*26) // 1048576 + 1)
+            wchrs[y] += val[-1]
+        if self.yesm(18, 0, 0):
+            self.mspeak(20)
+            return False
+        print('\n' + ''.join(map(chr, wchrs)))
+        wchrs = list(map(ord, getin()[0]))
+        ### What happens if the inputted word is less than five characters?
+        (d,t) = self.datime()
+        t = (t // 60) * 40 + (t // 10) * 10
+        d = self.magnm
+        for y in xrange(5):
+            wchrs[y] -= (abs(val[y] - val[(y+1)%5]) * (d%10) + t%10) % 26 + 1
+            t //= 10
+            d //= 10
+        if all(c == 64 for c in wchrs):
+            self.mspeak(19)
+            return True
+        else:
+            self.mspeak(20)
+            return False
+
+    def hours(self):
+        print()
+        self.hoursx(self.wkday, 'Mon - Fri:')
+        self.hoursx(self.wkend, 'Sat - Sun:')
+        self.hoursx(self.holid, 'Holidays: ')
+        (d,_) = self.datime()
+        if self.hend < d or self.hend < self.hbegin:
+            return
+        if self.hbegin > d:
+            d = self.hbegin - d
+            print('\nThe next holiday will be in %d day%s, namely %s.'
+                  % (d, '' if d == 1 else 's', self.hname))
+        else:
+            print('\nToday is a holiday, namely ' + self.hname + '.')
+
+    def hoursx(self, horae, day):
+        if not any(horae):
+            print(' ' * 10, day, '  Open all day', sep='')
+        else:
+            first = True
+            from = 0
+            while True:
+                while from < 24 and horae[from]:
+                    from += 1
+                if from >= 24:
+                    if first:
+                        print(' ' * 10, day, '  Closed all day', sep='')
+                    break
+                else:
+                    till = from + 1
+                    while till < 24 and not horae[till]:
+                        till += 1
+                    if first:
+                        print(' ' * 10, day, '%4d:00 to%3d:00' % (from, till),
+                              sep='')
+                    else:
+                        print(' ' * 20, '%4d:00 to%3d:00' % (from, till),
+                              sep='')
+                 first = False
+                 from = till
+
+    def newhrs(self):
+        self.mspeak(21)
+        self.wkday = self.newhrx('weekdays:')
+        self.wkend = self.newhrx('weekends:')
+        self.holid = self.newhrx('holidays:')
+        self.mspeak(22)
+        self.hours()
+
+    def newhrx(self, day):
+        horae = [False] * 24
+        print('Prime time on', day)
+        while True:
+            from = getInt('from: ')
+            if not (0 <= from < 24):
+                return horae
+            till = getInt('till: ')
+            if not (from <= till-1 < 24):
+                return horae
+            horae[from:till] = [True] * (till - from)
+
+    def motd(self, alter):
+        if alter:
+            self.mspeak(23)
+            self.msg = ''
+            # This doesn't exactly match the logic used in the original Fortran,
+            # but it's close:
+            while len(self.msg) < 430:
+                nextline = raw_input('> ')
+                if not nextline:
+                    return
+                if len(nextline) > 70:
+                    self.mspeak(24)
+                    continue
+                self.msg += nextline + '\n'
+            self.mspeak(25)
+        elif self.msg:
+            print(self.msg, end='')
+
+    def ciao(self):
+        self.mspeak(32)
+        sys.exit()
+
+
+class NoMagic(object):
+    on = False
+
+    def __getattr__(self, _):
+        return lambda *p, **a: None
 
 
 demo = False
@@ -576,242 +801,34 @@ def doaction():
         print('\nWhat do you want to do with the ' + in1 + '?')
         return label2600
 
-def mspeak(msg, blklin=True):  ### MAGIC
-    if msg != 0:
-        speak(cave.magic[msg], blklin=blklin)
-
-def ciao():  ### MAGIC
-    mspeak(32)
-    sys.exit()
-
-def yesm(x, y, z, blklin=True):  ### MAGIC
-    return yesx(x, y, z, mspeak, blklin=blklin)
-
-def datime():  ### MAGIC
-    # This function is supposed to return:
-    # - the number of days since 1 Jan 1977
-    # - the number of minutes past midnight
-    ### TODO: Double-check this
-    delta = datetime.today() - datetime(1977, 1, 1)
-    return (delta.days, delta.seconds // 60)
-
-def start():  ### MAGIC
-    (d,t) = datime()
-    if game.saved != -1:
-        delay = (d - game.saved) * 1440 + (t - game.savet)
-        if delay < magic.latency:
-            print('This adventure was suspended a mere', delay, 'minutes ago.')
-            if delay < magic.latency // 3:
-                mspeak(2)
-            else:
-                mspeak(8)
-                if wizard():
-                    game.saved = -1
-                    return False
-                mspeak(9)
-            sys.exit()
-    if (magic.holid if magic.hbegin <= d <= magic.hend
-                    else magic.wkend if d % 7 <= 1
-                    else magic.wkday)[t // 60]:
-        # Prime time (cave closed)
-        mspeak(3)
-        hours()
-        mspeak(4)
-        if wizard():
-            game.saved = -1
-            return False
-        if game.saved != -1:
-            mspeak(9)
-            sys.exit()
-        if yesm(5, 7, 7):
-            game.saved = -1
-            return True
-        sys.exit()
-    game.saved = -1
-    return False
-
-def maint():  ### MAGIC
-    if not wizard():
-        return
-    if yesm(10, 0, 0, blklin=False):
-        hours()
-    if yesm(11, 0, 0, blklin=False):
-        newhrs()
-    if yesm(26, 0, 0, blklin=False):
-        mspeak(27, blklin=False)
-        magic.hbegin = getInt()
-        mspeak(28, blklin=False)
-        magic.hend = getInt()
-        (d,t) = datime()
-        magic.hbegin += d
-        magic.hend += magic.hbegin - 1
-        mspeak(29, blklin=False)
-        magic.hname = raw_input('> ')[:20]
-    print('Length of short game (null to leave at %d):' % (magic.short,))
-    x = getInt()
-    if x > 0:
-        magic.short = x
-    mspeak(12, blklin=False)
-    word = getin()[0]
-    if word is not None:
-        magic.magic = word
-    mspeak(13, blklin=False)
-    x = getInt()
-    if x > 0:
-        magic.magnm = x
-    print('Latency for restart (null to leave at %d):' % (magic.latency,))
-    x = getInt()
-    if 0 < x < 45:
-        mspeak(30, blklin=False)
-    if x > 0:
-        magic.latency = max(45, x)
-    if yesm(14, 0, 0):
-        motd(True)
-    mspeak(15, blklin=False)
-    with open(magicfile, 'w') as fp:
-        pickle.dump(fp, magic)
-    ciao()
-
-def wizard():  ### MAGIC
-    if not yesm(16, 0, 7):
-        return False
-    mspeak(17)
-    word = getin()[0]
-    if word != magic.magic:
-        mspeak(20)
-        return False
-    (d,t) = datime
-    t = t*2 + 1
-    wchrs = [64] * 5
-    val = []
-    for y in xrange(5):
-        x = 79 + d % 5
-        d //= 5
-        for _ in xrange(x):
-            t = (t * 1027) % 1048576
-        val.append((t*26) // 1048576 + 1)
-        wchrs[y] += val[-1]
-    if yesm(18, 0, 0):
-        mspeak(20)
-        return False
-    print('\n' + ''.join(map(chr, wchrs)))
-    wchrs = list(map(ord, getin()[0]))
-    # What happens if the inputted word is less than five characters?
-    (d,t) = datime()
-    t = (t // 60) * 40 + (t // 10) * 10
-    d = magic.magnm
-    for y in xrange(5):
-        wchrs[y] -= (abs(val[y] - val[(y+1) % 5]) * (d % 10) + t % 10) % 26 + 1
-        t //= 10
-        d //= 10
-    if all(c == 64 for c in wchrs):
-        mspeak(19)
-        return True
-    else:
-        mspeak(20)
-        return False
-
-def hours():  ### MAGIC
-    print()
-    hoursx(magic.wkday, 'Mon - Fri:')
-    hoursx(magic.wkend, 'Sat - Sun:')
-    hoursx(magic.holid, 'Holidays: ')
-    (d,_) = datime()
-    if magic.hend < d or magic.hend < magic.hbegin:
-        return
-    if magic.hbegin > d:
-        d = magic.hbegin - d
-        print('\nThe next holiday will be in %d day%s, namely %s.'
-              % (d, '' if d == 1 else 's', magic.hname))
-    else:
-        print('\nToday is a holiday, namely ' + magic.hname + '.')
-
-def hoursx(horae, day):  ### MAGIC
-    if not any(horae):
-        print(' ' * 10, day, '  Open all day', sep='')
-    else:
-        first = True
-        from = 0
-        while True:
-            while from < 24 and horae[from]:
-                from += 1
-            if from >= 24:
-                if first:
-                    print(' ' * 10, day, '  Closed all day', sep='')
-                break
-            else:
-                till = from + 1
-                while till < 24 and not horae[till]:
-                    till += 1
-                if first:
-                    print(' ' * 10, day, '%4d:00 to%3d:00' % (from, till),
-                          sep='')
+def poof(on, mfile):
+    if on:
+        if mfile is None:
+            try:
+                mfile = open(Magic.magicfile, 'rb')
+            except IOError as e:
+                if e.errno == ENOENT:
+                    return Magic()
                 else:
-                    print(' ' * 20, '%4d:00 to%3d:00' % (from, till), sep='')
-             first = False
-             from = till
-
-def newhrs():  ### MAGIC
-    mspeak(21)
-    magic.wkday = newhrx('weekdays:')
-    magic.wkend = newhrx('weekends:')
-    magic.holid = newhrx('holidays:')
-    mspeak(22)
-    hours()
-
-def newhrx(day):  ### MAGIC
-    horae = [False] * 24
-    print('Prime time on', day)
-    while True:
-        from = getInt('from: ')
-        if not (0 <= from < 24):
-            return horae
-        till = getInt('till: ')
-        if not (from <= till-1 < 24):
-            return horae
-        horae[from:till] = [True] * (till - from)
-
-def motd(alter):  ### MAGIC
-    if alter:
-        mspeak(23)
-        magic.msg = ''
-        # This doesn't exactly match the logic used in the original Fortran,
-        # but it's close:
-        while len(magic.msg) < 430:
-            next = raw_input('> ')
-            if not next:
-                return
-            if len(next) > 70:
-                mspeak(24)
-                continue
-            magic.msg += next + '\n'
-        mspeak(25)
-    elif magic.msg:
-        print(magic.msg, end='')
-
-def poof(mfile):  ### MAGIC
-    global magic
-    if mfile is None:
-        try:
-            mfile = open(magicfile, 'rb')
-        except IOError as e:
-            if e.errno == ENOENT:
-                magic = Magic()
-            else:
-                raise
-    with mfile:
-        magic = load(mfile, Magic)
+                    raise
+        else:
+            Magic.magicfile = mfile.name
+        with mfile:
+            return load(mfile, Magic)
+    else:
+        return NoMagic()
 
 def main():
-    global cave, game, demo, ran
+    global cave, game, magic, demo, ran
     parser = argparse.ArgumentParser()
     parser.add_argument('-D', '--data-file', type=argparse.FileType('r'),
                         default='advent.dat')
-    ###parser.add_argument('-m', '--magic', action='store_true')
+    parser.add_argument('-m', '--magic', action='store_true')
     parser.add_argument('-M', '--magic-file', type=argparse.FileType('rb'))
     parser.add_argument('-R', '--orig-rng', action='store_true')
     parser.add_argument('savedgame', type=argparse.FileType('rb'), nargs='?')
     args = parser.parse_args()
+    ### What should happen if --magic-file is used without --magic?
     goto = label2
     if args.orig_rng:
         ran(1)
@@ -821,15 +838,13 @@ def main():
     with args.data_file:
         cave = Adventure(args.data_file)
     game = Game()
-    if MAGIC:
-        poof(args.magic_file)
+    magic = poof(args.magic, args.magic_file)
     if args.savedgame is not None:
         with args.savedgame:
             goto = resume(args.savedgame.name, args.savedgame)
     else:
-        if MAGIC:
-            demo = start()
-            motd(False)
+        demo = magic.start()
+        magic.motd(False)
         game.hinted[3] = yes(65, 1, 0)
         if game.hinted[3]:
             game.limit = 1000
@@ -1064,11 +1079,11 @@ def label2600():
 def label2608():
     global verb
     game.foobar = min(0, game.foobar)
-    if MAGIC and game.turns == 0 and (word1, word2) == ('MAGIC', 'MODE'):
-        maint()
+    if magic.on and game.turns == 0 and (word1, word2) == ('MAGIC', 'MODE'):
+        magic.maint()
     game.turns += 1
-    if MAGIC and demo and game.turns >= magic.short:
-        mspeak(1)
+    if magic.on and demo and game.turns >= magic.short:
+        magic.mspeak(1)
         normend()
     if verb == Action.SAY:
         if word2:
@@ -1351,9 +1366,9 @@ def vbrief():
     rspeak(156)
 
 def vhours():
-    if MAGIC:
-        mspeak(6)
-        hours()
+    if magic.on:
+        magic.mspeak(6)
+        magic.hours()
     else:
         print()
         print('Colossal Cave is open all day, every day.')
@@ -1952,7 +1967,7 @@ def vsay():
         print('Okay, "' + tk + '".')
 
 def vsuspend(filename):
-    if MAGIC:
+    if magic.on:
         if demo:
             rspeak(201)
             return
@@ -1967,8 +1982,8 @@ def vsuspend(filename):
               ' later.')
     if not yes(200, 54, 54):
         return
-    if MAGIC:
-        (game.saved, game.savet) = datime()
+    if magic.on:
+        (game.saved, game.savet) = magic.datime()
     print()
     print('Saving to', filename, '...')
     try:
@@ -1977,13 +1992,13 @@ def vsuspend(filename):
     except Exception as e:
         traceback.print_exc()
     else:
-        if MAGIC:
-            ciao()
+        if magic.on:
+            magic.ciao()
         sys.exit()
 
 def vresume(filename):
-    if MAGIC and demo:
-        mspeak(9)
+    if magic.on and demo:
+        magic.mspeak(9)
         return None
     if game.turns > 1:
         print()
@@ -2000,6 +2015,5 @@ def resume(fname, fp):
     print()
     print('Restoring from', fname, '...')
     game = load(fp, Game)
-    if MAGIC:
-        start()
+    magic.start()
     return lambda: domove(Movement.NULL)

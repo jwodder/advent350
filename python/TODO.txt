@@ -2,18 +2,16 @@
 - Get rid of as many global variables as possible
 - Try to completely rewrite the system for keeping track of object locations
  - Add a constant for -1 (the location of your inventory)?
-- Make all the magic functions into methods of Magic?
 - Remove fields that are always the same when saved (gaveup, foobar, closing?,
   closed, ???) from `Game` (or just from its pickling method?)
 - Ensure the code works in both Python 2 and Python 3
  - Make all strings Unicode
 - If the user enters "save" without a filename while playing a restored game,
   save the game to the same path that it was restored from?
-- Add command-line options for specifying the default save file path and
-  whether to use magic
+- Add a command-line option for specifying the default save file path
 - Change the `Limits` values to the actual quantities rather than the upper
   limits imposed by the original Fortran?
 - Add docstrings
 - Add error handling for when restoring a saved game fails
-- When a magic file is specified on the command line, `maint` should save to it
-  instead of the default path
+- Permit file names passed to the "save" and "restore" commands to contain
+  spaces
