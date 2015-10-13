@@ -27,7 +27,7 @@ def ran(n):
         d = 1000 + d % 1000
     for _ in xrange(d):
         ran.r = (ran.r * 1021) % 1048576
-        return (n * ran.r) // 1048576
+    return (n * ran.r) // 1048576
 ran.r = 0
 
 MAXDIE = 3
