@@ -12,7 +12,8 @@ import traceback
 
 # Configuration:
 DEFAULT_MAGICFILE = os.path.expanduser('~/.advmagic')
-savefile = os.path.expanduser('~/.adventure')
+DEFAULT_SAVEFILE = os.path.expanduser('~/.adventure')
+DEFAULT_DATAFILE = 'advent.dat'
 
 if sys.version_info[0] >= 3:
     raw_input = input
@@ -297,7 +298,7 @@ class Game(object):
         self.move(obj, self.place[obj])
         self.move(obj+100, self.fixed[obj])
 
-    def score(scoring):
+    def score(scoring, bonus=0):
         score = 0
         for i in xrange(50, 65):
             if self.prop[i] >= 0:
@@ -351,17 +352,8 @@ class Magic(object):
     def yesm(self, x, y, z, blklin=True):
         return yesx(x, y, z, self.mspeak, blklin=blklin)
 
-    def datime(self):
-        """
-        Returns a tuple of the number of days since 1977 Jan 1 and the number
-        of minutes past midnight
-        """
-        ### TODO: Double-check this
-        delta = datetime.today() - datetime(1977, 1, 1)
-        return (delta.days, delta.seconds // 60)
-
     def start(self):
-        (d,t) = self.datime()
+        (d,t) = datime()
         if game.saved != -1:
             delay = (d - game.saved) * 1440 + (t - game.savet)
             if delay < self.latency:
@@ -408,7 +400,7 @@ class Magic(object):
             self.hbegin = getInt()
             self.mspeak(28, blklin=False)
             self.hend = getInt()
-            (d,t) = self.datime()
+            (d,t) = datime()
             self.hbegin += d
             self.hend += self.hbegin - 1
             self.mspeak(29, blklin=False)
@@ -446,7 +438,7 @@ class Magic(object):
         if word != self.magic:
             self.mspeak(20)
             return False
-        (d,t) = self.datime()
+        (d,t) = datime()
         t = t*2 + 1
         wchrs = [64] * 5
         val = []
@@ -463,7 +455,7 @@ class Magic(object):
         print('\n' + ''.join(map(chr, wchrs)))
         wchrs = list(map(ord, getin()[0]))
         ### What happens if the inputted word is less than five characters?
-        (d,t) = self.datime()
+        (d,t) = datime()
         t = (t // 60) * 40 + (t // 10) * 10
         d = self.magnm
         for y in xrange(5):
@@ -482,7 +474,7 @@ class Magic(object):
         self.hoursx(self.wkday, 'Mon - Fri:')
         self.hoursx(self.wkend, 'Sat - Sun:')
         self.hoursx(self.holid, 'Holidays: ')
-        (d,_) = self.datime()
+        (d,_) = datime()
         if self.hend < d or self.hend < self.hbegin:
             return
         if self.hbegin > d:
@@ -569,7 +561,6 @@ class NoMagic(object):
 
 
 demo = False
-bonus = 0
 verb = None
 obj = None
 word1, in1, word2, in2 = None, None, None, None
@@ -769,8 +760,8 @@ def death():
         game.loc = game.oldloc = 3
         return label2000
 
-def normend():
-    score = game.score(False)
+def normend(bonus=0):
+    score = game.score(False, bonus)
     print('\n\n\nYou scored %d out of a possible 350 using %d turns.'
           % (score, game.turns))
     ranks = [cls for cls in cave.classes if cls[0] >= score]
@@ -801,6 +792,15 @@ def doaction():
         print('\nWhat do you want to do with the ' + in1 + '?')
         return label2600
 
+def datime(self):
+    """
+    Returns a tuple of the number of days since 1977 Jan 1 and the number
+    of minutes past midnight
+    """
+    ### TODO: Double-check this
+    delta = datetime.today() - datetime(1977, 1, 1)
+    return (delta.days, delta.seconds // 60)
+
 def poof(on, mfile):
     if on:
         if mfile is None:
@@ -822,7 +822,7 @@ def main():
     global cave, game, magic, demo, ran
     parser = argparse.ArgumentParser()
     parser.add_argument('-D', '--data-file', type=argparse.FileType('r'),
-                        default='advent.dat')
+                        default=DEFAULT_DATAFILE)
     parser.add_argument('-m', '--magic', action='store_true')
     parser.add_argument('-M', '--magic-file', type=argparse.FileType('rb'))
     parser.add_argument('-R', '--orig-rng', action='store_true')
@@ -1275,8 +1275,8 @@ iverbs = {
     Action.FOO: vfoo,
     Action.BRIEF: vbrief,
     Action.READ: vread,
-    Action.SUSPEND: lambda: vsuspend(savefile),
-    Action.RESUME: lambda: vresume(savefile),
+    Action.SUSPEND: lambda: vsuspend(DEFAULT_SAVEFILE),
+    Action.RESUME: lambda: vresume(DEFAULT_SAVEFILE),
     Action.HOURS: vhours,
     Action.ON: von,
     Action.OFF: voff,
@@ -1826,7 +1826,6 @@ def vfill():
 
 def vblast():
     # Label 9230
-    global bonus
     if game.prop[Item.ROD2] < 0 or not game.closed:
         actspk()
     else:
@@ -1836,7 +1835,7 @@ def vblast():
         if game.here(Item.ROD2):
             bonus = 135
         rspeak(bonus)
-        normend()
+        normend(bonus)
         # Fin
 
 def von():
@@ -1983,7 +1982,7 @@ def vsuspend(filename):
     if not yes(200, 54, 54):
         return
     if magic.on:
-        (game.saved, game.savet) = magic.datime()
+        (game.saved, game.savet) = datime()
     print()
     print('Saving to', filename, '...')
     try:
