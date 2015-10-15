@@ -10,8 +10,6 @@
 - If the user enters "save" without a filename while playing a restored game,
   save the game to the same path that it was restored from?
 - Add a command-line option for specifying the default save file path
-- Change the `Limits` values to the actual quantities rather than the upper
-  limits imposed by the original Fortran?
 - Add docstrings
 - Add error handling for when restoring a saved game fails
 - Permit file names passed to the "save" and "restore" commands to contain

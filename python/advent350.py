@@ -19,29 +19,18 @@ if sys.version_info[0] >= 3:
     raw_input = input
     xrange = range
 
-def ran(n):
-    d = 1
-    if ran.r == 0:
-        (d, ran.r) = datime()
-        ran.r = 18 * ran.r + 5
-        d = 1000 + d % 1000
-    for _ in xrange(d):
-        ran.r = (ran.r * 1021) % 1048576
-    return (n * ran.r) // 1048576
-ran.r = 0
-
 MAXDIE = 3
 CHLOC = 114
 CHLOC2 = 140
 
 class Limits(object):
-    OBJECTS   = 100
-    LOCATIONS = 150  # advent.for: LOCSIZ
-    RTEXT     = 205  # advent.for: RTXSIZ
-    HINTS     =  20  # advent.for: HNTSIZ
-    MTEXT     =  35  # advent.for: MAGSIZ
-   #CLASSES   =  12  # advent.for: CLSMAX
-    ACTSPK    =  35  # advent.for: VRBSIZ
+    OBJECTS   =  64  # advent.for: 100
+    LOCATIONS = 140  # advent.for: LOCSIZ/150/
+    RTEXT     = 201  # advent.for: RTXSIZ/205/
+    HINTS     =   9  # advent.for: HNTSIZ/20/
+    MTEXT     =  32  # advent.for: MAGSIZ/35/
+   #CLASSES   =   9  # advent.for: CLSMAX/12/
+    ACTSPK    =  31  # advent.for: VRBSIZ/35/
 
 def mkenum(name, *enums):
     return type(name, (object,), {e: i for (start, words) in enums
@@ -95,8 +84,19 @@ def bysection(line):
             pass
     return sectno
 
-def liq2(self, p):
+def liq2(p):
     return (Item.WATER, 0, Item.OIL)[p]
+
+def ran(n):
+    d = 1
+    if ran.r == 0:
+        (d, ran.r) = datime()
+        ran.r = 18 * ran.r + 5
+        d = 1000 + d % 1000
+    for _ in xrange(d):
+        ran.r = (ran.r * 1021) % 1048576
+    return (n * ran.r) // 1048576
+ran.r = 0
 
 def pct(x):
     return ran(100) < x
