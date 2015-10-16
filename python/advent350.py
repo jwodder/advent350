@@ -109,6 +109,8 @@ def load(fp, ofType):
 
 class Travel(namedtuple('Travel', 'dest verbs verb1 uncond chance nodwarf'
                                   ' carry here obj notprop forced')):
+    __slots__ = ()
+
     @classmethod
     def fromEntry(cls, line):
         line = intTSV(line)
@@ -410,7 +412,7 @@ class Magic(object):
         if x > 0:
             self.short = x
         self.mspeak(12, blklin=False)
-        word = getin()[0]
+        word = getin().word1
         if word is not None:
             self.magic = word
         self.mspeak(13, blklin=False)
@@ -434,7 +436,7 @@ class Magic(object):
         if not self.yesm(16, 0, 7):
             return False
         self.mspeak(17)
-        word = getin()[0]
+        word = getin().word1
         if word != self.magic:
             self.mspeak(20)
             return False
@@ -453,7 +455,7 @@ class Magic(object):
             self.mspeak(20)
             return False
         print('\n' + ''.join(map(chr, wchrs)))
-        wchrs = list(map(ord, getin()[0]))
+        wchrs = list(map(ord, getin().word1))
         ### What happens if the inputted word is less than five characters?
         (d,t) = datime()
         t = (t // 60) * 40 + (t // 10) * 10
@@ -560,10 +562,18 @@ class NoMagic(object):
         return lambda *p, **a: None
 
 
+class InputLine(namedtuple('InputLine', 'word1 in1 word2 in2 raw')):
+    __slots__ = ()
+
+    def moveup(self):
+        return self._replace(word1=self.word2, in1=self.in2,
+                             word2=None, in2=None)
+
+
 demo = False
 verb = None
 obj = None
-word1, in1, word2, in2 = None, None, None, None
+lastline = InputLine(None, None, None, None, None)
 
 cave = None
 game = None
@@ -586,11 +596,16 @@ def getin(blklin=True):
     if blklin:
         print()
     while True:
-        raw = (raw_input('> ').split() + [None]*2)[:2]
-        if raw[0] is None and blklin:
+        raw = raw_input('> ')
+        inp = (raw.split() + [None]*2)[:2]
+        if inp[0] is None and blklin:
             continue
-        words = nonemap(lambda s: s[:5].upper(), raw)
-        return (words[0], raw[0], words[1], raw[1])
+        words = nonemap(lambda s: s[:5].upper(), inp)
+        return InputLine(word1=words[0],
+                         word2=words[1],
+                         in1=inp[0],
+                         in2=inp[1],
+                         raw=raw)
 
 def getInt(prompt='> '):
     while True:
@@ -606,7 +621,7 @@ def yes(x, y, z):
 def yesx(x, y, z, spk, blklin=True):
     while True:
         spk(x, blklin=blklin)
-        reply = getin(blklin=blklin)[0]
+        reply = getin(blklin=blklin).word1
         if reply in ('YES', 'Y'):
             spk(y, blklin=blklin)
             return True
@@ -779,17 +794,16 @@ def normend(bonus=0):
     sys.exit()
 
 def doaction():
-    global word1, in1, word2, in2
+    global lastline
     # Label 5010
-    if word2:
+    if lastline.word2:
         # Label 2800
-        (word1, in1) = (word2, in2)
-        word2 = in2 = None
+        lastline = lastline.moveup()
         return label2610
     elif verb:
         return transitive()
     else:
-        print('\nWhat do you want to do with the ' + in1 + '?')
+        print('\nWhat do you want to do with the ' + lastline.in1 + '?')
         return label2600
 
 def datime(self):
@@ -797,7 +811,6 @@ def datime(self):
     Returns a tuple of the number of days since 1977 Jan 1 and the number
     of minutes past midnight
     """
-    ### TODO: Double-check this
     delta = datetime.today() - datetime(1977, 1, 1)
     return (delta.days, delta.seconds // 60)
 
@@ -1033,7 +1046,7 @@ def label2012():
     return label2600
 
 def label2600():
-    global word1, in1, word2, in2
+    global lastline
     for hint in xrange(4, 10):
         if game.hinted[hint]:
             continue
@@ -1073,20 +1086,21 @@ def label2600():
     game.wzdark = game.dark()
     if 0 < game.knifeloc != game.loc:
         game.knifeloc = 0
-    (word1, in1, word2, in2) = getin()
+    lastline = getin()
     return label2608
 
 def label2608():
     global verb
     game.foobar = min(0, game.foobar)
-    if magic.on and game.turns == 0 and (word1, word2) == ('MAGIC', 'MODE'):
+    if magic.on and game.turns == 0 and \
+            (lastline.word1, lastline.word2) == ('MAGIC', 'MODE'):
         magic.maint()
     game.turns += 1
     if magic.on and demo and game.turns >= magic.short:
         magic.mspeak(1)
         normend()
     if verb == Action.SAY:
-        if word2:
+        if lastline.word2:
             verb = 0
         else:
             return vsay() or label19999
@@ -1154,29 +1168,28 @@ def label2608():
     return label19999
 
 def label19999():
-    global word1, in1, word2, in2
-    if word1 == 'ENTER' and word2 in ('STREA', 'WATER'):
+    global lastline
+    if lastline.word1 == 'ENTER' and lastline.word2 in ('STREA', 'WATER'):
         rspeak(70 if cave.liqloc(game.loc) == Item.WATER else 43)
         return label2012
-    elif word1 == 'ENTER' and word2:
-        (word1, in1) = (word2, in2)
-        word2 = in2 = None
-    elif word1 in ('WATER', 'OIL') and word2 in ('PLANT', 'DOOR') and \
-            game.at(cave.vocab(word2, 1)):
-        word2 = 'POUR'
+    elif lastline.word1 == 'ENTER' and lastline.word2:
+        lastline = lastline.moveup()
+    elif lastline.word1 in ('WATER', 'OIL') and \
+            lastline.word2 in ('PLANT', 'DOOR') and \
+            game.at(cave.vocab(lastline.word2, 1)):
+        lastline = lastline._replace(word2='POUR')
     return label2610
 
 def label2610():
-    if word1 == 'WEST':
+    if lastline.word1 == 'WEST':
         game.iwest += 1
         if game.iwest == 10:
             rspeak(17)
     return label2630
 
 def label2630():
-    global obj, verb
-    global word1, in1, word2, in2
-    i = cave.vocab(word1, -1)
+    global obj, verb, lastline
+    i = cave.vocab(lastline.word1, -1)
     if i == -1:
         rspeak(61 if pct(20) else 13 if pct(20) else 60)
         return label2600
@@ -1193,10 +1206,10 @@ def label2630():
                 return domove(Movement.DEPRESSION)
             elif 9 < game.loc < 15:
                 return domove(Movement.ENTRANCE)
-            elif verb in (Action.FIND, Action.INVENT) and not word2:
+            elif verb in (Action.FIND, Action.INVENT) and not lastline.word2:
                 return doaction()
             else:
-                print('\nI see no', in1, 'here.')
+                print('\nI see no', lastline.in1, 'here.')
                 return label2012
         elif (obj == Item.DWARF and game.dflag >= 2 and \
                 game.loc in game.dloc[:5]) or \
@@ -1214,20 +1227,19 @@ def label2630():
         elif obj == Item.ROD and game.here(Item.ROD2):
             obj = Item.ROD2
             return doaction()
-        elif verb in (Action.FIND, Action.INVENT) and not word2:
+        elif verb in (Action.FIND, Action.INVENT) and not lastline.word2:
             return doaction()
         else:
-            print('\nI see no', in1, 'here.')
+            print('\nI see no', lastline.in1, 'here.')
             return label2012
     elif i // 1000 == 2:
         # Label 4000
         verb = k
         if verb in (Action.SAY, Action.SUSPEND, Action.RESUME):
-            obj = word2 is not None
+            obj = lastline.word2 is not None
             # This assignment just indicates whether an object was supplied.
-        elif word2:
-            (word1, in1) = (word2, in2)
-            word2 = in2 = None
+        elif lastline.word2:
+            lastline = lastline.moveup()
             return label2610
         if obj:
             return transitive()
@@ -1245,7 +1257,7 @@ def label2630():
 def what():
     global obj
     print()
-    print(in1, 'what?')
+    print(lastline.in1, 'what?')
     obj = 0
     return label2600
 
@@ -1322,8 +1334,8 @@ tverbs = {
     Action.READ: vread,
     Action.BREAK: vbreak,
     Action.WAKE: vwake,
-    Action.SUSPEND: lambda: vsuspend(in2),
-    Action.RESUME: lambda: vresume(in2),
+    Action.SUSPEND: lambda: vsuspend(lastline.in2),
+    Action.RESUME: lambda: vresume(lastline.in2),
 }
 
 def transitive():
@@ -1340,7 +1352,7 @@ def vscore():
         normend()
 
 def vfoo():
-    k = cave.vocab(word1, 3)
+    k = cave.vocab(lastline.word1, 3)
     if game.foobar == 1-k:
         game.foobar = k
         if k != 4:
@@ -1657,7 +1669,7 @@ def vread():
     # Label 9270
     if game.dark():
         print()
-        print('I see no', in1, 'here.')
+        print('I see no', lastline.in1, 'here.')
     else:
         spk = {
             Item.MAGZIN: 190,
@@ -1674,8 +1686,7 @@ def vread():
 
 def vkill():
     # Label 9120
-    global verb, obj
-    global word1, in1, word2, in2
+    global verb, obj, lastline
     if obj == 0:
         if game.dflag >= 2 and game.loc in game.dloc[:5]:
             obj = Item.DWARF
@@ -1723,8 +1734,8 @@ def vkill():
         else:
             rspeak(49)
             (verb, obj) = (0, 0)
-            (word1, in1, word2, in2) = getin()
-            if word1 not in ('YES', 'Y'):
+            lastline = getin()
+            if lastline.word1 not in ('YES', 'Y'):
                 return label2608
             pspeak(Item.DRAGON, 1)
             game.prop[Item.DRAGON] = 2
@@ -1954,11 +1965,12 @@ def vfeed():
 
 def vsay():
     # Label 9030
-    global word1, word2, obj
-    tk = in2 if in2 is not None else in1
-    word1 = word2 if word2 is not None else word1
-    if cave.vocab(word1, -1) in (62, 65, 71, 2025):
-        word2 = None
+    global lastline
+    tk = lastline.in2 if lastline.in2 is not None else lastline.in1
+    if lastline.word2 is not None:
+        lastline = lastline._replace(word1=lastline.word2)
+    if cave.vocab(lastline.word1, -1) in (62, 65, 71, 2025):
+        lastline = lastline._replace(word2=None)
         obj = 0
         return label2630
     else:
