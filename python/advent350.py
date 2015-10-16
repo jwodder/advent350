@@ -7,6 +7,7 @@ from   errno       import ENOENT
 import itertools
 import os.path
 import pickle
+import shlex
 import sys
 import traceback
 
@@ -428,7 +429,7 @@ class Magic(object):
         if self.yesm(14, 0, 0):
             self.motd(True)
         self.mspeak(15, blklin=False)
-        with open(self.magicfile, 'w') as fp:
+        with open(self.magicfile, 'wb') as fp:
             pickle.dump(fp, magic)
         self.ciao()
 
@@ -1061,7 +1062,10 @@ def label2600():
                                    obj != Item.BIRD) or \
                     hint == 6 and (not game.here(Item.SNAKE)
                                    or game.here(Item.BIRD)) or \
-                    hint == 7 and (any(game.atloc[l] for l in (game.loc, game.oldloc, game.oldloc2)) or game.holding <= 1) or \
+                    hint == 7 and (any(game.atloc[l]
+                                       for l in (game.loc, game.oldloc,
+                                                 game.oldloc2))
+                                   or game.holding <= 1) or \
                     hint == 8 and (game.prop[Item.EMERALD] == -1 or
                                    game.prop[Item.PYRAM] != -1):
                 if hint != 5:
@@ -1287,8 +1291,8 @@ iverbs = {
     Action.FOO: vfoo,
     Action.BRIEF: vbrief,
     Action.READ: vread,
-    Action.SUSPEND: lambda: vsuspend(DEFAULT_SAVEFILE),
-    Action.RESUME: lambda: vresume(DEFAULT_SAVEFILE),
+    Action.SUSPEND: vsuspend,
+    Action.RESUME: vresume,
     Action.HOURS: vhours,
     Action.ON: von,
     Action.OFF: voff,
@@ -1334,8 +1338,8 @@ tverbs = {
     Action.READ: vread,
     Action.BREAK: vbreak,
     Action.WAKE: vwake,
-    Action.SUSPEND: lambda: vsuspend(lastline.in2),
-    Action.RESUME: lambda: vresume(lastline.in2),
+    Action.SUSPEND: vsuspend,
+    Action.RESUME: vresume,
 }
 
 def transitive():
@@ -1977,7 +1981,16 @@ def vsay():
         print()
         print('Okay, "' + tk + '".')
 
-def vsuspend(filename):
+def vsuspend():
+    if obj:
+        cmd = shlex.split(lastline.raw)
+        if len(cmd) != 2 or not cmd[1]:
+            print()
+            print('Save to what file?')
+            return
+        filename = os.path.expanduser(cmd[1])
+    else:
+        filename = DEFAULT_SAVEFILE
     if magic.on:
         if demo:
             rspeak(201)
@@ -1998,7 +2011,7 @@ def vsuspend(filename):
     print()
     print('Saving to', filename, '...')
     try:
-        with open(filename, 'w') as fp:
+        with open(filename, 'wb') as fp:
             pickle.dump(fp, game)
     except Exception as e:
         traceback.print_exc()
@@ -2007,7 +2020,16 @@ def vsuspend(filename):
             magic.ciao()
         sys.exit()
 
-def vresume(filename):
+def vresume():
+    if obj:
+        cmd = shlex.split(lastline.raw)
+        if len(cmd) != 2 or not cmd[1]:
+            print()
+            print('Restore from what file?')
+            return
+        filename = os.path.expanduser(cmd[1])
+    else:
+        filename = DEFAULT_SAVEFILE
     if magic.on and demo:
         magic.mspeak(9)
         return None
@@ -2027,4 +2049,4 @@ def resume(fname, fp):
     print('Restoring from', fname, '...')
     game = load(fp, Game)
     magic.start()
-    return lambda: domove(Movement.NULL)
+    return domove(Movement.NULL)

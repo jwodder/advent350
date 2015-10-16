@@ -12,5 +12,3 @@
 - Add a command-line option for specifying the default save file path
 - Add docstrings
 - Add error handling for when restoring a saved game fails
-- Permit file names passed to the "save" and "restore" commands to contain
-  spaces
