@@ -37,7 +37,7 @@ bool bitset(int loc, int n) {
 }
 
 bool forced(int loc) {
- return travel[loc][0][1] == 1;
+ return loc > 0 && travel[loc][0][1] == 1;
 }
 
 bool dark(void) {

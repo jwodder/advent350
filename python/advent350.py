@@ -186,7 +186,7 @@ class Adventure(object):
         return self.cond[loc] & (1 << n)
 
     def forced(self, loc):
-        return self.travel[loc][0].forced
+        return loc > 0 and self.travel[loc][0].forced
 
     def vocab(self, word, wordtype):
         matches = self.vocabulary[word]
