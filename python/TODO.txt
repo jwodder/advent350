@@ -2,8 +2,8 @@
 - Get rid of as many global variables as possible
 - Try to completely rewrite the system for keeping track of object locations
  - Add a constant for -1 (the location of your inventory)?
-- Remove fields that are always the same when saved (gaveup, foobar, closing?,
-  closed, ???) from `Game` (or just from its pickling method?)
+- Remove fields that are always the same when saved (gaveup, foobar, ???) from
+  `Game` (or just from its pickling method?)
 - Ensure the code works in both Python 2 and Python 3
 - Get the code to pass pylint
 - If the user enters "save" without a filename while playing a restored game,
@@ -12,3 +12,5 @@
 - Add docstrings
 - Add error handling for when restoring a saved game fails
 - Use constants in place of as many magic numbers as possible/reasonable
+- Add an option for using the original RNG with a specified seed/datime for the
+  purposes of reproducibility/testing?

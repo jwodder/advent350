@@ -10,15 +10,12 @@ import pickle
 import shlex
 import sys
 import traceback
+from   six.moves   import input, range
 
 # Configuration:
 DEFAULT_MAGICFILE = os.path.expanduser('~/.advmagic')
 DEFAULT_SAVEFILE = os.path.expanduser('~/.adventure')
 DEFAULT_DATAFILE = 'advent.dat'
-
-if sys.version_info[0] >= 3:
-    raw_input = input
-    xrange = range
 
 MAXDIE = 3
 CHLOC = 114
@@ -93,7 +90,7 @@ def ran(n):
         (d, ran.r) = datime()
         ran.r = 18 * ran.r + 5
         d = 1000 + d % 1000
-    for _ in xrange(d):
+    for _ in range(d):
         ran.r = (ran.r * 1021) % 1048576
     return (n * ran.r) // 1048576
 ran.r = 0
@@ -237,18 +234,18 @@ class Game(object):
         self.dseen = [False] * 6
         self.dflag = 0
         self.dkill = 0
-        self.atloc = [[] for _ in xrange(Limits.LOCATIONS + 1)]
+        self.atloc = [[] for _ in range(Limits.LOCATIONS + 1)]
         self.place = cave.startplace[:]
         self.fixed = cave.startfixed[:]
         self.saved = -1
         self.savet = 0
         self.gaveup = False
         ### TODO: Replace the calls to `drop` with modifications of `atloc`
-        for k in xrange(len(self.fixed)-1, -1, -1):
+        for k in range(len(self.fixed)-1, -1, -1):
             if self.fixed[k] > 0:
                 self.drop(k+100, self.fixed[k])
                 self.drop(k, self.place[k])
-        for k in xrange(len(self.fixed)-1, -1, -1):
+        for k in range(len(self.fixed)-1, -1, -1):
             if self.place[k] != 0 and self.fixed[k] <= 0:
                 self.drop(k, self.place[k])
 
@@ -305,7 +302,7 @@ class Game(object):
 
     def score(self, scoring, bonus=0):
         score = 0
-        for i in xrange(50, 65):
+        for i in range(50, 65):
             if self.prop[i] >= 0:
                 score += 2
             if self.place[i] == 3 and self.prop[i] == 0:
@@ -322,7 +319,7 @@ class Game(object):
         if self.place[Item.MAGZIN] == 108:
             score += 1
         score += 2
-        for i in xrange(1, 10):
+        for i in range(1, 10):
             if self.hinted[i]:
                 score -= cave.hints[i].points
         return score
@@ -409,7 +406,7 @@ class Magic(object):
             self.hbegin += d
             self.hend += self.hbegin - 1
             self.mspeak(29, blklin=False)
-            self.hname = raw_input('> ')[:20]
+            self.hname = input('> ')[:20]
         print('Length of short game (null to leave at %d):' % (self.short,))
         x = getInt()
         if x > 0:
@@ -447,10 +444,10 @@ class Magic(object):
         t = t*2 + 1
         wchrs = [64] * 5
         val = []
-        for y in xrange(5):
+        for y in range(5):
             x = 79 + d % 5
             d //= 5
-            for _ in xrange(x):
+            for _ in range(x):
                 t = (t * 1027) % 1048576
             val.append((t*26) // 1048576 + 1)
             wchrs[y] += val[-1]
@@ -463,7 +460,7 @@ class Magic(object):
         (d,t) = datime()
         t = (t // 60) * 40 + (t // 10) * 10
         d = self.magnm
-        for y in xrange(5):
+        for y in range(5):
             wchrs[y] -= (abs(val[y] - val[(y+1)%5]) * (d%10) + t%10) % 26 + 1
             t //= 10
             d //= 10
@@ -542,7 +539,7 @@ class Magic(object):
             # This doesn't exactly match the logic used in the original Fortran,
             # but it's close:
             while len(self.msg) < 430:
-                nextline = raw_input('> ')
+                nextline = input('> ')
                 if not nextline:
                     return
                 if len(nextline) > 70:
@@ -599,7 +596,7 @@ def getin(blklin=True):
     if blklin:
         print()
     while True:
-        raw = raw_input('> ')
+        raw = input('> ')
         inp = (raw.split() + [None]*2)[:2]
         if inp[0] is None and blklin:
             continue
@@ -612,7 +609,7 @@ def getin(blklin=True):
 
 def getInt(prompt='> '):
     while True:
-        raw = raw_input(prompt)
+        raw = input(prompt)
         try:
             return int(raw)
         except ValueError:
@@ -772,7 +769,7 @@ def death():
         game.place[Item.OIL] = 0
         if game.toting(Item.LAMP):
             game.prop[Item.LAMP] = 0
-        for i in xrange(64, 0, -1):
+        for i in range(64, 0, -1):
             if game.toting(i):
                 game.drop(i, 1 if i == Item.LAMP else game.oldloc2)
         game.loc = game.oldloc = 3
@@ -878,7 +875,7 @@ def label2():
             not cave.forced(game.loc) and \
             not cave.bitset(game.loc, Cond.NO_PIRATE) and \
             any(game.odloc[i] == game.newloc and game.dseen[i]
-                for i in xrange(5)):
+                for i in range(5)):
         game.newloc = game.loc
         rspeak(2)
     game.loc = game.newloc
@@ -899,7 +896,7 @@ def label2():
         # Yes, this is supposed to be done twice.
         if pct(50):
             game.dloc[ran(5)] = 0
-        for i in xrange(5):
+        for i in range(5):
             if game.dloc[i] == game.loc:
                 game.dloc[i] = 18
             game.odloc[i] = game.dloc[i]
@@ -907,7 +904,7 @@ def label2():
         game.drop(Item.AXE, game.loc)
         return label2000
     dtotal, attack, stick = 0, 0, 0
-    for i in xrange(6):  # The individual dwarven movement loop
+    for i in range(6):  # The individual dwarven movement loop
         if game.dloc[i] == 0:
             continue
         kk = 0
@@ -934,7 +931,7 @@ def label2():
                     continue
                 k = False
                 stole = False
-                for j in xrange(50, 65):
+                for j in range(50, 65):
                     if j == Item.PYRAM and game.loc in (100, 101):
                         continue
                     if game.toting(j):
@@ -942,7 +939,7 @@ def label2():
                         if game.place[Item.MESSAG] == 0:
                             game.move(Item.CHEST, CHLOC)
                         game.move(Item.MESSAG, CHLOC2)
-                        for j2 in xrange(50, 65):
+                        for j2 in range(50, 65):
                             if j2 == Item.PYRAM and game.loc in (100, 101):
                                 continue
                             if game.at(j2) and game.fixed[j2] == 0:
@@ -1050,7 +1047,7 @@ def label2012():
 
 def label2600():
     global lastline
-    for hint in xrange(4, 10):
+    for hint in range(4, 10):
         if game.hinted[hint]:
             continue
         if not cave.bitset(game.loc, hint):
@@ -1085,7 +1082,7 @@ def label2600():
     if game.closed:
         if game.prop[Item.OYSTER] < 0 and game.toting(Item.OYSTER):
             pspeak(Item.OYSTER, 1)
-        for i in xrange(1, 65):
+        for i in range(1, 65):
             if game.toting(i) and game.prop[i] < 0:
                 game.prop[i] = -1 - game.prop[i]
     # Label 2605
@@ -1141,7 +1138,7 @@ def label2608():
             game.prop[i] = game.put(i, 116, int(i in (Item.SNAKE, Item.BIRD)))
         game.prop[Item.MIRROR] = game.put(Item.MIRROR, 115, 0)
         game.fixed[Item.MIRROR] = 116
-        for i in xrange(1, 65):
+        for i in range(1, 65):
             if game.toting(i):
                 game.destroy(i)
         rspeak(132)
@@ -1320,7 +1317,7 @@ def vquit():
 
 def vinvent():
     spk = 98
-    for i in xrange(65):
+    for i in range(65):
         if i == Item.BEAR or not game.toting(i):
             continue
         if spk == 98:
@@ -1380,7 +1377,7 @@ def vthrow():
         obj = Item.BEAR
         return vfeed()
     elif obj == Item.AXE:
-        ixs = [i for i in xrange(5) if game.dloc[i] == game.loc]
+        ixs = [i for i in range(5) if game.dloc[i] == game.loc]
         if ixs:
             if ran(3) == 0:
                 rspeak(48)
@@ -1672,7 +1669,7 @@ def vkill():
             game.move(Item.RUG+100, 0)
             game.move(Item.DRAGON, 120)
             game.move(Item.RUG, 120)
-            for i in xrange(65):
+            for i in range(65):
                 if game.place[i] in (119, 121):
                     game.move(i, 120)
             game.loc = 120
