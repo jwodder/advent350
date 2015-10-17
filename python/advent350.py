@@ -30,7 +30,6 @@ class Limits(object):
     RTEXT     = 201  # advent.for: RTXSIZ/205/
     HINTS     =   9  # advent.for: HNTSIZ/20/
     MTEXT     =  32  # advent.for: MAGSIZ/35/
-   #CLASSES   =   9  # advent.for: CLSMAX/12/
     ACTSPK    =  31  # advent.for: VRBSIZ/35/
 
 def mkenum(name, *enums):
@@ -141,7 +140,7 @@ class Adventure(object):
                               indexLines(sections[3], Limits.LOCATIONS))
         self.vocabulary = defaultdict(list)
         for entry in sections[4]:
-            i, word = entry.split('\t')[:2]
+            i, word = entry.strip().split('\t')[:2]
             self.vocabulary[word].append(int(i))
         self.itemDesc = [None] * (Limits.OBJECTS + 1)
         obj = 0
@@ -173,7 +172,10 @@ class Adventure(object):
         for cs in map(intTSV, sections[9]):
             for loc in cs[1:]:
                 self.cond[loc] |= 1 << cs[0]
-        self.classes = list(map(lambda s: s.strip().split('\t'), sections[10]))
+        self.classes = []
+        for line in sections[10]:
+            threshold, msg = line.split('\t', 1)
+            self.classes.append((int(threshold), msg))
         self.hints = nonemap(lambda s: Hint(*intTSV(s)),
                              indexLines(sections[11], Limits.HINTS))
         self.magic = indexLines(sections[12], Limits.MTEXT)
@@ -301,7 +303,7 @@ class Game(object):
         self.move(obj, self.place[obj])
         self.move(obj+100, self.fixed[obj])
 
-    def score(scoring, bonus=0):
+    def score(self, scoring, bonus=0):
         score = 0
         for i in xrange(50, 65):
             if self.prop[i] >= 0:
@@ -807,7 +809,7 @@ def doaction():
         print('\nWhat do you want to do with the ' + lastline.in1 + '?')
         return label2600
 
-def datime(self):
+def datime():
     """
     Returns a tuple of the number of days since 1977 Jan 1 and the number
     of minutes past midnight
@@ -1891,7 +1893,7 @@ def vfeed():
 
 def vsay():
     # Label 9030
-    global lastline
+    global lastline, obj
     tk = lastline.in2 if lastline.in2 is not None else lastline.in1
     if lastline.word2 is not None:
         lastline = lastline._replace(word1=lastline.word2)
