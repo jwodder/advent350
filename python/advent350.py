@@ -1,5 +1,5 @@
 #!/usr/bin/python
-from   __future__  import print_function
+from   __future__  import print_function, unicode_literals
 import argparse
 from   collections import defaultdict, namedtuple
 from   datetime    import datetime
@@ -34,9 +34,9 @@ class Limits(object):
     ACTSPK    =  31  # advent.for: VRBSIZ/35/
 
 def mkenum(name, *enums):
-    return type(name, (object,), {e: i for (start, words) in enums
-                                       for (i,e) in enumerate(words.split(),
-                                                              start=start)})
+    return type(str(name), (object,), {e:i for (start, words) in enums
+                                           for i,e in enumerate(words.split(),
+                                                                start=start)})
 
 Item = mkenum('Item', (1, 'KEYS LAMP GRATE CAGE ROD ROD2 STEPS BIRD DOOR PILLOW'
                           ' SNAKE FISSUR TABLET CLAM OYSTER MAGZIN DWARF KNIFE'
@@ -64,9 +64,9 @@ Cond = mkenum('Cond', (0, 'LIGHT OIL LIQUID NO_PIRATE'))
 def indexLines(lines, qty):
     data = [None] * (qty+1)
     for i, block in itertools.groupby(lines, lambda s: int(s.split('\t')[0])):
-        dict[i] = ''.join(s.split('\t', 1)[1] for s in block)
-        if '>$<' in dict[i]:
-            dict[i] = None
+        data[i] = ''.join(s.split('\t', 1)[1] for s in block)
+        if '>$<' in data[i]:
+            data[i] = None
     return data
 
 def intTSV(line):
@@ -131,7 +131,7 @@ class Travel(namedtuple('Travel', 'dest verbs verb1 uncond chance nodwarf'
 Hint = namedtuple('Hint', 'turns points question hint')
 
 class Adventure(object):
-    def __init__(self, advdat)
+    def __init__(self, advdat):
         sections = {index: list(sect)[1:-1]
                     for index, sect in itertools.groupby(advdat, bysection)}
         self.longDesc = indexLines(sections[1], Limits.LOCATIONS)
@@ -143,7 +143,7 @@ class Adventure(object):
         for entry in sections[4]:
             i, word = entry.split('\t')[:2]
             self.vocabulary[word].append(int(i))
-        self.itemDesc = [None] * Limits.OBJECTS
+        self.itemDesc = [None] * (Limits.OBJECTS + 1)
         obj = 0
         for line in sections[5]:
             num, txt = line.split('\t', 1)
@@ -152,16 +152,16 @@ class Adventure(object):
                 txt = None
             if 1 <= num < 100:
                 obj = num
-                itemDesc[obj] = [txt]
+                self.itemDesc[obj] = [txt]
             else:
                 state = num // 100
                 try:
-                    itemDesc[obj][state+1] += txt
+                    self.itemDesc[obj][state+1] += txt
                 except IndexError:
-                    itemDesc[obj].append(txt)
+                    self.itemDesc[obj].append(txt)
         self.rmsg = indexLines(sections[6], Limits.RTEXT)
-        self.startplace = [0] * Limits.OBJECTS
-        self.startfixed = [0] * Limits.OBJECTS
+        self.startplace = [0] * (Limits.OBJECTS + 1)
+        self.startfixed = [0] * (Limits.OBJECTS + 1)
         for locs in map(intTSV, sections[7]):
             self.startplace[locs[0]] = locs[1]
             try:
@@ -169,7 +169,7 @@ class Adventure(object):
             except IndexError:
                 self.startfixed[locs[0]] = 0
         self.actspk = indexLines(sections[8], Limits.ACTSPK)
-        self.cond = [0] * Limits.LOCATIONS
+        self.cond = [0] * (Limits.LOCATIONS + 1)
         for cs in map(intTSV, sections[9]):
             for loc in cs[1:]:
                 self.cond[loc] |= 1 << cs[0]
@@ -236,8 +236,8 @@ class Game(object):
         self.dflag = 0
         self.dkill = 0
         self.atloc = [[] for _ in xrange(Limits.LOCATIONS + 1)]
-        self.place = game.startplace[:]
-        self.fixed = game.startfixed[:]
+        self.place = cave.startplace[:]
+        self.fixed = cave.startfixed[:]
         self.saved = -1
         self.savet = 0
         self.gaveup = False
@@ -285,9 +285,9 @@ class Game(object):
             self.atloc[where].insert(0, obj)
 
     def move(self, obj, where):
-        from = self.fixed[obj-100] if obj > 100 else self.place[obj]
-        if 0 < from <= 300:
-            self.carry(obj, from)
+        whence = self.fixed[obj-100] if obj > 100 else self.place[obj]
+        if 0 < whence <= 300:
+            self.carry(obj, whence)
         self.drop(obj, where)
 
     def put(self, obj, where, pval):
@@ -492,26 +492,26 @@ class Magic(object):
             print(' ' * 10, day, '  Open all day', sep='')
         else:
             first = True
-            from = 0
+            fromH = 0
             while True:
-                while from < 24 and horae[from]:
-                    from += 1
-                if from >= 24:
+                while fromH < 24 and horae[fromH]:
+                    fromH += 1
+                if fromH >= 24:
                     if first:
                         print(' ' * 10, day, '  Closed all day', sep='')
                     break
                 else:
-                    till = from + 1
+                    till = fromH + 1
                     while till < 24 and not horae[till]:
                         till += 1
                     if first:
-                        print(' ' * 10, day, '%4d:00 to%3d:00' % (from, till),
+                        print(' ' * 10, day, '%4d:00 to%3d:00' % (fromH, till),
                               sep='')
                     else:
-                        print(' ' * 20, '%4d:00 to%3d:00' % (from, till),
+                        print(' ' * 20, '%4d:00 to%3d:00' % (fromH, till),
                               sep='')
-                 first = False
-                 from = till
+                first = False
+                fromH = till
 
     def newhrs(self):
         self.mspeak(21)
@@ -525,13 +525,13 @@ class Magic(object):
         horae = [False] * 24
         print('Prime time on', day)
         while True:
-            from = getInt('from: ')
-            if not (0 <= from < 24):
+            fromH = getInt('from: ')
+            if not (0 <= fromH < 24):
                 return horae
             till = getInt('till: ')
-            if not (from <= till-1 < 24):
+            if not (fromH <= till-1 < 24):
                 return horae
-            horae[from:till] = [True] * (till - from)
+            horae[fromH:till] = [True] * (till - fromH)
 
     def motd(self, alter):
         if alter:
@@ -589,9 +589,9 @@ def speak(s, blklin=True):
 def pspeak(item, state, blklin=True):
     speak(cave.itemDesc[item][state+1], blklin=blklin)
 
-def rspeak(msg):
+def rspeak(msg, blklin=True):
     if msg != 0:
-        speak(cave.rmsg[msg])
+        speak(cave.rmsg[msg], blklin=blklin)
 
 def getin(blklin=True):
     if blklin:
@@ -1268,84 +1268,6 @@ def what():
 def actspk():
     rspeak(cave.actspk[verb])
 
-iverbs = {
-    Action.NOTHING: lambda: rspeak(54),
-    Action.WALK: actspk,
-    Action.DROP: what,
-    Action.SAY: what,
-    Action.WAVE: what,
-    Action.CALM: what,
-    Action.RUB: what,
-    Action.THROW: what,
-    Action.FIND: what,
-    Action.FEED: what,
-    Action.BREAK: what,
-    Action.WAKE: what,
-    Action.TAKE: vtake,
-    Action.OPEN: vopen,
-    Action.LOCK: vopen,
-    Action.EAT: iveat,
-    Action.QUIT: vquit,
-    Action.INVENT: vinvent,
-    Action.SCORE: vscore,
-    Action.FOO: vfoo,
-    Action.BRIEF: vbrief,
-    Action.READ: vread,
-    Action.SUSPEND: vsuspend,
-    Action.RESUME: vresume,
-    Action.HOURS: vhours,
-    Action.ON: von,
-    Action.OFF: voff,
-    Action.KILL: vkill,
-    Action.POUR: vpour,
-    Action.DRINK: vdrink,
-    Action.FILL: vfill,
-    Action.BLAST: vblast,
-}
-
-def intransitive():
-    # Label 4080 (intransitive verb handling)
-    return iverbs.get(verb, lambda: bug(23))() or label2012
-
-tverbs = {
-    Action.TAKE: vtake,
-    Action.DROP: vdrop,
-    Action.SAY: vsay,
-    Action.OPEN: vopen,
-    Action.LOCK: vopen,
-    Action.NOTHING: lambda: rspeak(54),
-    Action.ON: von,
-    Action.OFF: voff,
-    Action.WAVE: vwave,
-    Action.CALM: actspk,
-    Action.WALK: actspk,
-    Action.QUIT: actspk,
-    Action.SCORE: actspk,
-    Action.FOO: actspk,
-    Action.BRIEF: actspk,
-    Action.HOURS: actspk,
-    Action.KILL: vkill,
-    Action.POUR: vpour,
-    Action.EAT: veat,
-    Action.DRINK: vdrink,
-    Action.RUB: lambda: actspk() if obj == Item.LAMP else rspeak(76),
-    Action.THROW: vthrow,
-    Action.FIND: vfind,
-    Action.INVENT: vfind,
-    Action.FEED: vfeed,
-    Action.FILL: vfill,
-    Action.BLAST: vblast,
-    Action.READ: vread,
-    Action.BREAK: vbreak,
-    Action.WAKE: vwake,
-    Action.SUSPEND: vsuspend,
-    Action.RESUME: vresume,
-}
-
-def transitive():
-    # Label 4090 (transitive verb handling)
-    return tverbs.get(verb, lambda: bug(24))() or label2012
-
 def vscore():
     score = game.score(True)
     print()
@@ -1867,7 +1789,7 @@ def von():
 
 def voff():
     # Label 9080
-    if not game.here(Item.LAMP)
+    if not game.here(Item.LAMP):
         actspk()
     else:
         game.prop[Item.LAMP] = 0
@@ -2050,3 +1972,84 @@ def resume(fname, fp):
     game = load(fp, Game)
     magic.start()
     return domove(Movement.NULL)
+
+iverbs = {
+    Action.NOTHING: lambda: rspeak(54),
+    Action.WALK: actspk,
+    Action.DROP: what,
+    Action.SAY: what,
+    Action.WAVE: what,
+    Action.CALM: what,
+    Action.RUB: what,
+    Action.THROW: what,
+    Action.FIND: what,
+    Action.FEED: what,
+    Action.BREAK: what,
+    Action.WAKE: what,
+    Action.TAKE: vtake,
+    Action.OPEN: vopen,
+    Action.LOCK: vopen,
+    Action.EAT: iveat,
+    Action.QUIT: vquit,
+    Action.INVENT: vinvent,
+    Action.SCORE: vscore,
+    Action.FOO: vfoo,
+    Action.BRIEF: vbrief,
+    Action.READ: vread,
+    Action.SUSPEND: vsuspend,
+    Action.RESUME: vresume,
+    Action.HOURS: vhours,
+    Action.ON: von,
+    Action.OFF: voff,
+    Action.KILL: vkill,
+    Action.POUR: vpour,
+    Action.DRINK: vdrink,
+    Action.FILL: vfill,
+    Action.BLAST: vblast,
+}
+
+def intransitive():
+    # Label 4080 (intransitive verb handling)
+    return iverbs.get(verb, lambda: bug(23))() or label2012
+
+tverbs = {
+    Action.TAKE: vtake,
+    Action.DROP: vdrop,
+    Action.SAY: vsay,
+    Action.OPEN: vopen,
+    Action.LOCK: vopen,
+    Action.NOTHING: lambda: rspeak(54),
+    Action.ON: von,
+    Action.OFF: voff,
+    Action.WAVE: vwave,
+    Action.CALM: actspk,
+    Action.WALK: actspk,
+    Action.QUIT: actspk,
+    Action.SCORE: actspk,
+    Action.FOO: actspk,
+    Action.BRIEF: actspk,
+    Action.HOURS: actspk,
+    Action.KILL: vkill,
+    Action.POUR: vpour,
+    Action.EAT: veat,
+    Action.DRINK: vdrink,
+    Action.RUB: lambda: actspk() if obj == Item.LAMP else rspeak(76),
+    Action.THROW: vthrow,
+    Action.FIND: vfind,
+    Action.INVENT: vfind,
+    Action.FEED: vfeed,
+    Action.FILL: vfill,
+    Action.BLAST: vblast,
+    Action.READ: vread,
+    Action.BREAK: vbreak,
+    Action.WAKE: vwake,
+    Action.SUSPEND: vsuspend,
+    Action.RESUME: vresume,
+}
+
+def transitive():
+    # Label 4090 (transitive verb handling)
+    return tverbs.get(verb, lambda: bug(24))() or label2012
+
+if __name__ == '__main__':
+    main()

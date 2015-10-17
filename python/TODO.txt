@@ -5,7 +5,6 @@
 - Remove fields that are always the same when saved (gaveup, foobar, closing?,
   closed, ???) from `Game` (or just from its pickling method?)
 - Ensure the code works in both Python 2 and Python 3
- - Make all strings Unicode
 - Get the code to pass pylint
 - If the user enters "save" without a filename while playing a restored game,
   save the game to the same path that it was restored from?
