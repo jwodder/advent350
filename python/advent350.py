@@ -234,20 +234,22 @@ class Game(object):
         self.dseen = [False] * 6
         self.dflag = 0
         self.dkill = 0
-        self.atloc = [[] for _ in range(Limits.LOCATIONS + 1)]
         self.place = cave.startplace[:]
         self.fixed = cave.startfixed[:]
         self.saved = -1
         self.savet = 0
         self.gaveup = False
-        ### TODO: Replace the calls to `drop` with modifications of `atloc`
-        for k in range(len(self.fixed)-1, -1, -1):
-            if self.fixed[k] > 0:
-                self.drop(k+100, self.fixed[k])
-                self.drop(k, self.place[k])
-        for k in range(len(self.fixed)-1, -1, -1):
-            if self.place[k] != 0 and self.fixed[k] <= 0:
-                self.drop(k, self.place[k])
+        self.atloc = [[]]
+        for i in range(1, Limits.LOCATIONS+1):
+            here = [k for k in range(1, Limits.OBJECTS+1)
+                      if self.place[k] == i and self.fixed[k] <= 0]
+            for k in range(1, Limits.OBJECTS+1):
+                if self.place[k] == i and self.fixed[k] > 0:
+                    here.append(k)
+                elif self.fixed[k] == i:
+                    here.append(k+100)
+            self.atloc.append(here)
+        print(repr(self.atloc)); sys.exit()  ######
 
     def toting(self, item):
         return self.place[item] == -1
