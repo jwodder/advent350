@@ -120,7 +120,7 @@ class Travel(namedtuple('Travel', 'dest verbs verb1 uncond chance nodwarf'
                    nodwarf = M == 100,
                    carry = M - 100 if 100 < M <= 200 else None,
                    here = M - 200 if 200 < M <= 300 else None,
-                   obj = M % 100,
+                   obj = M % 100 if 300 < M else None,
                    notprop = M // 100 - 3 if 300 < M else None,
                    forced = line[1] == 1)
 
@@ -694,7 +694,7 @@ def dotrav(motion):
                 trav.chance and pct(trav.chance) or\
                 trav.carry and game.toting(trav.carry) or\
                 trav.here and (game.toting(trav.here) or game.at(trav.here)) or\
-                game.prop[trav.obj] != trav.notprop:
+                trav.obj and game.prop[trav.obj] != trav.notprop:
             rdest = trav.dest
             break
     else:
