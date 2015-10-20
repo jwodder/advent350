@@ -1,7 +1,6 @@
 - Test everything!
 - Get rid of as many global variables as possible
 - Try to completely rewrite the system for keeping track of object locations
- - Add a constant for -1 (the location of your inventory)?
 - Remove fields that are always the same when saved (gaveup, foobar, ???) from
   `Game` (or just from its pickling method?)
 - Ensure the code works in both Python 2 and Python 3

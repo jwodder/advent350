@@ -18,8 +18,10 @@ DEFAULT_SAVEFILE = os.path.expanduser('~/.adventure')
 DEFAULT_DATAFILE = 'advent.dat'
 
 MAXDIE = 3
-CHLOC = 114
+CHLOC  = 114
 CHLOC2 = 140
+TOTING = -1  # location number for the player's inventory
+FIXED  = -1  # "fixed" location number for an immovable object found in only one place
 
 class Limits(object):
     OBJECTS   =  64  # advent.for: 100
@@ -188,12 +190,12 @@ class Adventure(object):
     def forced(self, loc):
         return loc > 0 and self.travel[loc][0].forced
 
-    def vocab(self, word, wordtype):
+    def vocab(self, word, wordtype=None):
         matches = self.vocabulary[word]
-        if wordtype >= 0:
+        if wordtype is not None:
             matches = [i for i in matches if i // 1000 == wordtype]
         if not matches:
-            if wordtype >= 0:
+            if wordtype is not None:
                 bug(5)
             return -1
         return matches[0] % 1000 if wordtype >= 0 else min(matches)
@@ -253,7 +255,7 @@ class Game(object):
         print(repr(self.atloc)); sys.exit()  ######
 
     def toting(self, item):
-        return self.place[item] == -1
+        return self.place[item] == TOTING
 
     def here(self, item):
         return self.place[item] == self.loc or self.toting(item)
@@ -270,9 +272,9 @@ class Game(object):
 
     def carry(self, obj, where):
         if obj <= 100:
-            if self.place[obj] == -1:
+            if self.place[obj] == TOTING:
                 return
-            self.place[obj] = -1
+            self.place[obj] = TOTING
             self.holding += 1
         self.atloc[where].remove(obj)
 
@@ -280,7 +282,7 @@ class Game(object):
         if obj > 100:
             self.fixed[obj-100] = where
         else:
-            if self.place[obj] == -1:
+            if self.place[obj] == TOTING:
                 self.holding -= 1
             self.place[obj] = where
         if where > 0:
@@ -745,7 +747,7 @@ def dotrav(motion):
                 game.prop[Item.CHASM] = 1
                 game.prop[Item.TROLL] = 2
                 game.drop(Item.BEAR, game.newloc)
-                game.fixed[Item.BEAR] = -1
+                game.fixed[Item.BEAR] = FIXED
                 game.prop[Item.BEAR] = 3
                 if game.prop[Item.SPICES] < 0:
                     game.tally2 += 1
@@ -771,7 +773,7 @@ def death():
         game.place[Item.OIL] = 0
         if game.toting(Item.LAMP):
             game.prop[Item.LAMP] = 0
-        for i in range(64, 0, -1):
+        for i in range(Limits.OBJECTS, 0, -1):
             if game.toting(i):
                 game.drop(i, 1 if i == Item.LAMP else game.oldloc2)
         game.loc = game.oldloc = 3
@@ -1194,7 +1196,7 @@ def label2610():
 
 def label2630():
     global obj, verb, lastline
-    i = cave.vocab(lastline.word1, -1)
+    i = cave.vocab(lastline.word1)
     if i == -1:
         rspeak(61 if pct(20) else 13 if pct(20) else 60)
         return label2600
@@ -1394,7 +1396,7 @@ def vthrow():
             rspeak(158)
         elif game.here(Item.BEAR) and game.prop[Item.BEAR] == 0:
             game.drop(Item.AXE, game.loc)
-            game.fixed[Item.AXE] = -1
+            game.fixed[Item.AXE] = FIXED
             game.prop[Item.AXE] = 1
             game.juggle(Item.BEAR)  # Don't try this at home, kids.
             rspeak(164)
@@ -1428,7 +1430,7 @@ def vbreak():
         if game.toting(Item.VASE):
             game.drop(Item.VASE, game.loc)
         game.prop[Item.VASE] = 2
-        game.fixed[Item.VASE] = -1
+        game.fixed[Item.VASE] = FIXED
         rspeak(198)
     elif obj != Item.MIRROR:
         actspk()
@@ -1499,7 +1501,7 @@ def vtake():
     game.carry(obj, game.loc)
     k = game.liq()
     if obj == Item.BOTTLE and k != 0:
-        game.place[k] = -1
+        game.place[k] = TOTING
     rspeak(54)
 
 def vopen():
@@ -1554,7 +1556,7 @@ def vopen():
                 game.prop[Item.CHAIN] = 2
                 if game.toting(Item.CHAIN):
                     game.drop(Item.CHAIN, game.loc)
-                game.fixed[Item.CHAIN] = -1
+                game.fixed[Item.CHAIN] = FIXED
         else:
             spk = 171
             if game.prop[Item.BEAR] == 0:
@@ -1667,7 +1669,7 @@ def vkill():
             pspeak(Item.DRAGON, 1)
             game.prop[Item.DRAGON] = 2
             game.prop[Item.RUG] = 0
-            game.move(Item.DRAGON+100, -1)
+            game.move(Item.DRAGON+100, FIXED)
             game.move(Item.RUG+100, 0)
             game.move(Item.DRAGON, 120)
             game.move(Item.RUG, 120)
@@ -1735,7 +1737,7 @@ def vfill():
         else:
             rspeak(145)
             game.prop[Item.VASE] = 2
-            game.fixed[Item.VASE] = -1
+            game.fixed[Item.VASE] = FIXED
             # In the original Fortran, when the vase is filled with water or
             # oil, its property is set so that it breaks into pieces, *but* the
             # code then branches to label 9024 to actually drop the vase.  Once
@@ -1759,7 +1761,7 @@ def vfill():
     else:
         game.prop[Item.BOTTLE] = cave.bitset(game.loc, Cond.OIL)
         if game.toting(Item.BOTTLE):
-            game.place[game.liq()] = -1
+            game.place[game.liq()] = TOTING
         rspeak(108 if game.liq() == Item.OIL else 107)
 
 def vblast():
@@ -1838,7 +1840,7 @@ def vdrop():
         game.prop[Item.VASE] = 0 if game.at(Item.PILLOW) else 2
         pspeak(Item.VASE, game.prop[VASE] + 1)
         if game.prop[Item.VASE] != 0:
-            game.fixed[Item.VASE] = -1
+            game.fixed[Item.VASE] = FIXED
     else:
         rspeak(54)
     k = game.liq()
@@ -1896,7 +1898,7 @@ def vsay():
     tk = lastline.in2 if lastline.in2 is not None else lastline.in1
     if lastline.word2 is not None:
         lastline = lastline._replace(word1=lastline.word2)
-    if cave.vocab(lastline.word1, -1) in (62, 65, 71, 2025):
+    if cave.vocab(lastline.word1) in (62, 65, 71, 2025):
         lastline = lastline._replace(word2=None)
         obj = 0
         return label2630
