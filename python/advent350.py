@@ -4,7 +4,7 @@ import argparse
 from   collections import defaultdict, namedtuple
 from   datetime    import datetime
 from   errno       import ENOENT
-import itertools
+from   itertools   import dropwhile, groupby
 import os.path
 import pickle
 import shlex
@@ -59,7 +59,7 @@ Cond = mkenum('Cond', (0, 'LIGHT OIL LIQUID NO_PIRATE'))
 
 def indexLines(lines, qty):
     data = [None] * (qty+1)
-    for i, block in itertools.groupby(lines, lambda s: int(s.split('\t')[0])):
+    for i, block in groupby(lines, lambda s: int(s.split('\t')[0])):
         data[i] = ''.join(s.split('\t', 1)[1] for s in block)
         if '>$<' in data[i]:
             data[i] = None
@@ -128,8 +128,9 @@ Hint = namedtuple('Hint', 'turns points question hint')
 
 class Adventure(object):
     def __init__(self, advdat):
-        sections = {index: list(sect)[1:-1]
-                    for index, sect in itertools.groupby(advdat, bysection)}
+        sections = {
+            i: list(sect)[1:-1] for i, sect in groupby(advdat, bysection)
+        }
         self.longDesc = indexLines(sections[1], Limits.LOCATIONS)
         self.shortDesc = indexLines(sections[2], Limits.LOCATIONS)
         self.travel = nonemap(lambda s: list(map(Travel.fromEntry,
@@ -689,9 +690,8 @@ def domove(motion):
 
 def dotrav(motion):
     # Label 9
-    for trav in itertools.dropwhile(lambda t: not t.forced and
-                                              motion not in t.verbs,
-                                    cave.travel[game.loc]):
+    for trav in dropwhile(lambda t: not t.forced and motion not in t.verbs,
+                          cave.travel[game.loc]):
         if trav.uncond or\
                 trav.chance and pct(trav.chance) or\
                 trav.carry and game.toting(trav.carry) or\
