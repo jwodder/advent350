@@ -10,6 +10,7 @@ import pickle
 import shlex
 import sys
 import traceback
+from   enum        import IntEnum
 from   six.moves   import input, range
 
 # Configuration:
@@ -21,7 +22,7 @@ MAXDIE = 3
 CHLOC  = 114
 CHLOC2 = 140
 TOTING = -1  # location number for the player's inventory
-FIXED  = -1  # "fixed" location number for an immovable object found in only one place
+FIXED  = -1  # "fixed" location for an immovable object found in only one place
 
 class Limits(object):
     OBJECTS   =  64  # advent.for: 100
@@ -31,38 +32,37 @@ class Limits(object):
     MTEXT     =  32  # advent.for: MAGSIZ/35/
     ACTSPK    =  31  # advent.for: VRBSIZ/35/
 
-def mkenum(name, *enums):
-    return type(str(name), (object,), {e:i for (start, words) in enums
-                                           for i,e in enumerate(words.split(),
-                                                                start=start)})
+Item = IntEnum('Item', '''
+    KEYS LAMP GRATE CAGE ROD ROD2 STEPS BIRD DOOR PILLOW SNAKE FISSUR TABLET
+    CLAM OYSTER MAGZIN DWARF KNIFE FOOD BOTTLE WATER OIL MIRROR PLANT PLANT2
+    STALACTITE SHADOW AXE DRAWING PIRATE DRAGON CHASM TROLL TROLL2 BEAR MESSAG
+    VOLCANO VEND BATTER CARPET null41 null42 null43 null44 null45 null46 null47
+    null48 null49 NUGGET DIAMONDS SILVER JEWELRY COINS CHEST EGGS TRIDENT VASE
+    EMERALD PYRAM PEARL RUG SPICES CHAIN
+''')
 
-Item = mkenum('Item', (1, 'KEYS LAMP GRATE CAGE ROD ROD2 STEPS BIRD DOOR PILLOW'
-                          ' SNAKE FISSUR TABLET CLAM OYSTER MAGZIN DWARF KNIFE'
-                          ' FOOD BOTTLE WATER OIL MIRROR PLANT PLANT2'), 
-                      (28, 'AXE'),
-                      (31, 'DRAGON CHASM TROLL TROLL2 BEAR MESSAG VOLCANO VEND'
-                           ' BATTER'),
-                      (50, 'NUGGET'),
-                      (54, 'COINS CHEST EGGS TRIDENT VASE EMERALD PYRAM PEARL'
-                           ' RUG SPICES CHAIN'))
+Movement = IntEnum('Movement', '''
+    HILL ENTER UPSTREAM DOWNSTREAM FOREST CONTINUE BACK VALLEY STAIRS EXIT
+    BUILDING GULLY STREAM ROCK BED CRAWL COBBLE IN SURFACE NOWHERE DARK PASSAGE
+    LOW CANYON AWKWARD GIANT VIEW UP DOWN PIT OUTDOORS CRACK STEPS DOME LEFT
+    RIGHT HALL JUMP BARREN OVER ACROSS EAST WEST NORTH SOUTH NE SE SW NW DEBRIS
+    HOLE WALL BROKEN Y2 CLIMB LOOK FLOOR ROOM SLIT SLAB XYZZY DEPRESSION
+    ENTRANCE PLUGH SECRET CAVE null68 CROSS BEDQUILT PLOVER ORIENTAL CAVERN
+    SHELL RESERVOIR MAIN FORK
+''', start=2)
 
-Movement = mkenum('Movement', (8, 'BACK'),
-                              (21, 'NULL'),
-                              (57, 'LOOK'),
-                              (63, 'DEPRESSION ENTRANCE'),
-                              (67, 'CAVE'))
+Action = IntEnum('Action', '''
+    TAKE DROP SAY OPEN NOTHING LOCK ON OFF WAVE CALM WALK KILL POUR EAT DRINK
+    RUB THROW QUIT FIND INVENT FEED FILL BLAST SCORE FOO BRIEF READ BREAK WAKE
+    SUSPEND HOURS RESUME
+''')
 
-Action = mkenum('Action', (1, 'TAKE DROP SAY OPEN NOTHING LOCK ON OFF WAVE CALM'
-                              ' WALK KILL POUR EAT DRINK RUB THROW QUIT FIND'
-                              ' INVENT FEED FILL BLAST SCORE FOO BRIEF READ'
-                              ' BREAK WAKE SUSPEND HOURS RESUME'))
-
-Cond = mkenum('Cond', (0, 'LIGHT OIL LIQUID NO_PIRATE'))
+Cond = IntEnum('Cond', 'LIGHT OIL LIQUID NO_PIRATE', start=0)
 
 def indexLines(lines, qty):
     data = [None] * (qty+1)
-    for i, block in groupby(lines, lambda s: int(s.split('\t')[0])):
-        data[i] = ''.join(s.split('\t', 1)[1] for s in block)
+    for i, block in groupby(lines, lambda s: int(s.partition('\t')[0])):
+        data[i] = ''.join(s.partition('\t')[2] for s in block)
         if '>$<' in data[i]:
             data[i] = None
     return data
@@ -145,7 +145,7 @@ class Adventure(object):
         self.itemDesc = [None] * (Limits.OBJECTS + 1)
         obj = 0
         for line in sections[5]:
-            num, txt = line.split('\t', 1)
+            num, _, txt = line.partition('\t')
             num = int(num)
             if '>$<' in txt:
                 txt = None
@@ -174,7 +174,7 @@ class Adventure(object):
                 self.cond[loc] |= 1 << cs[0]
         self.classes = []
         for line in sections[10]:
-            threshold, msg = line.split('\t', 1)
+            threshold, _, msg = line.partition('\t')
             self.classes.append((int(threshold), msg))
         self.hints = nonemap(lambda s: Hint(*intTSV(s)),
                              indexLines(sections[11], Limits.HINTS))

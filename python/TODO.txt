@@ -15,4 +15,3 @@
    wordtype
 - Add an option for using the original RNG with a specified seed/datime for the
   purposes of reproducibility/testing?
-- Replace `mkenum` with enum34? (or just switch to Python 3.4+ entirely?)
