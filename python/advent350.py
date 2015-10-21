@@ -32,15 +32,6 @@ class Limits(object):
     MTEXT     =  32  # advent.for: MAGSIZ/35/
     ACTSPK    =  31  # advent.for: VRBSIZ/35/
 
-Item = IntEnum('Item', '''
-    KEYS LAMP GRATE CAGE ROD ROD2 STEPS BIRD DOOR PILLOW SNAKE FISSUR TABLET
-    CLAM OYSTER MAGZIN DWARF KNIFE FOOD BOTTLE WATER OIL MIRROR PLANT PLANT2
-    STALACTITE SHADOW AXE DRAWING PIRATE DRAGON CHASM TROLL TROLL2 BEAR MESSAG
-    VOLCANO VEND BATTER CARPET null41 null42 null43 null44 null45 null46 null47
-    null48 null49 NUGGET DIAMONDS SILVER JEWELRY COINS CHEST EGGS TRIDENT VASE
-    EMERALD PYRAM PEARL RUG SPICES CHAIN
-''')
-
 Movement = IntEnum('Movement', '''
     HILL ENTER UPSTREAM DOWNSTREAM FOREST CONTINUE BACK VALLEY STAIRS EXIT
     BUILDING GULLY STREAM ROCK BED CRAWL COBBLE IN SURFACE NOWHERE DARK PASSAGE
@@ -51,11 +42,37 @@ Movement = IntEnum('Movement', '''
     SHELL RESERVOIR MAIN FORK
 ''', start=2)
 
+Item = IntEnum('Item', '''
+    KEYS LAMP GRATE CAGE ROD ROD2 STEPS BIRD DOOR PILLOW SNAKE FISSUR TABLET
+    CLAM OYSTER MAGZIN DWARF KNIFE FOOD BOTTLE WATER OIL MIRROR PLANT PLANT2
+    STALACTITE SHADOW AXE DRAWING PIRATE DRAGON CHASM TROLL TROLL2 BEAR MESSAG
+    VOLCANO VEND BATTER CARPET null41 null42 null43 null44 null45 null46 null47
+    null48 null49 NUGGET DIAMONDS SILVER JEWELRY COINS CHEST EGGS TRIDENT VASE
+    EMERALD PYRAM PEARL RUG SPICES CHAIN
+''')
+
 Action = IntEnum('Action', '''
     TAKE DROP SAY OPEN NOTHING LOCK ON OFF WAVE CALM WALK KILL POUR EAT DRINK
     RUB THROW QUIT FIND INVENT FEED FILL BLAST SCORE FOO BRIEF READ BREAK WAKE
     SUSPEND HOURS RESUME
 ''')
+
+class MsgWord(IntEnum):
+    FEE = 1
+    FIE = 2
+    FOE = 3
+    FOO = 4
+    FUM = 5
+    HOCUS = 50
+    HELP = 51
+    TREE = 64
+    DIG = 66
+    LOST = 68
+    MIST = 69
+    FUCK = 79
+    STOP = 139
+    INFO = 142
+    SWIM = 147
 
 Cond = IntEnum('Cond', 'LIGHT OIL LIQUID NO_PIRATE', start=0)
 
@@ -141,7 +158,9 @@ class Adventure(object):
         self.vocabulary = defaultdict(list)
         for entry in sections[4]:
             i, word = entry.strip().split('\t')[:2]
-            self.vocabulary[word].append(int(i))
+            i = int(i)
+            iconst = ([Movement, Item, Action, MsgWord][i // 1000])(i % 1000)
+            self.vocabulary[word].append(iconst)
         self.itemDesc = [None] * (Limits.OBJECTS + 1)
         obj = 0
         for line in sections[5]:
@@ -193,15 +212,12 @@ class Adventure(object):
     def vocab(self, word, wordtype=None):
         matches = self.vocabulary[word]
         if wordtype is not None:
-            matches = [i for i in matches if i // 1000 == wordtype]
+            matches = [i for i in matches if isinstance(i, wordtype)]
         if not matches:
             if wordtype is not None:
                 bug(5)
-            return -1
-        return matches[0] % 1000 if wordtype >= 0 else min(matches)
-        # When returning values of a specified type, there can be no more than
-        # one match; if there is more than one, someone's been messing with the
-        # data sections.
+            return None
+        return matches[0]
 
 
 class Game(object):
@@ -1183,7 +1199,7 @@ def label19999():
         lastline = lastline.moveup()
     elif lastline.word1 in ('WATER', 'OIL') and \
             lastline.word2 in ('PLANT', 'DOOR') and \
-            game.at(cave.vocab(lastline.word2, 1)):
+            game.at(Item[lastline.word2]):
         lastline = lastline._replace(word2='POUR')
     return label2610
 
@@ -1197,15 +1213,14 @@ def label2610():
 def label2630():
     global obj, verb, lastline
     i = cave.vocab(lastline.word1)
-    if i == -1:
+    if i is None:
         rspeak(61 if pct(20) else 13 if pct(20) else 60)
         return label2600
-    k = i % 1000
-    if i // 1000 == 0:
-        return domove(k)
-    elif i // 1000 == 1:
+    if isinstance(i, Movement):
+        return domove(i)
+    elif isinstance(i, Item):
         # Label 5000
-        obj = k
+        obj = i
         if game.fixed[obj] == game.loc or game.here(obj):
             return doaction()
         elif obj == Item.GRATE:
@@ -1239,9 +1254,9 @@ def label2630():
         else:
             print('\nI see no', lastline.in1, 'here.')
             return label2012
-    elif i // 1000 == 2:
+    elif isinstance(i, Action):
         # Label 4000
-        verb = k
+        verb = i
         if verb in (Action.SAY, Action.SUSPEND, Action.RESUME):
             obj = lastline.word2 is not None
             # This assignment just indicates whether an object was supplied.
@@ -1252,8 +1267,8 @@ def label2630():
             return transitive()
         else:
             return intransitive()
-    elif i // 1000 == 3:
-        rspeak(k)
+    elif isinstance(i, MsgWord):
+        rspeak(i)
         return label2012
     else:
         bug(22)
@@ -1281,7 +1296,9 @@ def vscore():
         normend()
 
 def vfoo():
-    k = cave.vocab(lastline.word1, 3)
+    k = cave.vocab(lastline.word1, MsgWord)
+    if k is None:
+        k = -1
     if game.foobar == 1-k:
         game.foobar = k
         if k != 4:
@@ -1295,9 +1312,10 @@ def vfoo():
             if game.place[Item.EGGS] == game.place[Item.TROLL] == \
                     game.prop[Item.TROLL] == 0:
                 game.prop[Item.TROLL] = 1
-            k = 0 if game.loc == 92 else 1 if game.here(Item.EGGS) else 2
             game.move(Item.EGGS, 92)
-            pspeak(Item.EGGS, k)
+            pspeak(Item.EGGS, 0 if game.loc == 92
+                                else 1 if game.here(Item.EGGS)
+                                else 2)
     else:
         rspeak(151 if game.foobar else 42)
 
@@ -1898,7 +1916,9 @@ def vsay():
     tk = lastline.in2 if lastline.in2 is not None else lastline.in1
     if lastline.word2 is not None:
         lastline = lastline._replace(word1=lastline.word2)
-    if cave.vocab(lastline.word1) in (62, 65, 71, 2025):
+    word1 = cave.vocab(lastline.word1)
+    if word1 is Movement.XYZZY or word1 is Movement.PLUGH or \
+            word1 is Movement.PLOVER or word1 is Action.FOO:
         lastline = lastline._replace(word2=None)
         obj = 0
         return label2630

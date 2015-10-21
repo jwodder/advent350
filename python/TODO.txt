@@ -11,7 +11,5 @@
 - Add docstrings
 - Add error handling for when restoring a saved game fails
 - Use constants in place of as many magic numbers as possible/reasonable
- - Convert the first column of the vocab table into a class with an enum for
-   wordtype
 - Add an option for using the original RNG with a specified seed/datime for the
   purposes of reproducibility/testing?
