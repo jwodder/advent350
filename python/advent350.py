@@ -1114,7 +1114,7 @@ def label2600():
 
 def label2608():
     global verb
-    game.foobar = min(0, game.foobar)
+    game.foobar = min(0, -game.foobar)
     if magic.on and game.turns == 0 and \
             (lastline.word1, lastline.word2) == ('MAGIC', 'MODE'):
         magic.maint()
