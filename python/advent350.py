@@ -934,21 +934,21 @@ def label2():
         kk = 0
         tk = game.odloc[i]
         for t in cave.travel[game.dloc[i]]:
-           if not t.nodwarf:
-               newloc = t.dest
-               if 15 <= newloc <= 300 and \
-                       newloc not in (game.odloc[i], game.dloc[i]) and \
-                       not cave.forced(newloc) and \
-                       not (i == 5 and cave.bitset(newloc, Cond.NO_PIRATE)):
-                   kk += 1
-                   if ran(kk) == 0:
-                       tk = newloc
+            if not t.nodwarf:
+                newloc = t.dest
+                if 15 <= newloc <= 300 and \
+                        newloc not in (game.odloc[i], game.dloc[i]) and \
+                        not cave.forced(newloc) and \
+                        not (i == 5 and cave.bitset(newloc, Cond.NO_PIRATE)):
+                    kk += 1
+                    if ran(kk) == 0:
+                        tk = newloc
         game.odloc[i] = game.dloc[i]
         game.dloc[i] = tk
         game.dseen[i] = (game.dseen[i] and game.loc >= 15) or \
             game.loc in (game.dloc[i], game.odloc[i])
         if game.dseen[i]:
-            game.dloc[i] = game.loc;
+            game.dloc[i] = game.loc
             if i == 5:
                 # Pirate logic:
                 if game.loc == CHLOC or game.prop[Item.CHEST] >= 0:
@@ -1594,7 +1594,7 @@ def vopen():
         if not game.here(Item.KEYS):
             spk = 31
         elif game.closing:
-            spk = 130;
+            spk = 130
             if not game.panic:
                 game.clock2 = 15
             game.panic = True
@@ -1989,7 +1989,7 @@ def vresume():
               ' one.')
         # This message is taken from the 430 pt. version of Adventure (v.2.5).
         if not yes(200, 54, 54):
-           return None
+            return None
     with open(filename, 'rb') as fp:
         return resume(filename, fp)
 
