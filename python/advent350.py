@@ -34,7 +34,7 @@ class Limits(object):
 
 Movement = IntEnum('Movement', '''
     forced HILL ENTER UPSTREAM DOWNSTREAM FOREST CONTINUE BACK VALLEY STAIRS
-    EXIT BUILDING GULLY STREAM ROCK BED CRAWL COBBLE IN SURFACE NOWHERE DARK
+    EXIT BUILDING GULLY STREAM ROCK BED CRAWL COBBLE IN SURFACE NULL DARK
     PASSAGE LOW CANYON AWKWARD GIANT VIEW UP DOWN PIT OUTDOORS CRACK STEPS DOME
     LEFT RIGHT HALL JUMP BARREN OVER ACROSS EAST WEST NORTH SOUTH NE SE SW NW
     DEBRIS HOLE WALL BROKEN Y2 CLIMB LOOK FLOOR ROOM SLIT SLAB XYZZY DEPRESSION
@@ -122,10 +122,11 @@ def pct(x):
     return ran(100) < x
 
 def load(fp, ofType):
-    obj = pickle.load(fp)
-    if not isinstance(obj, ofType):
+    x = pickle.load(fp)
+    if not isinstance(x, ofType):
         raise TypeError('Expected %s object in %r; got %s instead'
-                        % (ofType.__name__, fp.name, obj.__class__.__name__))
+                        % (ofType.__name__, fp.name, x.__class__.__name__))
+    return x
 
 class Travel(namedtuple('Travel', 'dest verbs verb1 uncond chance nodwarf'
                                   ' carry here obj notprop forced')):
@@ -426,7 +427,7 @@ class Magic(object):
             self.hbegin = getInt()
             self.mspeak(28, blklin=False)
             self.hend = getInt()
-            (d,t) = datime()
+            (d,_) = datime()
             self.hbegin += d
             self.hend += self.hbegin - 1
             self.mspeak(29, blklin=False)
@@ -1022,7 +1023,7 @@ def label2():
     else:
         print()
         print(stick, 'of them get you!')
-    game.odloc2 = game.loc
+    game.oldloc2 = game.loc
     return death()
 
 def label2000():
@@ -1034,7 +1035,7 @@ def label2000():
     if not cave.forced(game.loc) and game.dark():
         if game.wzdark and pct(35):
             rspeak(23)
-            game.odloc2 = game.loc
+            game.oldloc2 = game.loc
             return death()
         kk = cave.rmsg[16]
     if game.toting(Item.BEAR):
@@ -1440,7 +1441,7 @@ def vfind():
             game.loc in game.dloc[:5]) or \
             game.at(obj) or \
             (game.liq() == obj and game.at(Item.BOTTLE)) or \
-            obj == game.liqloc(game.loc):
+            obj == cave.liqloc(game.loc):
         rspeak(94)
     else:
         actspk()
@@ -1708,6 +1709,7 @@ def vkill():
 
 def vpour():
     # Label 9130
+    global obj
     if obj in (Item.BOTTLE, 0):
         obj = game.liq()
     if obj == 0:
@@ -1723,7 +1725,7 @@ def vpour():
             game.prop[Item.DOOR] = (obj == Item.OIL)
             rspeak(113 + game.prop[Item.DOOR])
         elif game.at(Item.PLANT):
-            if obj != WATER:
+            if obj != Item.WATER:
                 rspeak(112)
             else:
                 pspeak(Item.PLANT, game.prop[Item.PLANT] + 1)
@@ -1859,7 +1861,7 @@ def vdrop():
         game.prop[Item.TROLL] = 2
     elif obj == Item.VASE and game.loc != 96:
         game.prop[Item.VASE] = 0 if game.at(Item.PILLOW) else 2
-        pspeak(Item.VASE, game.prop[VASE] + 1)
+        pspeak(Item.VASE, game.prop[Item.VASE] + 1)
         if game.prop[Item.VASE] != 0:
             game.fixed[Item.VASE] = FIXED
     else:
@@ -1961,7 +1963,7 @@ def vsuspend():
     try:
         with open(filename, 'wb') as fp:
             pickle.dump(fp, game)
-    except Exception as e:
+    except Exception:
         traceback.print_exc()
     else:
         if magic.on:
