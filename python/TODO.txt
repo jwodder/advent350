@@ -10,7 +10,6 @@
   save the game to the same path that it was restored from?
 - Add a command-line option for specifying the default save file path
 - Add docstrings
-- Add error handling for when restoring a saved game fails
 - Use constants in place of as many magic numbers as possible/reasonable
 - Add an option for using the original RNG with a specified seed/datime for the
   purposes of reproducibility/testing?

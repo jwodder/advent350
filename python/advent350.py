@@ -121,13 +121,6 @@ ran.r = 0
 def pct(x):
     return ran(100) < x
 
-def load(fp, ofType):
-    x = pickle.load(fp)
-    if not isinstance(x, ofType):
-        raise TypeError('Expected %s object in %r; got %s instead'
-                        % (ofType.__name__, fp.name, x.__class__.__name__))
-    return x
-
 class Travel(namedtuple('Travel', 'dest verbs verb1 uncond chance nodwarf'
                                   ' carry here obj notprop forced')):
     __slots__ = ()
@@ -146,7 +139,7 @@ class Travel(namedtuple('Travel', 'dest verbs verb1 uncond chance nodwarf'
                    here = M - 200 if 200 < M <= 300 else None,
                    obj = M % 100 if 300 < M else None,
                    notprop = M // 100 - 3 if 300 < M else None,
-                   forced = line[1] == 1)
+                   forced = line[1] == Movement.forced)
 
 Hint = namedtuple('Hint', 'turns points question hint')
 
@@ -851,7 +844,12 @@ def poof(on, mfile):
         else:
             Magic.magicfile = mfile.name
         with mfile:
-            return load(mfile, Magic)
+            m = pickle.load(mfile)
+        if not isinstance(x, Magic):
+            raise SystemExit('ERROR: Expected Magic object in %s;'
+                             ' got %s object instead'
+                             % (mfile.name, x.__class__.__name__))
+        return m
     else:
         return NoMagic()
 
@@ -1071,7 +1069,7 @@ def label2012():
 
 def label2600():
     global lastline
-    for hint in range(4, 10):
+    for hint in range(4, Limits.HINTS+1):
         if game.hinted[hint]:
             continue
         if not cave.bitset(game.loc, hint):
@@ -1990,14 +1988,25 @@ def vresume():
         # This message is taken from the 430 pt. version of Adventure (v.2.5).
         if not yes(200, 54, 54):
             return None
-    with open(filename, 'rb') as fp:
-        return resume(filename, fp)
+    try:
+        with open(filename, 'rb') as fp:
+            return resume(filename, fp)
+    except (Exception, SystemExit):
+        traceback.print_exc()
+        print()
+        print("Let's pretend that didn't happen.")
+        return
 
 def resume(fname, fp):
     global game
     print()
     print('Restoring from', fname, '...')
-    game = load(fp, Game)
+    newgame = pickle.load(fp)
+    if not isinstance(newgame, Game):
+        raise SystemExit('ERROR: Expected Game object in %s;'
+                         ' got %s object instead'
+                         % (fname, x.__class__.__name__))
+    game = newgame
     magic.start()
     return domove(Movement.NULL)
 
