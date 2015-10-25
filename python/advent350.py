@@ -191,7 +191,7 @@ class Adventure(object):
                 self.startfixed[locs[0]] = locs[2]
             except IndexError:
                 self.startfixed[locs[0]] = 0
-        self.actspk = indexLines(sections[8], Limits.ACTSPK)
+        self.actspk = nonemap(int, indexLines(sections[8], Limits.ACTSPK))
         self.cond = [0] * (Limits.LOCATIONS + 1)
         for cs in map(intTSV, sections[9]):
             for loc in cs[1:]:
