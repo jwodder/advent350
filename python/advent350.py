@@ -7,6 +7,7 @@ from   errno       import ENOENT
 from   itertools   import dropwhile, groupby
 import os.path
 import pickle
+import readline
 import shlex
 import sys
 import traceback

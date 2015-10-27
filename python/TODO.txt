@@ -13,5 +13,4 @@
 - Use constants in place of as many magic numbers as possible/reasonable
 - Add an option for using the original RNG with a specified seed/datime for the
   purposes of reproducibility/testing?
-- Add readline support
 - Merge the Adventure and Game classes together?
