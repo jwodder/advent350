@@ -847,10 +847,10 @@ def poof(on, mfile):
             Magic.magicfile = mfile.name
         with mfile:
             m = pickle.load(mfile)
-        if not isinstance(x, Magic):
+        if not isinstance(m, Magic):
             raise SystemExit('ERROR: Expected Magic object in %s;'
                              ' got %s object instead'
-                             % (mfile.name, x.__class__.__name__))
+                             % (mfile.name, m.__class__.__name__))
         return m
     else:
         return NoMagic()
@@ -2011,7 +2011,7 @@ def resume(fname, fp):
     if not isinstance(newgame, Game):
         raise SystemExit('ERROR: Expected Game object in %s;'
                          ' got %s object instead'
-                         % (fname, x.__class__.__name__))
+                         % (fname, newgame.__class__.__name__))
     game = newgame
     magic.start()
     return domove(Movement.NULL)
