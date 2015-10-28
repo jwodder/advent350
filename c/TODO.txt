@@ -18,5 +18,3 @@
   to its/their real values so that the binary can have its setuid/setgid flag
   set to protect the magic file from outsiders while avoiding security problems
   with creating save files
-- Make the arrays be properly zero-based?
-- Improve the storage of the travel table
