@@ -5,9 +5,10 @@
   `Game` (or just from its pickling method?)
 - Ensure the code works in both Python 2 and Python 3
 - Get the code to pass pylint
-- If the user enters "save" without a filename while playing a restored game,
-  save the game to the same path that it was restored from?
 - Add a command-line option for specifying the default save file path
 - Add docstrings
 - Use constants in place of as many magic numbers as possible/reasonable
 - Merge the Adventure and Game classes together?
+- Add an option for enabling an "old-tymey" interface in which all output lines
+  (including the MOTD!) begin with a single space and there is no "> " input
+  prompt?  (Lowercase letters will still be used, though.)

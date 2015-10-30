@@ -221,6 +221,8 @@ class Adventure(object):
 
 
 class Game(object):
+    savefile = DEFAULT_SAVEFILE
+
     def __init__(self):
         self.loc = 0
         self.newloc = 1
@@ -449,7 +451,7 @@ class Magic(object):
             self.motd(True)
         self.mspeak(15, blklin=False)
         with open(self.magicfile, 'wb') as fp:
-            pickle.dump(fp, magic)
+            pickle.dump(magic, fp)
         self.ciao()
 
     def wizard(self):
@@ -1944,7 +1946,7 @@ def vsuspend():
             return
         filename = os.path.expanduser(cmd[1])
     else:
-        filename = DEFAULT_SAVEFILE
+        filename = Game.savefile
     if magic.on:
         if demo:
             rspeak(201)
@@ -1960,13 +1962,12 @@ def vsuspend():
               ' later.')
     if not yes(200, 54, 54):
         return
-    if magic.on:
-        (game.saved, game.savet) = datime()
+    (game.saved, game.savet) = datime()
     print()
     print('Saving to', filename, '...')
     try:
         with open(filename, 'wb') as fp:
-            pickle.dump(fp, game)
+            pickle.dump(game, fp)
     except Exception:
         traceback.print_exc()
     else:
@@ -1983,7 +1984,7 @@ def vresume():
             return
         filename = os.path.expanduser(cmd[1])
     else:
-        filename = DEFAULT_SAVEFILE
+        filename = Game.savefile
     if magic.on and demo:
         magic.mspeak(9)
         return None
@@ -2013,6 +2014,7 @@ def resume(fname, fp):
                          ' got %s object instead'
                          % (fname, newgame.__class__.__name__))
     game = newgame
+    Game.savefile = fname
     magic.start()
     return domove(Movement.NULL)
 
