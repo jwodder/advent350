@@ -19,9 +19,9 @@ DEFAULT_MAGICFILE = os.path.expanduser('~/.advmagic')
 DEFAULT_SAVEFILE = os.path.expanduser('~/.adventure')
 DEFAULT_DATAFILE = 'advent.dat'
 
-MAXDIE = 3
-CHLOC  = 114
-CHLOC2 = 140
+MAXDIE = 3   # maximum number of times you can die
+CHLOC  = 114 # location of the pirate's treasure chest
+CHLOC2 = 140 # location of the message about the pirate's treasure chest
 TOTING = -1  # location number for the player's inventory
 FIXED  = -1  # "fixed" location for an immovable object found in only one place
 
@@ -51,6 +51,8 @@ Item = IntEnum('Item', '''
     null48 null49 NUGGET DIAMONDS SILVER JEWELRY COINS CHEST EGGS TRIDENT VASE
     EMERALD PYRAM PEARL RUG SPICES CHAIN
 ''')
+
+TREASURES = tuple(map(Item, range(50, Limits.OBJECTS)))
 
 Action = IntEnum('Action', '''
     TAKE DROP SAY OPEN NOTHING LOCK ON OFF WAVE CALM WALK KILL POUR EAT DRINK
@@ -324,7 +326,7 @@ class Game(object):
 
     def score(self, scoring, bonus=0):
         score = 0
-        for i in range(50, 65):
+        for i in TREASURES:
             if self.prop[i] >= 0:
                 score += 2
             if self.place[i] == 3 and self.prop[i] == 0:
@@ -961,7 +963,7 @@ def label2():
                     continue
                 k = False
                 stole = False
-                for j in range(50, 65):
+                for j in TREASURES:
                     if j == Item.PYRAM and game.loc in (100, 101):
                         continue
                     if game.toting(j):
@@ -969,7 +971,7 @@ def label2():
                         if game.place[Item.MESSAG] == 0:
                             game.move(Item.CHEST, CHLOC)
                         game.move(Item.MESSAG, CHLOC2)
-                        for j2 in range(50, 65):
+                        for j2 in TREASURES:
                             if j2 == Item.PYRAM and game.loc in (100, 101):
                                 continue
                             if game.at(j2) and game.fixed[j2] == 0:
@@ -1112,7 +1114,7 @@ def label2600():
     if game.closed:
         if game.prop[Item.OYSTER] < 0 and game.toting(Item.OYSTER):
             pspeak(Item.OYSTER, 1)
-        for i in range(1, 65):
+        for i in range(1, Limits.OBJECTS+1):
             if game.toting(i) and game.prop[i] < 0:
                 game.prop[i] = -1 - game.prop[i]
     # Label 2605
@@ -1168,7 +1170,7 @@ def label2608():
             game.prop[i] = game.put(i, 116, int(i in (Item.SNAKE, Item.BIRD)))
         game.prop[Item.MIRROR] = game.put(Item.MIRROR, 115, 0)
         game.fixed[Item.MIRROR] = 116
-        for i in range(1, 65):
+        for i in range(1, Limits.OBJECTS+1):
             if game.toting(i):
                 game.destroy(i)
         rspeak(132)
@@ -1349,7 +1351,7 @@ def vquit():
 
 def vinvent():
     spk = 98
-    for i in range(65):
+    for i in range(Limits.OBJECTS+1):
         if i == Item.BEAR or not game.toting(i):
             continue
         if spk == 98:
@@ -1397,7 +1399,7 @@ def vthrow():
         obj = Item.ROD2
     if not game.toting(obj):
         actspk()
-    elif 50 <= obj < 65 and game.at(Item.TROLL):
+    elif 50 <= obj <= Limits.OBJECTS and game.at(Item.TROLL):
         game.drop(obj, 0)
         game.move(Item.TROLL, 0)
         game.move(Item.TROLL+100, 0)
@@ -1701,7 +1703,7 @@ def vkill():
             game.move(Item.RUG+100, 0)
             game.move(Item.DRAGON, 120)
             game.move(Item.RUG, 120)
-            for i in range(65):
+            for i in range(Limits.OBJECTS+1):
                 if game.place[i] in (119, 121):
                     game.move(i, 120)
             game.loc = 120
