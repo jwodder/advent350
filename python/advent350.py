@@ -12,7 +12,7 @@ import shlex
 import sys
 import traceback
 from   enum        import IntEnum
-from   six.moves   import input, range
+from   six.moves   import input, map, range
 
 # Configuration:
 DEFAULT_MAGICFILE = os.path.expanduser('~/.advmagic')
@@ -104,9 +104,6 @@ def bysection(line):
         except ValueError:
             pass
     return sectno
-
-def liq2(p):
-    return (Item.WATER, 0, Item.OIL)[p]
 
 def ran(n):
     d = 1
@@ -200,8 +197,10 @@ class Adventure(object):
         self.magic = indexLines(sections[12], Limits.MTEXT)
 
     def liqloc(self, loc):
-        return liq2(self.bitset(loc, Cond.OIL) if self.bitset(loc, Cond.LIQUID)
-                                               else 1)
+        if self.bitset(loc, Cond.LIQUID):
+            return Item.OIL if self.bitset(loc, Cond.OIL) else Item.WATER
+        else:
+            return 0
 
     def bitset(self, loc, n):
         return self.cond[loc] & (1 << n)
@@ -281,7 +280,8 @@ class Game(object):
         return self.loc in (self.place[item], self.fixed[item])
 
     def liq(self):
-        return liq2(max(self.prop[Item.BOTTLE], -1-self.prop[Item.BOTTLE]))
+        liqprop = max(self.prop[Item.BOTTLE], -1-self.prop[Item.BOTTLE])
+        return (Item.WATER, 0, Item.OIL)[liqprop]
 
     def dark(self):
         return not (cave.bitset(self.loc, Cond.LIGHT) or
