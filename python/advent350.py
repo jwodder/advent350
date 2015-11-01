@@ -436,7 +436,7 @@ class Magic(object):
         if x > 0:
             self.short = x
         self.mspeak(12, blklin=False)
-        word = getin().word1
+        word = getin(blklin=False).word1
         if word is not None:
             self.magic = word
         self.mspeak(13, blklin=False)
@@ -449,7 +449,7 @@ class Magic(object):
             self.mspeak(30, blklin=False)
         if x > 0:
             self.latency = max(45, x)
-        if self.yesm(14, 0, 0):
+        if self.yesm(14, 0, 0, blklin=False):
             self.motd(True)
         self.mspeak(15, blklin=False)
         with open(self.magicfile, 'wb') as fp:
@@ -537,40 +537,42 @@ class Magic(object):
                 fromH = till
 
     def newhrs(self):
-        self.mspeak(21)
+        self.mspeak(21, blklin=False)
         self.wkday = self.newhrx('weekdays:')
         self.wkend = self.newhrx('weekends:')
         self.holid = self.newhrx('holidays:')
-        self.mspeak(22)
+        self.mspeak(22, blklin=False)
         self.hours()
 
     def newhrx(self, day):
         horae = [False] * 24
         print('Prime time on', day)
         while True:
-            fromH = getInt('from: ')
+            print('from:')
+            fromH = getInt()
             if not (0 <= fromH < 24):
                 return horae
-            till = getInt('till: ')
+            print('till:')
+            till = getInt()
             if not (fromH <= till-1 < 24):
                 return horae
             horae[fromH:till] = [True] * (till - fromH)
 
     def motd(self, alter):
         if alter:
-            self.mspeak(23)
+            self.mspeak(23, blklin=False)
             self.msg = ''
-            # This doesn't exactly match the logic used in the original Fortran,
-            # but it's close:
+            # This doesn't exactly match the logic used in the original
+            # Fortran, but it's close:
             while len(self.msg) < 430:
                 nextline = input('> ')
                 if not nextline:
                     return
                 if len(nextline) > 70:
-                    self.mspeak(24)
+                    self.mspeak(24, blklin=False)
                     continue
                 self.msg += nextline + '\n'
-            self.mspeak(25)
+            self.mspeak(25, blklin=False)
         elif self.msg:
             print(self.msg, end='')
 
@@ -632,12 +634,11 @@ def getin(blklin=True):
                          raw=raw)
 
 def getInt(prompt='> '):
-    while True:
-        raw = input(prompt)
-        try:
-            return int(raw)
-        except ValueError:
-            pass
+    raw = input(prompt)
+    try:
+        return int(raw)
+    except ValueError:
+        return 0
 
 def yes(x, y, z):
     return yesx(x, y, z, rspeak)
