@@ -22,7 +22,7 @@ if not word.isalpha() or len(word) != 5:
 val = [ord(c) - 64 for c in word]
 t = args.hour * 100 + args.minute - args.minute % 10
 d = args.magic_num
-for y in xrange(5):
+for y in range(5):
     print(chr((abs(val[y] - val[(y+1) % 5]) * (d % 10) + (t % 10)) % 26 + 65),
           end='')
     t //= 10
