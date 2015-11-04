@@ -12,3 +12,5 @@
 - Add an option for enabling an "old-tymey" interface in which all output lines
   (including the MOTD!) begin with a single space and there is no "> " input
   prompt?  (Lowercase letters will still be used, though.)
+- Automatically resume ~/.adventure when invoked with no arguments?  (The file
+  would have to be deleted once the game ends.)

@@ -404,6 +404,7 @@ bool wizard(void) {
  if (yesm(18, 0, 0)) {mspeak(20); return false; }
  printf("\n%s\n", word);
  getin(word, NULL, NULL, NULL);
+ if (strlen(word) != 5) {mspeak(20); return false; }
  datime(&d, &t);
  t = (t/60) * 40 + (t/10) * 10;
  d = mage.magnm;

@@ -480,7 +480,9 @@ class Magic(object):
             return False
         print('\n' + ''.join(map(chr, wchrs)))
         wchrs = list(map(ord, getin().word1))
-        ### What happens if the inputted word is less than five characters?
+        if len(wchrs) != 5:
+            self.mspeak(20)
+            return False
         (d,t) = datime()
         t = (t // 60) * 40 + (t // 10) * 10
         d = self.magnm
