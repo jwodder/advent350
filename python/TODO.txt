@@ -14,3 +14,4 @@
   prompt?  (Lowercase letters will still be used, though.)
 - Automatically resume ~/.adventure when invoked with no arguments?  (The file
   would have to be deleted once the game ends.)
+- Don't error out when --magic-file doesn't exist

@@ -873,7 +873,8 @@ def main():
     parser.add_argument('-S', '--seed-date', type=int)
     parser.add_argument('savedgame', type=argparse.FileType('rb'), nargs='?')
     args = parser.parse_args()
-    ### What should happen if --magic-file is used without --magic?
+    if args.magic_file:
+        args.magic = True
     goto = label2
     if args.orig_rng or args.seed_date is not None:
         if args.seed_date is not None:
