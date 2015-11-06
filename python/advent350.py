@@ -840,18 +840,19 @@ def datime():
     delta = datetime.today() - datetime(1977, 1, 1)
     return (delta.days, delta.seconds // 60)
 
-def poof(on, mfile):
+def poof(on, mfname):
     if on:
-        if mfile is None:
-            try:
-                mfile = open(Magic.magicfile, 'rb')
-            except IOError as e:
-                if e.errno == ENOENT:
-                    return Magic()
-                else:
-                    raise
+        if mfname is None:
+            mfname = Magic.magicfile
         else:
-            Magic.magicfile = mfile.name
+            Magic.magicfile = mfname
+        try:
+            mfile = open(mfname, 'rb')
+        except IOError as e:
+            if e.errno == ENOENT:
+                return Magic()
+            else:
+                raise
         with mfile:
             m = pickle.load(mfile)
         if not isinstance(m, Magic):
@@ -868,7 +869,7 @@ def main():
     parser.add_argument('-D', '--data-file', type=argparse.FileType('r'),
                         default=DEFAULT_DATAFILE)
     parser.add_argument('-m', '--magic', action='store_true')
-    parser.add_argument('-M', '--magic-file', type=argparse.FileType('rb'))
+    parser.add_argument('-M', '--magic-file')
     parser.add_argument('-R', '--orig-rng', action='store_true')
     parser.add_argument('-S', '--seed-date', type=int)
     parser.add_argument('savedgame', type=argparse.FileType('rb'), nargs='?')
