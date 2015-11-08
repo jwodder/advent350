@@ -925,6 +925,7 @@ def label2():
             game.dflag = 1
         return label2000
     elif game.dflag == 1:
+        # Label 6000
         if game.loc < 15 or pct(95):
             return label2000
         game.dflag = 2
@@ -940,6 +941,7 @@ def label2():
         rspeak(3)
         game.drop(Item.AXE, game.loc)
         return label2000
+    # Label 6010
     dtotal, attack, stick = 0, 0, 0
     for i in range(6):  # The individual dwarven movement loop
         if game.dloc[i] == 0:
@@ -963,7 +965,7 @@ def label2():
         if game.dseen[i]:
             game.dloc[i] = game.loc
             if i == 5:
-                # Pirate logic:
+                # Pirate logic (line 716):
                 if game.loc == CHLOC or game.prop[Item.CHEST] >= 0:
                     continue
                 k = False
@@ -1002,7 +1004,7 @@ def label2():
                         game.dseen[5] = False
                     elif game.odloc[5] != game.dloc[5] and pct(20):
                         rspeak(127)
-            else:  # not a pirate
+            else:  # not a pirate; label 6027
                 dtotal += 1
                 if game.odloc[i] == game.dloc[i]:
                     attack += 1
@@ -1135,6 +1137,34 @@ def label2608():
     if magic.on and game.turns == 0 and \
             (lastline.word1, lastline.word2) == ('MAGIC', 'MODE'):
         magic.maint()
+
+    if lastline.word1 == 'DEBUG':
+        print()
+        if hasattr(ran, 'r'):
+            print('ran.r =', ran.r)
+            print('Next 5 ran.r values:', end='')
+            r = ran.r
+            for _ in range(5):
+                r = (r * 1021) % 1048576
+                print(' ', r, sep='', end='')
+            print()
+            print()
+        for i in range(6):
+            if i < 5:
+                print('Dwarf #', i, ': ', sep='', end='')
+            else:
+                print('Pirate: ', end='')
+            if game.dloc[i] == 0:
+                print('---')
+            else:
+                print('Room #', game.dloc[i], sep='', end='')
+                dwdesc = cave.shortDesc[game.dloc[i]] or \
+                            cave.longDesc[game.dloc[i]]
+                if dwdesc is not None:
+                    print(' (', dwdesc.strip(), ')', sep='', end='')
+                print()
+        return label2600
+
     game.turns += 1
     if magic.on and demo and game.turns >= magic.short:
         magic.mspeak(1)
