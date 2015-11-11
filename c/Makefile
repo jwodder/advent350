@@ -1,7 +1,7 @@
 #CC = c99
-#CFLAGS = -O2 -Wall
+#CFLAGS = -O2 -Wall -pedantic
 CC = gcc
-CFLAGS = -std=c99 -O2 -Wall
+CFLAGS = -std=c99 -O2 -Wall -pedantic
 
 OBJS = advent350.o advtext.o miscdata.o motion.o travel.o util.o verbs.o vocab.o
 
