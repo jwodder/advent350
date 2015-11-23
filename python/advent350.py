@@ -108,6 +108,11 @@ def bysection(line):
     return sectno
 
 def ran(n):
+    """
+    Returns a random integer from 0 through ``n-1`` using the same RNG
+    algorithm as the original Fortran.  The first time ``ran`` is called, it
+    seeds the RNG with the current time.
+    """
     d = 1
     if ran.r == 0:
         (d, ran.r) = ran.datime or datime()
@@ -120,6 +125,9 @@ ran.r = 0
 ran.datime = None
 
 def pct(x):
+    """
+    Returns ``True`` ``x`` times out of 100, ``False`` the rest of the time
+    """
     return ran(100) < x
 
 class Travel(namedtuple('Travel', 'dest verbs verb1 uncond chance nodwarf'
@@ -145,6 +153,11 @@ class Travel(namedtuple('Travel', 'dest verbs verb1 uncond chance nodwarf'
 Hint = namedtuple('Hint', 'turns points question hint')
 
 class Adventure(object):
+    """
+    A class for all of the static information about the game world, read from
+    ``advent.dat``
+    """
+
     def __init__(self, advdat):
         sections = {
             i: list(sect)[1:-1] for i, sect in groupby(advdat, bysection)
@@ -199,18 +212,29 @@ class Adventure(object):
         self.magic = indexLines(sections[12], Limits.MTEXT)
 
     def liqloc(self, loc):
+        """
+        Returns the type of liquid at location ``loc``, or 0 if there is none
+        """
         if self.bitset(loc, Cond.LIQUID):
             return Item.OIL if self.bitset(loc, Cond.OIL) else Item.WATER
         else:
             return 0
 
     def bitset(self, loc, n):
+        """
+        Tests whether the ``COND`` value for location ``loc`` has bit ``n`` set
+        """
         return self.cond[loc] & (1 << n)
 
     def forced(self, loc):
+        """
+        Tests whether being in location ``loc`` automatically forces movement
+        to another room
+        """
         return loc > 0 and self.travel[loc][0].forced
 
     def vocab(self, word, wordtype=None):
+        """ TODO """
         matches = self.vocabulary[word]
         if wordtype is not None:
             matches = [i for i in matches if isinstance(i, wordtype)]
@@ -222,6 +246,10 @@ class Adventure(object):
 
 
 class Game(object):
+    """
+    A class representing the player's current progress in the game
+    """
+
     savefile = DEFAULT_SAVEFILE
 
     def __init__(self):
@@ -273,23 +301,44 @@ class Game(object):
             self.atloc.append(here)
 
     def toting(self, item):
+        """
+        Tests whether the player is currently carrying item ``item``
+        """
         return self.place[item] == TOTING
 
     def here(self, item):
+        """
+        Tests whether item ``item`` is either at the player's current location
+        or is being carried by the player
+        """
         return self.place[item] == self.loc or self.toting(item)
 
     def at(self, item):
+        """
+        Tests whether the player is currently at one of the locations of a
+        two-location object ``item``
+        """
         return self.loc in (self.place[item], self.fixed[item])
 
     def liq(self):
+        """
+        Returns the type of liquid currently in the bottle, or 0 if it's empty
+        """
         liqprop = max(self.prop[Item.BOTTLE], -1-self.prop[Item.BOTTLE])
         return (Item.WATER, 0, Item.OIL)[liqprop]
 
     def dark(self):
+        """
+        Tests whether the player's current location is dark/unlit
+        """
         return not (cave.bitset(self.loc, Cond.LIGHT) or
                     (self.prop[Item.LAMP] and self.here(Item.LAMP)))
 
     def carry(self, obj, where):
+        """
+        Add item ``obj`` to the player's inventory, removing it from location
+        ``where``
+        """
         if obj <= 100:
             if self.place[obj] == TOTING:
                 return
@@ -298,6 +347,10 @@ class Game(object):
         self.atloc[where].remove(obj)
 
     def drop(self, obj, where):
+        """
+        Remove item ``obj`` from the player's current inventory, placing it at
+        location ``where``
+        """
         if obj > 100:
             self.fixed[obj-100] = where
         else:
@@ -318,6 +371,9 @@ class Game(object):
         return -1 - pval
 
     def destroy(self, obj):
+        """
+        Destroy item ``obj``
+        """
         self.move(obj, 0)
 
     def juggle(self, obj):
