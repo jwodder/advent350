@@ -174,21 +174,21 @@ class Adventure(object):
             iconst = ([Movement, Item, Action, MsgWord][i // 1000])(i % 1000)
             self.vocabulary[word].append(iconst)
         self.itemDesc = [None] * (Limits.OBJECTS + 1)
-        obj = 0
+        item = 0
         for line in sections[5]:
             num, _, txt = line.partition('\t')
             num = int(num)
             if '>$<' in txt:
                 txt = None
             if 1 <= num < 100:
-                obj = num
-                self.itemDesc[obj] = [txt]
+                item = num
+                self.itemDesc[item] = [txt]
             else:
                 state = num // 100
                 try:
-                    self.itemDesc[obj][state+1] += txt
+                    self.itemDesc[item][state+1] += txt
                 except IndexError:
-                    self.itemDesc[obj].append(txt)
+                    self.itemDesc[item].append(txt)
         self.rmsg = indexLines(sections[6], Limits.RTEXT)
         self.startplace = [0] * (Limits.OBJECTS + 1)
         self.startfixed = [0] * (Limits.OBJECTS + 1)
@@ -334,51 +334,51 @@ class Game(object):
         return not (cave.bitset(self.loc, Cond.LIGHT) or
                     (self.prop[Item.LAMP] and self.here(Item.LAMP)))
 
-    def carry(self, obj, where):
+    def carry(self, item, where):
         """
-        Add item ``obj`` to the player's inventory, removing it from location
+        Add item ``item`` to the player's inventory, removing it from location
         ``where``
         """
-        if obj <= 100:
-            if self.place[obj] == TOTING:
+        if item <= 100:
+            if self.place[item] == TOTING:
                 return
-            self.place[obj] = TOTING
+            self.place[item] = TOTING
             self.holding += 1
-        self.atloc[where].remove(obj)
+        self.atloc[where].remove(item)
 
-    def drop(self, obj, where):
+    def drop(self, item, where):
         """
-        Remove item ``obj`` from the player's current inventory, placing it at
+        Remove item ``item`` from the player's current inventory, placing it at
         location ``where``
         """
-        if obj > 100:
-            self.fixed[obj-100] = where
+        if item > 100:
+            self.fixed[item-100] = where
         else:
-            if self.place[obj] == TOTING:
+            if self.place[item] == TOTING:
                 self.holding -= 1
-            self.place[obj] = where
+            self.place[item] = where
         if where > 0:
-            self.atloc[where].insert(0, obj)
+            self.atloc[where].insert(0, item)
 
-    def move(self, obj, where):
-        whence = self.fixed[obj-100] if obj > 100 else self.place[obj]
+    def move(self, item, where):
+        whence = self.fixed[item-100] if item > 100 else self.place[item]
         if 0 < whence <= 300:
-            self.carry(obj, whence)
-        self.drop(obj, where)
+            self.carry(item, whence)
+        self.drop(item, where)
 
-    def put(self, obj, where, pval):
-        self.move(obj, where)
+    def put(self, item, where, pval):
+        self.move(item, where)
         return -1 - pval
 
-    def destroy(self, obj):
+    def destroy(self, item):
         """
-        Destroy item ``obj``
+        Destroy item ``item``
         """
-        self.move(obj, 0)
+        self.move(item, 0)
 
-    def juggle(self, obj):
-        self.move(obj, self.place[obj])
-        self.move(obj+100, self.fixed[obj])
+    def juggle(self, item):
+        self.move(item, self.place[item])
+        self.move(item+100, self.fixed[item])
 
     def score(self, scoring, bonus=0):
         score = 0
