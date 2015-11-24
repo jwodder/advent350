@@ -1118,21 +1118,21 @@ def label2000():
         rspeak(8)
     if not game.dark():
         game.abb[game.loc] += 1
-        for obj in game.atloc[game.loc]:
-            if obj > 100:
-                obj -= 100
-            if obj == Item.STEPS and game.toting(Item.NUGGET):
+        for item in game.atloc[game.loc]:
+            if item > 100:
+                item -= 100
+            if item == Item.STEPS and game.toting(Item.NUGGET):
                 continue
-            if game.prop[obj] < 0:
+            if game.prop[item] < 0:
                 if game.closed:
                     continue
-                game.prop[obj] = obj in (Item.RUG, Item.CHAIN)
+                game.prop[item] = item in (Item.RUG, Item.CHAIN)
                 game.tally -= 1
                 if game.tally == game.tally2 and game.tally != 0:
                     game.limit = min(35, game.limit)
-            pspeak(obj, 1 if obj == Item.STEPS and
-                             game.loc == game.fixed[Item.STEPS]
-                          else game.prop[obj])
+            pspeak(item, 1 if item == Item.STEPS and
+                              game.loc == game.fixed[Item.STEPS]
+                           else game.prop[item])
     return label2012
 
 def label2012():
