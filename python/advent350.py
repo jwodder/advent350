@@ -382,8 +382,14 @@ class Game(object):
         """
         Move item ``item`` to the front of the chain of items at its location
         """
-        self.move(item, self.place[item])
-        self.move(item+100, self.fixed[item])
+        where = self.place[item]
+        if where > 0:
+            self.atloc[where].remove(item)
+            self.atloc[where].insert(0, item)
+        where = self.fixed[item]
+        if 0 < where <= 300:
+            self.atloc[where].remove(item+100)
+            self.atloc[where].insert(0, item+100)
 
     def score(self, scoring, bonus=0):
         """
