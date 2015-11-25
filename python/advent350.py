@@ -234,7 +234,6 @@ class Adventure(object):
         return loc > 0 and self.travel[loc][0].forced
 
     def vocab(self, word, wordtype=None):
-        """ TODO """
         matches = self.vocabulary[word]
         if wordtype is not None:
             matches = [i for i in matches if isinstance(i, wordtype)]
@@ -361,26 +360,40 @@ class Game(object):
             self.atloc[where].insert(0, item)
 
     def move(self, item, where):
+        """ Move item ``item`` to location ``where`` """
         whence = self.fixed[item-100] if item > 100 else self.place[item]
         if 0 < whence <= 300:
             self.carry(item, whence)
         self.drop(item, where)
 
     def put(self, item, where, pval):
+        """
+        Like ``move``, but also returns a value used to set up the negated
+        ``prop`` values for the items in the endgame repository
+        """
         self.move(item, where)
         return -1 - pval
 
     def destroy(self, item):
-        """
-        Destroy item ``item``
-        """
+        """ Destroy item ``item`` """
         self.move(item, 0)
 
     def juggle(self, item):
+        """
+        Move item ``item`` to the front of the chain of items at its location
+        """
         self.move(item, self.place[item])
         self.move(item+100, self.fixed[item])
 
     def score(self, scoring, bonus=0):
+        """
+        Calculate the player's current score
+
+        :param bool scoring: ``True`` iff called as part of the ``SCORE``
+            command rather than at end-of-game
+        :param int bonus: index in ``rmsg`` of the special end-of-game message,
+            if any
+        """
         score = 0
         for i in TREASURES:
             if self.prop[i] >= 0:
