@@ -636,6 +636,12 @@ class Magic(object):
             horae[fromH:till] = [True] * (till - fromH)
 
     def motd(self, alter):
+        """
+        Print or set the MOTD
+
+        :param bool alter: If ``True``, the user will be prompted for a new
+            MOTD; if ``False``, the current MOTD (if any) will be printed
+        """
         if alter:
             self.mspeak(23, blklin=False)
             self.msg = ''
@@ -654,11 +660,16 @@ class Magic(object):
             print(self.msg, end='')
 
     def ciao(self):
+        """ Exit the game """
         self.mspeak(32)
         sys.exit()
 
 
 class NoMagic(object):
+    """
+    The non-magical dummy alternative to `Magic` for which every method is a
+    no-op
+    """
     on = False
 
     def __getattr__(self, _):
@@ -916,6 +927,15 @@ def datime():
     return (delta.days, delta.seconds // 60)
 
 def poof(on, mfname):
+    """
+    Load the magic configuration ... or not
+
+    :param bool on: whether magic is in use this game
+    :param mfname: The path to the magic file (which need not exist), or
+        ``None``.  A nonexistent path or ``None`` causes a `Magic` object with
+        the default values to be returned.
+    :return: a `Magic` object if ``on``, else a ``NoMagic`` object
+    """
     if on:
         if mfname is None:
             mfname = Magic.magicfile
