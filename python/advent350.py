@@ -1223,6 +1223,7 @@ def label2600():
     game.wzdark = game.dark()
     if 0 < game.knifeloc != game.loc:
         game.knifeloc = 0
+    ran(1)
     lastline = getin()
     return label2608
 

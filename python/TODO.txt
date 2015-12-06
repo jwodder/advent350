@@ -3,10 +3,10 @@
  - Make them all attributes of Adventure and/or Game?
 - Remove fields that are always the same when saved (gaveup, foobar, ???) from
   `Game` (or just from its pickling method?)
+- Merge the Adventure and Game classes together?
 - Ensure the code works in both Python 2 and Python 3
 - Add docstrings
 - Use constants in place of as many magic numbers as possible/reasonable
-- Merge the Adventure and Game classes together?
 - Add an option for enabling an "old-tymey" interface in which all output lines
   (including the MOTD!) begin with a single space and there is no "> " input
   prompt?  (Lowercase letters will still be used, though.)
