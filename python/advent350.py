@@ -115,14 +115,13 @@ def ran(n):
     """
     d = 1
     if ran.r == 0:
-        (d, ran.r) = ran.datime or datime()
+        (d, ran.r) = datime()
         ran.r = 18 * ran.r + 5
         d = 1000 + d % 1000
     for _ in range(d):
         ran.r = (ran.r * 1021) % 1048576
     return (n * ran.r) // 1048576
 ran.r = 0
-ran.datime = None
 
 def pct(x):
     """
@@ -966,16 +965,15 @@ def main():
     parser.add_argument('-m', '--magic', action='store_true')
     parser.add_argument('-M', '--magic-file')
     parser.add_argument('-R', '--orig-rng', action='store_true')
-    parser.add_argument('-S', '--seed-date', type=int)
+    parser.add_argument('-S', '--seed', type=int)
     parser.add_argument('savedgame', type=argparse.FileType('rb'), nargs='?')
     args = parser.parse_args()
     if args.magic_file:
         args.magic = True
     goto = label2
-    if args.orig_rng or args.seed_date is not None:
-        if args.seed_date is not None:
-            delta = datetime.fromtimestamp(args.seed_date) - datetime(1977,1,1)
-            ran.datime = (delta.days, delta.seconds // 60)
+    if args.seed is not None:
+        ran.r = args.seed
+    elif args.orig_rng:
         ran(1)
     else:
         from random import randrange
