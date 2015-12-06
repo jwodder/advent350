@@ -3,7 +3,6 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <string.h>
-#include <time.h>
 #include "advconfig.h"
 #include "advconst.h"
 #include "advdecl.h"
@@ -60,19 +59,41 @@ struct advgame game = {
 void turn(void);
 
 int main(int argc, char** argv) {
-#ifdef ORIG_RNG
- ran(1);
-#elif defined(RANDOM_RNG)
- srandom(time(NULL));
+#ifdef SEEDABLE_RNG
+ char* argv0 = *argv;
+ argv++;
+ if (*argv && strncmp(*argv, "-S", 2) == 0) {
+  char* seedarg = *argv + 2;
+  argv++;
+  if (!*seedarg) {
+   seedarg = *argv;
+   argv++;
+   if (!seedarg || !*seedarg) {
+    fprintf(stderr, "Usage: %s [-S seed] [savefile]\n", argv0);
+    exit(EXIT_FAILURE);
+   }
+  }
+  char* endp;
+  int seed = (int) strtol(seedarg, &endp, 10);
+  if (*endp) {
+   fprintf(stderr, "Usage: %s [-S seed] [savefile]\n", argv0);
+   exit(EXIT_FAILURE);
+  }
+  init_ran(&seed);
+ } else {
+  if (*argv && strcmp(*argv, "--") == 0) argv++;
+  init_ran(NULL);
+ }
 #else
- srand(time(NULL));
+ argv++;
+ init_ran(NULL);
 #endif
 
 #ifdef ADVMAGIC
  poof();
 #endif
 
- if (argc > 1) {if (!vresume(argv[1])) exit(EXIT_FAILURE); }
+ if (*argv) {if (!vresume(*argv)) exit(EXIT_FAILURE); }
  else {
 #ifdef ADVMAGIC
   demo = start();

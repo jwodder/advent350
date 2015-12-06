@@ -105,6 +105,7 @@ int vocab(const char* word, int type);
 void getin(char* w1, char* r1, char* w2, char* r2);
 void ftoeol(void);
 void readError(void);
+void init_ran(int* seed);
 int ran(int max);
 #ifdef ADVMAGIC
 void ciao(void);

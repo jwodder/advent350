@@ -33,4 +33,9 @@
  * function random() will be used instead of rand().  If both RANDOM_RNG and
  * ORIG_RNG are defined, ORIG_RNG takes precedence. */
 
+/* #define SEEDABLE_RNG */
+/* If SEEDABLE_RNG is defined, the resulting program will take an optional `-S
+ * seed` parameter on the command line for seeding the RNG with a specified
+ * value.  This is intended for use in debugging. */
+
 #endif

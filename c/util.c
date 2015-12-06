@@ -239,17 +239,30 @@ void readError(void) {
  exit(EXIT_FAILURE);
 }
 
+static int ran_r = 0;
+
+void init_ran(int* seed) {
+#ifdef ORIG_RNG
+ if (seed) {
+  ran_r = *seed;
+ } else {
+  int d;
+  datime(&d, &ran_r);
+  ran_r = 18 * ran_r + 5;
+  d = 1000 + d % 1000;
+  for (int i=0; i<d; i++) ran_r = (ran_r * 1021) % 1048576;
+ }
+#elif defined(RANDOM_RNG)
+ srandom(seed ? *seed : time(NULL));
+#else
+ srand(seed ? *seed : time(NULL));
+#endif
+}
+
 int ran(int max) {
 #ifdef ORIG_RNG
- static int r = 0;
- int d = 1;
- if (r == 0) {
-  datime(&d, &r);
-  r = 18 * r + 5;
-  d = 1000 + d % 1000;
- }
- for (int i=0; i<d; i++) r = (r * 1021) % 1048576;
- return (max * r) / 1048576;
+ ran_r = (ran_r * 1021) % 1048576;
+ return (max * ran_r) / 1048576;
 #elif defined(RANDOM_RNG)
  return random() % max;
 #else
