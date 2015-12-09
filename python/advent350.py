@@ -28,10 +28,7 @@ FIXED  = -1  # "fixed" location for an immovable object found in only one place
 class Limits(object):
     OBJECTS   =  64  # advent.for: 100
     LOCATIONS = 140  # advent.for: LOCSIZ/150/
-    RTEXT     = 201  # advent.for: RTXSIZ/205/
     HINTS     =   9  # advent.for: HNTSIZ/20/
-    MTEXT     =  32  # advent.for: MAGSIZ/35/
-    ACTSPK    =  31  # advent.for: VRBSIZ/35/
 
 Movement = IntEnum('Movement', '''
     forced HILL ENTER UPSTREAM DOWNSTREAM FOREST CONTINUE BACK VALLEY STAIRS
@@ -83,12 +80,12 @@ class Cond(IntEnum):
     LIQUID = 2
     NO_PIRATE = 3
 
-def indexLines(lines, qty):
-    data = [None] * (qty+1)
+def indexLines(lines):
+    data = []
     for i, block in groupby(lines, lambda s: int(s.partition('\t')[0])):
-        data[i] = ''.join(s.partition('\t')[2] for s in block)
-        if '>$<' in data[i]:
-            data[i] = None
+        data.extend([None] * (i - len(data)))
+        txt = ''.join(s.partition('\t')[2] for s in block)
+        data.append(None if '>$<' in txt else txt)
     return data
 
 def intTSV(line):
@@ -161,11 +158,11 @@ class Adventure(object):
         sections = {
             i: list(sect)[1:-1] for i, sect in groupby(advdat, bysection)
         }
-        self.longDesc = indexLines(sections[1], Limits.LOCATIONS)
-        self.shortDesc = indexLines(sections[2], Limits.LOCATIONS)
+        self.longDesc = indexLines(sections[1])
+        self.shortDesc = indexLines(sections[2])
         self.travel = nonemap(lambda s: list(map(Travel.fromEntry,
                                                  s.splitlines())),
-                              indexLines(sections[3], Limits.LOCATIONS))
+                              indexLines(sections[3]))
         self.vocabulary = defaultdict(list)
         for entry in sections[4]:
             i, word = entry.strip().split('\t')[:2]
@@ -188,7 +185,7 @@ class Adventure(object):
                     self.itemDesc[item][state+1] += txt
                 except IndexError:
                     self.itemDesc[item].append(txt)
-        self.rmsg = indexLines(sections[6], Limits.RTEXT)
+        self.rmsg = indexLines(sections[6])
         self.startplace = [0] * (Limits.OBJECTS + 1)
         self.startfixed = [0] * (Limits.OBJECTS + 1)
         for locs in map(intTSV, sections[7]):
@@ -197,7 +194,7 @@ class Adventure(object):
                 self.startfixed[locs[0]] = locs[2]
             except IndexError:
                 self.startfixed[locs[0]] = 0
-        self.actspk = nonemap(int, indexLines(sections[8], Limits.ACTSPK))
+        self.actspk = nonemap(int, indexLines(sections[8]))
         self.cond = [0] * (Limits.LOCATIONS + 1)
         for cs in map(intTSV, sections[9]):
             for loc in cs[1:]:
@@ -207,8 +204,8 @@ class Adventure(object):
             threshold, _, msg = line.partition('\t')
             self.classes.append((int(threshold), msg))
         self.hints = nonemap(lambda s: Hint(*intTSV(s)),
-                             indexLines(sections[11], Limits.HINTS))
-        self.magic = indexLines(sections[12], Limits.MTEXT)
+                             indexLines(sections[11]))
+        self.magic = indexLines(sections[12])
 
     def liqloc(self, loc):
         """
