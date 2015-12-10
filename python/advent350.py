@@ -49,7 +49,7 @@ Item = IntEnum('Item', '''
     EMERALD PYRAM PEARL RUG SPICES CHAIN
 ''')
 
-TREASURES = tuple(map(Item, range(50, Limits.OBJECTS)))
+TREASURES = tuple(map(Item, range(50, Limits.OBJECTS+1)))
 
 Action = IntEnum('Action', '''
     TAKE DROP SAY OPEN NOTHING LOCK ON OFF WAVE CALM WALK KILL POUR EAT DRINK
