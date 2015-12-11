@@ -26,7 +26,6 @@ TOTING = -1  # location number for the player's inventory
 FIXED  = -1  # "fixed" location for an immovable object found in only one place
 
 class Limits(object):
-    OBJECTS   =  64  # advent.for: 100
     LOCATIONS = 140  # advent.for: LOCSIZ/150/
     HINTS     =   9  # advent.for: HNTSIZ/20/
 
@@ -49,7 +48,8 @@ Item = IntEnum('Item', '''
     EMERALD PYRAM PEARL RUG SPICES CHAIN
 ''')
 
-TREASURES = tuple(map(Item, range(50, Limits.OBJECTS+1)))
+#TREASURES = tuple(map(Item, range(50, len(Item)+1)))
+TREASURES = tuple(i for i in Item if i >= 50)
 
 Action = IntEnum('Action', '''
     TAKE DROP SAY OPEN NOTHING LOCK ON OFF WAVE CALM WALK KILL POUR EAT DRINK
@@ -169,7 +169,7 @@ class Adventure(object):
             i = int(i)
             iconst = ([Movement, Item, Action, MsgWord][i // 1000])(i % 1000)
             self.vocabulary[word].append(iconst)
-        self.itemDesc = [None] * (Limits.OBJECTS + 1)
+        self.itemDesc = [None] * (len(Item) + 1)
         item = 0
         for line in sections[5]:
             num, _, txt = line.partition('\t')
@@ -186,8 +186,8 @@ class Adventure(object):
                 except IndexError:
                     self.itemDesc[item].append(txt)
         self.rmsg = indexLines(sections[6])
-        self.startplace = [0] * (Limits.OBJECTS + 1)
-        self.startfixed = [0] * (Limits.OBJECTS + 1)
+        self.startplace = [0] * (len(Item) + 1)
+        self.startfixed = [0] * (len(Item) + 1)
         for locs in map(intTSV, sections[7]):
             self.startplace[locs[0]] = locs[1]
             try:
@@ -270,7 +270,7 @@ class Game(object):
         self.lmwarn = False
         self.panic = False
         self.closed = False
-        self.prop = [0] * 50 + [-1] * (Limits.OBJECTS - 49)
+        self.prop = [0] * 50 + [-1] * (len(Item) - 49)
         self.abb = [0] * (Limits.LOCATIONS + 1)
         self.hintlc = [0] * (Limits.HINTS + 1)
         self.hinted = [False] * (Limits.HINTS + 1)
@@ -286,9 +286,9 @@ class Game(object):
         self.gaveup = False
         self.atloc = [[]]
         for i in range(1, Limits.LOCATIONS+1):
-            here = [k for k in range(1, Limits.OBJECTS+1)
+            here = [k for k in Item
                       if self.place[k] == i and self.fixed[k] <= 0]
-            for k in range(1, Limits.OBJECTS+1):
+            for k in Item:
                 if self.place[k] == i and self.fixed[k] > 0:
                     here.append(k)
                 elif self.fixed[k] == i:
@@ -877,7 +877,7 @@ def death():
         game.place[Item.OIL] = 0
         if game.toting(Item.LAMP):
             game.prop[Item.LAMP] = 0
-        for i in range(Limits.OBJECTS, 0, -1):
+        for i in reversed(Item):
             if game.toting(i):
                 game.drop(i, 1 if i == Item.LAMP else game.oldloc2)
         game.loc = game.oldloc = 3
@@ -1211,7 +1211,7 @@ def label2600():
     if game.closed:
         if game.prop[Item.OYSTER] < 0 and game.toting(Item.OYSTER):
             pspeak(Item.OYSTER, 1)
-        for i in range(1, Limits.OBJECTS+1):
+        for i in Item:
             if game.toting(i) and game.prop[i] < 0:
                 game.prop[i] = -1 - game.prop[i]
     # Label 2605
@@ -1296,7 +1296,7 @@ def label2608():
             game.prop[i] = game.put(i, 116, int(i in (Item.SNAKE, Item.BIRD)))
         game.prop[Item.MIRROR] = game.put(Item.MIRROR, 115, 0)
         game.fixed[Item.MIRROR] = 116
-        for i in range(1, Limits.OBJECTS+1):
+        for i in Item:
             if game.toting(i):
                 game.destroy(i)
         rspeak(132)
@@ -1477,7 +1477,7 @@ def vquit():
 
 def vinvent():
     spk = 98
-    for i in range(Limits.OBJECTS+1):
+    for i in Item:
         if i == Item.BEAR or not game.toting(i):
             continue
         if spk == 98:
@@ -1525,7 +1525,7 @@ def vthrow():
         obj = Item.ROD2
     if not game.toting(obj):
         actspk()
-    elif 50 <= obj <= Limits.OBJECTS and game.at(Item.TROLL):
+    elif obj in TREASURES and game.at(Item.TROLL):
         game.drop(obj, 0)
         game.move(Item.TROLL, 0)
         game.move(Item.TROLL+100, 0)
@@ -1829,7 +1829,7 @@ def vkill():
             game.move(Item.RUG+100, 0)
             game.move(Item.DRAGON, 120)
             game.move(Item.RUG, 120)
-            for i in range(Limits.OBJECTS+1):
+            for i in Item:
                 if game.place[i] in (119, 121):
                     game.move(i, 120)
             game.loc = 120
