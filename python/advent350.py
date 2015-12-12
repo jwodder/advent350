@@ -25,10 +25,6 @@ CHLOC2 = 140 # location of the message about the pirate's treasure chest
 TOTING = -1  # location number for the player's inventory
 FIXED  = -1  # "fixed" location for an immovable object found in only one place
 
-class Limits(object):
-    LOCATIONS = 140  # advent.for: LOCSIZ/150/
-    HINTS     =   9  # advent.for: HNTSIZ/20/
-
 Movement = IntEnum('Movement', '''
     forced HILL ENTER UPSTREAM DOWNSTREAM FOREST CONTINUE BACK VALLEY STAIRS
     EXIT BUILDING GULLY STREAM ROCK BED CRAWL COBBLE IN SURFACE NULL DARK
@@ -160,6 +156,7 @@ class Adventure(object):
         }
         self.longDesc = indexLines(sections[1])
         self.shortDesc = indexLines(sections[2])
+        self.locsiz = len(self.longDesc) - 1
         self.travel = nonemap(lambda s: list(map(Travel.fromEntry,
                                                  s.splitlines())),
                               indexLines(sections[3]))
@@ -195,7 +192,7 @@ class Adventure(object):
             except IndexError:
                 self.startfixed[locs[0]] = 0
         self.actspk = nonemap(int, indexLines(sections[8]))
-        self.cond = [0] * (Limits.LOCATIONS + 1)
+        self.cond = [0] * (self.locsiz + 1)
         for cs in map(intTSV, sections[9]):
             for loc in cs[1:]:
                 self.cond[loc] |= 1 << cs[0]
@@ -271,9 +268,9 @@ class Game(object):
         self.panic = False
         self.closed = False
         self.prop = [0] * 50 + [-1] * (len(Item) - 49)
-        self.abb = [0] * (Limits.LOCATIONS + 1)
-        self.hintlc = [0] * (Limits.HINTS + 1)
-        self.hinted = [False] * (Limits.HINTS + 1)
+        self.abb = [0] * (cave.locsiz + 1)
+        self.hintlc = [0] * len(cave.hints)
+        self.hinted = [False] * len(cave.hints)
         self.dloc = [19, 27, 33, 44, 64, CHLOC]
         self.odloc = [0] * 6
         self.dseen = [False] * 6
@@ -285,7 +282,7 @@ class Game(object):
         self.savet = 0
         self.gaveup = False
         self.atloc = [[]]
-        for i in range(1, Limits.LOCATIONS+1):
+        for i in range(1, cave.locsiz+1):
             here = [k for k in Item
                       if self.place[k] == i and self.fixed[k] <= 0]
             for k in Item:
@@ -1176,7 +1173,7 @@ def label2012():
 
 def label2600():
     global lastline
-    for hint in range(4, Limits.HINTS+1):
+    for hint in range(4, len(cave.hints)):
         if game.hinted[hint]:
             continue
         if not cave.bitset(game.loc, hint):
