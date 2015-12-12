@@ -803,15 +803,17 @@ def dotrav(motion):
             rdest = trav.dest
             break
     else:
-        if motion in {29, 30, 43, 44, 45, 46, 47, 48, 49, 50}:
+        if motion in {Movement.UP, Movement.DOWN, Movement.EAST, Movement.WEST,
+                      Movement.NORTH, Movement.SOUTH, Movement.NE, Movement.SE,
+                      Movement.SW, Movement.NW}:
             rspeak(9)
-        elif motion in {7, 36, 37}:
+        elif motion in {Movement.CONTINUE, Movement.LEFT, Movement.RIGHT}:
             rspeak(10)
-        elif motion in {11, 19}:
+        elif motion in {Movement.EXIT, Movement.IN}:
             rspeak(11)
-        elif motion in {62, 65}:
+        elif motion in {Movement.XYZZY, Movement.PLUGH}:
             rspeak(42)
-        elif motion == 17:
+        elif motion == Movement.CRAWL:
             rspeak(80)
         elif verb in {Action.FIND, Action.INVENT}:
             rspeak(59)
@@ -1144,7 +1146,7 @@ def label2000():
         rspeak(141)
     speak(kk)
     if cave.forced(game.loc):
-        return domove(1)
+        return domove(Movement.forced)
     if game.loc == 33 and pct(25) and not game.closing:
         rspeak(8)
     if not game.dark():
