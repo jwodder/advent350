@@ -14,7 +14,3 @@
   interface in which all output lines (including the MOTD!) begin with a single
   space and there is no "> " input prompt (lowercase letters will still be
   used, though).
-- Consider adding a compile-time option for setting the euid and/or egid back
-  to its/their real values so that the binary can have its setuid/setgid flag
-  set to protect the magic file from outsiders while avoiding security problems
-  with creating save files

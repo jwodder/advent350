@@ -20,10 +20,6 @@ DEFAULT_SAVEFILE = os.path.expanduser('~/.adventure')
 DEFAULT_DATAFILE = 'advent.dat'
 
 MAXDIE = 3   # maximum number of times you can die
-CHLOC  = 114 # location of the pirate's treasure chest
-CHLOC2 = 140 # location of the message about the pirate's treasure chest
-TOTING = -1  # location number for the player's inventory
-FIXED  = -1  # "fixed" location for an immovable object found in only one place
 
 Movement = IntEnum('Movement', '''
     forced HILL ENTER UPSTREAM DOWNSTREAM FOREST CONTINUE BACK VALLEY STAIRS
@@ -76,6 +72,38 @@ class Cond(IntEnum):
     LIQUID = 2
     NO_PIRATE = 3
 
+class Location(IntEnum):
+    TOTING = -1  # location number for the player's inventory
+    FIXED  = -1  # location for an immovable object found in only one place
+    START = 1
+    BUILDING = 3
+    VALLEY = 4
+    STREAMBED = 7
+    OUT_GRATE = 8
+    IN_GRATE = 9
+    HALL_OF_MISTS = 15
+    MT_KING = 19
+    NUGGET = 18
+    W_FISSURE = 27
+    Y2 = 33
+    MOTLP3 = 44
+    COMPLEX = 64
+    GIANT = 92
+    SOFT = 96
+    PLOVER = 100
+    DARK = 101
+    CUL_DE_SAC = 105
+    CHLOC = 114 # location of the pirate's treasure chest
+    NE_REPO = 115
+    SW_REPO = 116
+    SW_CHASM = 117
+    SECRET_CANYON_N = 119
+    SECRET_CANYON = 120
+    SECRET_CANYON_E = 121
+    NE_CHASM = 122
+    BARREN = 130
+    CHLOC2 = 140 # location of the message about the pirate's treasure chest
+
 def indexLines(lines):
     data = []
     for i, block in groupby(lines, lambda s: int(s.partition('\t')[0])):
@@ -99,28 +127,6 @@ def bysection(line):
         except ValueError:
             pass
     return sectno
-
-def ran(n):
-    """
-    Returns a random integer from 0 through ``n-1`` using the same RNG
-    algorithm as the original Fortran.  The first time ``ran`` is called, it
-    seeds the RNG with the current time.
-    """
-    d = 1
-    if ran.r == 0:
-        (d, ran.r) = datime()
-        ran.r = 18 * ran.r + 5
-        d = 1000 + d % 1000
-    for _ in range(d):
-        ran.r = (ran.r * 1021) % 1048576
-    return (n * ran.r) // 1048576
-ran.r = 0
-
-def pct(x):
-    """
-    Returns ``True`` ``x`` times out of 100, ``False`` the rest of the time
-    """
-    return ran(100) < x
 
 class Travel(namedtuple('Travel', 'dest verbs verb1 uncond chance nodwarf'
                                   ' carry here obj notprop forced')):
@@ -246,7 +252,7 @@ class Game(object):
 
     def __init__(self):
         self.loc = 0
-        self.newloc = 1
+        self.newloc = Location.START
         self.oldloc = 0
         self.oldloc2 = 0
         self.limit = 330
@@ -271,7 +277,8 @@ class Game(object):
         self.abb = [0] * (cave.locsiz + 1)
         self.hintlc = [0] * len(cave.hints)
         self.hinted = [False] * len(cave.hints)
-        self.dloc = [19, 27, 33, 44, 64, CHLOC]
+        self.dloc = [Location.MT_KING, Location.W_FISSURE, Location.Y2,
+                     Location.MOTLP3, Location.COMPLEX, Location.CHLOC]
         self.odloc = [0] * 6
         self.dseen = [False] * 6
         self.dflag = 0
@@ -296,7 +303,7 @@ class Game(object):
         """
         Tests whether the player is currently carrying item ``item``
         """
-        return self.place[item] == TOTING
+        return self.place[item] == Location.TOTING
 
     def here(self, item):
         """
@@ -332,9 +339,9 @@ class Game(object):
         ``where``
         """
         if item <= 100:
-            if self.place[item] == TOTING:
+            if self.place[item] == Location.TOTING:
                 return
-            self.place[item] = TOTING
+            self.place[item] = Location.TOTING
             self.holding += 1
         self.atloc[where].remove(item)
 
@@ -346,7 +353,7 @@ class Game(object):
         if item > 100:
             self.fixed[item-100] = where
         else:
-            if self.place[item] == TOTING:
+            if self.place[item] == Location.TOTING:
                 self.holding -= 1
             self.place[item] = where
         if where > 0:
@@ -686,6 +693,28 @@ cave = None
 game = None
 magic = None
 
+def ran(n):
+    """
+    Returns a random integer from 0 through ``n-1`` using the same RNG
+    algorithm as the original Fortran.  The first time ``ran`` is called, it
+    seeds the RNG with the current time.
+    """
+    d = 1
+    if ran.r == 0:
+        (d, ran.r) = datime()
+        ran.r = 18 * ran.r + 5
+        d = 1000 + d % 1000
+    for _ in range(d):
+        ran.r = (ran.r * 1021) % 1048576
+    return (n * ran.r) // 1048576
+ran.r = 0
+
+def pct(x):
+    """
+    Returns ``True`` ``x`` times out of 100, ``False`` the rest of the time
+    """
+    return ran(100) < x
+
 def speak(s, blklin=True):
     if s:
         if blklin:
@@ -785,7 +814,7 @@ def domove(motion):
         game.wzdark = False
         game.abb[game.loc] = 0
     elif motion == Movement.CAVE:
-        rspeak(57 if game.loc < 8 else 58)
+        rspeak(57 if game.loc < Location.OUT_GRATE else 58)
     else:
         (game.oldloc2, game.oldloc) = (game.oldloc, game.loc)
         dotrav(motion)
@@ -830,19 +859,19 @@ def dotrav(motion):
             rspeak(117)
     elif rdest == 302:
         game.drop(Item.EMERALD, game.loc)
-        game.newloc = 100 if game.loc == 33 else 33
+        game.newloc = Location.PLOVER if game.loc == Location.Y2 else Location.Y2
     elif rdest == 303:
         if game.prop[Item.TROLL] == 1:
             pspeak(Item.TROLL, 1)
             game.prop[Item.TROLL] = 0
             game.move(Item.TROLL2, 0)
             game.move(Item.TROLL2+100, 0)
-            game.move(Item.TROLL, 117)
-            game.move(Item.TROLL+100, 122)
+            game.move(Item.TROLL, Location.SW_CHASM)
+            game.move(Item.TROLL+100, Location.NE_CHASM)
             game.juggle(Item.CHASM)
             game.newloc = game.loc
         else:
-            game.newloc = 122 if game.loc == 117 else 117
+            game.newloc = Location.NE_CHASM if game.loc == Location.SW_CHASM else Location.SW_CHASM
             if game.prop[Item.TROLL] == 0:
                 game.prop[Item.TROLL] = 1
             if game.toting(Item.BEAR):
@@ -850,7 +879,7 @@ def dotrav(motion):
                 game.prop[Item.CHASM] = 1
                 game.prop[Item.TROLL] = 2
                 game.drop(Item.BEAR, game.newloc)
-                game.fixed[Item.BEAR] = FIXED
+                game.fixed[Item.BEAR] = Location.FIXED
                 game.prop[Item.BEAR] = 3
                 if game.prop[Item.SPICES] < 0:
                     game.tally2 += 1
@@ -878,8 +907,8 @@ def death():
             game.prop[Item.LAMP] = 0
         for i in reversed(Item):
             if game.toting(i):
-                game.drop(i, 1 if i == Item.LAMP else game.oldloc2)
-        game.loc = game.oldloc = 3
+                game.drop(i, Location.START if i == Item.LAMP else game.oldloc2)
+        game.loc = game.oldloc = Location.BUILDING
         return label2000
 
 def normend(bonus=0):
@@ -991,7 +1020,7 @@ def main():
         goto = goto()
 
 def label2():
-    if 0 < game.newloc < 9 and game.closing:
+    if 0 < game.newloc < Location.IN_GRATE and game.closing:
         rspeak(130)
         game.newloc = game.loc
         if not game.panic:
@@ -1010,12 +1039,12 @@ def label2():
             cave.bitset(game.newloc, Cond.NO_PIRATE):
         return label2000
     if game.dflag == 0:
-        if game.loc >= 15:
+        if game.loc >= Location.HALL_OF_MISTS:
             game.dflag = 1
         return label2000
     elif game.dflag == 1:
         # Label 6000
-        if game.loc < 15 or pct(95):
+        if game.loc < Location.HALL_OF_MISTS or pct(95):
             return label2000
         game.dflag = 2
         if pct(50):
@@ -1025,7 +1054,7 @@ def label2():
             game.dloc[ran(5)] = 0
         for i in range(5):
             if game.dloc[i] == game.loc:
-                game.dloc[i] = 18
+                game.dloc[i] = Location.NUGGET
             game.odloc[i] = game.dloc[i]
         rspeak(3)
         game.drop(Item.AXE, game.loc)
@@ -1040,7 +1069,7 @@ def label2():
         for t in cave.travel[game.dloc[i]]:
             if not t.nodwarf:
                 newloc = t.dest
-                if 15 <= newloc <= 300 and \
+                if Location.HALL_OF_MISTS <= newloc <= 300 and \
                         newloc not in (game.odloc[i], game.dloc[i]) and \
                         not cave.forced(newloc) and \
                         not (i == 5 and cave.bitset(newloc, Cond.NO_PIRATE)):
@@ -1049,32 +1078,32 @@ def label2():
                         tk = newloc
         game.odloc[i] = game.dloc[i]
         game.dloc[i] = tk
-        game.dseen[i] = (game.dseen[i] and game.loc >= 15) or \
+        game.dseen[i] = (game.dseen[i] and game.loc >= Location.HALL_OF_MISTS) or \
             game.loc in (game.dloc[i], game.odloc[i])
         if game.dseen[i]:
             game.dloc[i] = game.loc
             if i == 5:
                 # Pirate logic (line 716):
-                if game.loc == CHLOC or game.prop[Item.CHEST] >= 0:
+                if game.loc == Location.CHLOC or game.prop[Item.CHEST] >= 0:
                     continue
                 k = False
                 stole = False
                 for j in TREASURES:
-                    if j == Item.PYRAM and game.loc in (100, 101):
+                    if j == Item.PYRAM and game.loc in (Location.PLOVER, Location.DARK):
                         continue
                     if game.toting(j):
                         rspeak(128)
                         if game.place[Item.MESSAG] == 0:
-                            game.move(Item.CHEST, CHLOC)
-                        game.move(Item.MESSAG, CHLOC2)
+                            game.move(Item.CHEST, Location.CHLOC)
+                        game.move(Item.MESSAG, Location.CHLOC2)
                         for j2 in TREASURES:
-                            if j2 == Item.PYRAM and game.loc in (100, 101):
+                            if j2 == Item.PYRAM and game.loc in (Location.PLOVER, Location.DARK):
                                 continue
                             if game.at(j2) and game.fixed[j2] == 0:
                                 game.carry(j2, game.loc)
                             if game.toting(j2):
-                                game.drop(j2, CHLOC)
-                        game.dloc[5] = game.odloc[5] = CHLOC
+                                game.drop(j2, Location.CHLOC)
+                        game.dloc[5] = game.odloc[5] = Location.CHLOC
                         game.dseen[5] = False
                         stole = True
                         break
@@ -1087,9 +1116,9 @@ def label2():
                             game.here(Item.LAMP) and \
                             game.prop[Item.LAMP] == 1:
                         rspeak(186)
-                        game.move(Item.CHEST, CHLOC)
-                        game.move(Item.MESSAG, CHLOC2)
-                        game.dloc[5] = game.odloc[5] = CHLOC
+                        game.move(Item.CHEST, Location.CHLOC)
+                        game.move(Item.MESSAG, Location.CHLOC2)
+                        game.dloc[5] = game.odloc[5] = Location.CHLOC
                         game.dseen[5] = False
                     elif game.odloc[5] != game.dloc[5] and pct(20):
                         rspeak(127)
@@ -1147,7 +1176,7 @@ def label2000():
     speak(kk)
     if cave.forced(game.loc):
         return domove(Movement.forced)
-    if game.loc == 33 and pct(25) and not game.closing:
+    if game.loc == Location.Y2 and pct(25) and not game.closing:
         rspeak(8)
     if not game.dark():
         game.abb[game.loc] += 1
@@ -1264,7 +1293,7 @@ def label2608():
             verb = 0
         else:
             return vsay() or label19999
-    if game.tally == 0 and 15 <= game.loc != 33:
+    if game.tally == 0 and Location.HALL_OF_MISTS <= game.loc != Location.Y2:
         game.clock1 -= 1
     if game.clock1 == 0:
         game.prop[Item.GRATE] = game.prop[Item.FISSUR] = 0
@@ -1272,8 +1301,8 @@ def label2608():
         game.dseen = [False] * 6
         game.move(Item.TROLL, 0)
         game.move(Item.TROLL+100, 0)
-        game.move(Item.TROLL2, 117)
-        game.move(Item.TROLL2+100, 122)
+        game.move(Item.TROLL2, Location.SW_CHASM)
+        game.move(Item.TROLL2+100, Location.NE_CHASM)
         game.juggle(Item.CHASM)
         if game.prop[Item.BEAR] != 3:
             game.destroy(Item.BEAR)
@@ -1288,13 +1317,13 @@ def label2608():
     if game.clock2 == 0:
         for i in (Item.BOTTLE, Item.PLANT, Item.OYSTER, Item.LAMP, Item.ROD,
                   Item.DWARF):
-            game.prop[i] = game.put(i, 115, int(i == Item.BOTTLE))
-        game.loc, game.oldloc, game.newloc = 115, 115, 115
-        game.put(Item.GRATE, 116, 0)
+            game.prop[i] = game.put(i, Location.NE_REPO, int(i == Item.BOTTLE))
+        game.loc, game.oldloc, game.newloc = (Location.NE_REPO,) * 3
+        game.put(Item.GRATE, Location.SW_REPO, 0)
         for i in (Item.SNAKE, Item.BIRD, Item.CAGE, Item.ROD2, Item.PILLOW):
-            game.prop[i] = game.put(i, 116, int(i in (Item.SNAKE, Item.BIRD)))
-        game.prop[Item.MIRROR] = game.put(Item.MIRROR, 115, 0)
-        game.fixed[Item.MIRROR] = 116
+            game.prop[i] = game.put(i, Location.SW_REPO, int(i in (Item.SNAKE, Item.BIRD)))
+        game.prop[Item.MIRROR] = game.put(Item.MIRROR, Location.NE_REPO, 0)
+        game.fixed[Item.MIRROR] = Location.SW_REPO
         for i in Item:
             if game.toting(i):
                 game.destroy(i)
@@ -1316,7 +1345,7 @@ def label2608():
         game.prop[Item.LAMP] = 0
         if game.here(Item.LAMP):
             rspeak(184)
-    elif game.limit < 0 and game.loc <= 8:
+    elif game.limit < 0 and game.loc <= Location.OUT_GRATE:
         rspeak(185)
         game.gaveup = True
         normend()
@@ -1361,9 +1390,9 @@ def label2630():
         if game.fixed[obj] == game.loc or game.here(obj):
             return doaction()
         elif obj == Item.GRATE:
-            if game.loc in (1, 4, 7):
+            if game.loc in (Location.START, Location.VALLEY, Location.STREAMBED):
                 return domove(Movement.DEPRESSION)
-            elif 9 < game.loc < 15:
+            elif Location.IN_GRATE < game.loc < Location.HALL_OF_MISTS:
                 return domove(Movement.ENTRANCE)
             elif verb in (Action.FIND, Action.INVENT) and not lastline.word2:
                 return doaction()
@@ -1442,15 +1471,15 @@ def vfoo():
             rspeak(54)
             return
         game.foobar = 0
-        if game.place[Item.EGGS] == 92 or \
-                (game.toting(Item.EGGS) and game.loc == 92):
+        if game.place[Item.EGGS] == Location.GIANT or \
+                (game.toting(Item.EGGS) and game.loc == Location.GIANT):
             rspeak(42)
         else:
             if game.place[Item.EGGS] == game.place[Item.TROLL] == \
                     game.prop[Item.TROLL] == 0:
                 game.prop[Item.TROLL] = 1
-            game.move(Item.EGGS, 92)
-            pspeak(Item.EGGS, 0 if game.loc == 92
+            game.move(Item.EGGS, Location.GIANT)
+            pspeak(Item.EGGS, 0 if game.loc == Location.GIANT
                                 else 1 if game.here(Item.EGGS)
                                 else 2)
     else:
@@ -1528,8 +1557,8 @@ def vthrow():
         game.drop(obj, 0)
         game.move(Item.TROLL, 0)
         game.move(Item.TROLL+100, 0)
-        game.drop(Item.TROLL2, 117)
-        game.drop(Item.TROLL2+100, 122)
+        game.drop(Item.TROLL2, Location.SW_CHASM)
+        game.drop(Item.TROLL2+100, Location.NE_CHASM)
         game.juggle(Item.CHASM)
         rspeak(159)
     elif obj == Item.FOOD and game.here(Item.BEAR):
@@ -1551,7 +1580,7 @@ def vthrow():
             rspeak(158)
         elif game.here(Item.BEAR) and game.prop[Item.BEAR] == 0:
             game.drop(Item.AXE, game.loc)
-            game.fixed[Item.AXE] = FIXED
+            game.fixed[Item.AXE] = Location.FIXED
             game.prop[Item.AXE] = 1
             game.juggle(Item.BEAR)  # Don't try this at home, kids.
             rspeak(164)
@@ -1585,7 +1614,7 @@ def vbreak():
         if game.toting(Item.VASE):
             game.drop(Item.VASE, game.loc)
         game.prop[Item.VASE] = 2
-        game.fixed[Item.VASE] = FIXED
+        game.fixed[Item.VASE] = Location.FIXED
         rspeak(198)
     elif obj != Item.MIRROR:
         actspk()
@@ -1656,7 +1685,7 @@ def vtake():
     game.carry(obj, game.loc)
     k = game.liq()
     if obj == Item.BOTTLE and k != 0:
-        game.place[k] = TOTING
+        game.place[k] = Location.TOTING
     rspeak(54)
 
 def vopen():
@@ -1691,7 +1720,7 @@ def vopen():
         if spk == 124:
             game.destroy(Item.CLAM)
             game.drop(Item.OYSTER, game.loc)
-            game.drop(Item.PEARL, 105)
+            game.drop(Item.PEARL, Location.CUL_DE_SAC)
     elif obj == Item.DOOR:
         spk = 54 if game.prop[Item.DOOR] == 1 else 111
     elif obj == Item.CAGE:
@@ -1705,13 +1734,13 @@ def vopen():
             spk = 172
             if game.prop[Item.CHAIN] != 0:
                 spk = 34
-            if game.loc != 130:
+            if game.loc != Location.BARREN:
                 spk = 173
             if spk == 172:
                 game.prop[Item.CHAIN] = 2
                 if game.toting(Item.CHAIN):
                     game.drop(Item.CHAIN, game.loc)
-                game.fixed[Item.CHAIN] = FIXED
+                game.fixed[Item.CHAIN] = Location.FIXED
         else:
             spk = 171
             if game.prop[Item.BEAR] == 0:
@@ -1797,7 +1826,7 @@ def vkill():
         else:
             game.destroy(Item.BIRD)
             game.prop[Item.BIRD] = 0
-            if game.place[Item.SNAKE] == 19:
+            if game.place[Item.SNAKE] == Location.MT_KING:
                 game.tally2 += 1
             rspeak(45)
     elif obj == 0:
@@ -1824,14 +1853,14 @@ def vkill():
             pspeak(Item.DRAGON, 1)
             game.prop[Item.DRAGON] = 2
             game.prop[Item.RUG] = 0
-            game.move(Item.DRAGON+100, FIXED)
+            game.move(Item.DRAGON+100, Location.FIXED)
             game.move(Item.RUG+100, 0)
-            game.move(Item.DRAGON, 120)
+            game.move(Item.DRAGON, Location.SECRET_CANYON)
             game.move(Item.RUG, 120)
             for i in Item:
-                if game.place[i] in (119, 121):
-                    game.move(i, 120)
-            game.loc = 120
+                if game.place[i] in (Location.SECRET_CANYON_N, Location.SECRET_CANYON_E):
+                    game.move(i, Location.SECRET_CANYON)
+            game.loc = Location.SECRET_CANYON
             return domove(Movement.NULL)
     elif obj == Item.TROLL:
         rspeak(157)
@@ -1893,7 +1922,7 @@ def vfill():
         else:
             rspeak(145)
             game.prop[Item.VASE] = 2
-            game.fixed[Item.VASE] = FIXED
+            game.fixed[Item.VASE] = Location.FIXED
             # In the original Fortran, when the vase is filled with water or
             # oil, its property is set so that it breaks into pieces, *but* the
             # code then branches to label 9024 to actually drop the vase.  Once
@@ -1917,7 +1946,7 @@ def vfill():
     else:
         game.prop[Item.BOTTLE] = cave.bitset(game.loc, Cond.OIL)
         if game.toting(Item.BOTTLE):
-            game.place[game.liq()] = TOTING
+            game.place[game.liq()] = Location.TOTING
         rspeak(108 if game.liq() == Item.OIL else 107)
 
 def vblast():
@@ -1981,22 +2010,22 @@ def vdrop():
         rspeak(154)
         game.destroy(Item.BIRD)
         game.prop[Item.BIRD] = 0
-        if game.place[Item.SNAKE] == 19:
+        if game.place[Item.SNAKE] == Location.MT_KING:
             game.tally2 += 1
         return
     elif obj == Item.BEAR and game.at(Item.TROLL):
         rspeak(163)
         game.move(Item.TROLL, 0)
         game.move(Item.TROLL+100, 0)
-        game.move(Item.TROLL2, 117)
-        game.move(Item.TROLL2+100, 122)
+        game.move(Item.TROLL2, Location.SW_CHASM)
+        game.move(Item.TROLL2+100, Location.NE_CHASM)
         game.juggle(Item.CHASM)
         game.prop[Item.TROLL] = 2
-    elif obj == Item.VASE and game.loc != 96:
+    elif obj == Item.VASE and game.loc != Location.SOFT:
         game.prop[Item.VASE] = 0 if game.at(Item.PILLOW) else 2
         pspeak(Item.VASE, game.prop[Item.VASE] + 1)
         if game.prop[Item.VASE] != 0:
-            game.fixed[Item.VASE] = FIXED
+            game.fixed[Item.VASE] = Location.FIXED
     else:
         rspeak(54)
     k = game.liq()
