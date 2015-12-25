@@ -1858,7 +1858,8 @@ def vkill():
             game.move(Item.DRAGON, Location.SECRET_CANYON)
             game.move(Item.RUG, 120)
             for i in Item:
-                if game.place[i] in (Location.SECRET_CANYON_N, Location.SECRET_CANYON_E):
+                if game.place[i] in (Location.SECRET_CANYON_N,
+                                     Location.SECRET_CANYON_E):
                     game.move(i, Location.SECRET_CANYON)
             game.loc = Location.SECRET_CANYON
             return domove(Movement.NULL)

@@ -9,6 +9,7 @@
 #include "advdecl.h"
 
 static bool freeable;
+static char* savefile = NULL;
 
 void intransitive(void) {
 /* Label 4080 (intransitive verb handling): */
@@ -699,6 +700,18 @@ bool vresume(char* file) {
   return false;
  }
  fclose(adv);
+ if (file != savefile) {
+  if (savefile != NULL) free(savefile);
+  int flen = strlen(file);
+  savefile = malloc(flen+1);
+  if (savefile != NULL) {
+   strncpy(savefile, file, flen+1);
+  } else {
+   perror("\nWarning: not enough memory to remember filename");
+   fprintf(stderr, "SUSPEND and RESUME without filename will use ~/%s\n",
+	   DEFAULT_SAVE_NAME);
+  }
+ }
 #ifdef ADVMAGIC
  start();
 #endif
@@ -708,6 +721,7 @@ bool vresume(char* file) {
 
 char* defaultSaveFile(void) {
  freeable = false;
+ if (savefile != NULL) return savefile;
  char* home = getenv("HOME");
  if (home != NULL) {
   size_t homeLen = strlen(home);
