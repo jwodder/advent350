@@ -859,7 +859,8 @@ def dotrav(motion):
             rspeak(117)
     elif rdest == 302:
         game.drop(Item.EMERALD, game.loc)
-        game.newloc = Location.PLOVER if game.loc == Location.Y2 else Location.Y2
+        game.newloc = Location.PLOVER if game.loc == Location.Y2
+                                      else Location.Y2
     elif rdest == 303:
         if game.prop[Item.TROLL] == 1:
             pspeak(Item.TROLL, 1)
@@ -871,7 +872,8 @@ def dotrav(motion):
             game.juggle(Item.CHASM)
             game.newloc = game.loc
         else:
-            game.newloc = Location.NE_CHASM if game.loc == Location.SW_CHASM else Location.SW_CHASM
+            game.newloc = Location.NE_CHASM if game.loc == Location.SW_CHASM
+                                            else Location.SW_CHASM
             if game.prop[Item.TROLL] == 0:
                 game.prop[Item.TROLL] = 1
             if game.toting(Item.BEAR):
@@ -912,6 +914,12 @@ def death():
         return label2000
 
 def normend(bonus=0):
+    """
+    Game over.  Does not return.
+
+    :param int bonus: index in ``rmsg`` of the special end-of-game message, if
+        any
+    """
     score = game.score(False, bonus)
     print('\n\n\nYou scored %d out of a possible 350 using %d turns.'
           % (score, game.turns))
@@ -1443,6 +1451,10 @@ def label2630():
 # Verb functions:
 
 def what():
+    """
+    Ask the user for clarification in the event that they entered a command
+    with no object and no clear inferrable candidate for the object
+    """
     global obj
     print()
     print(lastline.in1, 'what?')
@@ -1450,6 +1462,10 @@ def what():
     return label2600
 
 def actspk():
+    """
+    Print the "default message" for the current verb in the event that the user
+    tried to use it inappropriately
+    """
     rspeak(cave.actspk[verb])
 
 def vscore():
